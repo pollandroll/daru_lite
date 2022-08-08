@@ -33,13 +33,9 @@ require 'daru'
 
 if jruby?
   require 'mdarray'
-else
-  if Daru.has_nmatrix?
-    require 'nmatrix/nmatrix'
-  end
 end
 
-ALL_DTYPES = [:nmatrix, :array]
+ALL_DTYPES = [:array]
 
 # FIXME: This must go! Need to be able to use be_within
 def expect_correct_vector_in_delta v1, v2, delta

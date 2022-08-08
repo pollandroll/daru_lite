@@ -27,9 +27,6 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  # it is required by NMatrix, yet we want to specify clearly which minimal version is OK
-  spec.add_runtime_dependency 'packable', '~> 1.3.13'
-
   spec.add_development_dependency 'spreadsheet', '~> 1.1.1'
   spec.add_development_dependency 'bundler', '>= 1.10'
   spec.add_development_dependency 'rake', '~>13.0'
@@ -40,7 +37,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec-its'
   spec.add_development_dependency 'awesome_print'
   spec.add_development_dependency 'nyaplot', '~> 0.1.5'
-  spec.add_development_dependency 'nmatrix', '~> 0.2.1' if ENV['DARU_TEST_NMATRIX']
   spec.add_development_dependency 'distribution', '~> 0.7'
   spec.add_development_dependency 'dbd-sqlite3'
   spec.add_development_dependency 'dbi'

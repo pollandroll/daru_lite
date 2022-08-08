@@ -42,7 +42,6 @@ This gem extends support for many Import and Export methods of `Daru::DataFrame`
 * Flexible and intuitive API for manipulation and analysis of data.
 * Easy plotting, statistics and arithmetic.
 * Plentiful iterators.
-* Optional speed and space optimization on MRI with [NMatrix](https://github.com/SciRuby/nmatrix).
 * Easy splitting, aggregation and grouping of data.
 * Quickly reducing data with pivot tables for quick data summary.
 * Import and export data from and to Excel, CSV, SQL Databases, ActiveRecord and plain text files.

@@ -3,7 +3,6 @@ require 'daru/maths/statistics/vector.rb'
 require 'daru/plotting/gruff.rb'
 require 'daru/plotting/nyaplot.rb'
 require 'daru/accessors/array_wrapper.rb'
-require 'daru/accessors/nmatrix_wrapper.rb'
 require 'daru/category.rb'
 
 module Daru
@@ -136,11 +135,8 @@ module Daru
     attr_reader :name
     # The row index. Can be either Daru::Index or Daru::MultiIndex.
     attr_reader :index
-    # The underlying dtype of the Vector. Can be either :array or :nmatrix.
+    # The underlying dtype of the Vector. Can be :array.
     attr_reader :dtype
-    # If the dtype is :nmatrix, this attribute represents the data type of the
-    # underlying NMatrix object. See NMatrix docs for more details on NMatrix
-    # data types.
     attr_reader :nm_dtype
     # An Array or the positions in the vector that are being treated as 'missing'.
     attr_reader :missing_positions
@@ -170,11 +166,8 @@ module Daru
     #
     # * +:index+ - Index of the vector
     #
-    # * +:dtype+ - The underlying data type. Can be :array or :nmatrix.
+    # * +:dtype+ - The underlying data type. Can be :array.
     # Default :array.
-    #
-    # * +:nm_dtype+ - For NMatrix, the data type of the numbers. See the NMatrix docs for
-    # further information on supported data type.
     #
     # * +:missing_values+ - An Array of the values that are to be treated as 'missing'.
     # nil is the default missing value.
@@ -546,10 +539,10 @@ module Daru
     #
     # == Options
     #
-    # * +:dtype+ - :array for Ruby Array. :nmatrix for NMatrix.
+    # * +:dtype+ - :array for Ruby Array..
     def cast opts={}
       dt = opts[:dtype]
-      raise ArgumentError, "Unsupported dtype #{opts[:dtype]}" unless %i[array nmatrix].include?(dt)
+      raise ArgumentError, "Unsupported dtype #{opts[:dtype]}" unless dt == :array
 
       @data = cast_vector_to dt unless @dtype == dt
     end
@@ -567,15 +560,11 @@ module Daru
       update_position_cache
     end
 
-    # The type of data contained in the vector. Can be :object or :numeric. If
-    # the underlying dtype is an NMatrix, this method will return the data type
-    # of the NMatrix object.
+    # The type of data contained in the vector. Can be :object.
     #
     # Running through the data to figure out the kind of data is delayed to the
     # last possible moment.
     def type
-      return @data.nm_dtype if dtype == :nmatrix
-
       if @type.nil? || @possibly_changed_type
         @type = :numeric
         each do |e|
@@ -949,32 +938,6 @@ module Daru
         Matrix.columns([to_a])
       else
         raise ArgumentError, "axis should be either :horizontal or :vertical, not #{axis}"
-      end
-    end
-
-    # Convert vector to nmatrix object
-    # @param [Symbol] axis :horizontal or :vertical
-    # @return [NMatrix] NMatrix object containing all values of the vector
-    # @example
-    #   dv = Daru::Vector.new [1, 2, 3]
-    #   dv.to_nmatrix
-    #   # =>
-    #   # [
-    #   #   [1, 2, 3] ]
-    def to_nmatrix axis=:horizontal
-      unless numeric? && !include?(nil)
-        raise ArgumentError, 'Can not convert to nmatrix'\
-          'because the vector is numeric'
-      end
-
-      case axis
-      when :horizontal
-        NMatrix.new [1, size], to_a
-      when :vertical
-        NMatrix.new [size, 1], to_a
-      else
-        raise ArgumentError, 'Invalid axis specified. '\
-          'Valid axis are :horizontal and :vertical'
       end
     end
 
@@ -1621,7 +1584,6 @@ module Daru
       new_vector =
         case dtype
         when :array   then Daru::Accessors::ArrayWrapper.new(source, self)
-        when :nmatrix then Daru::Accessors::NMatrixWrapper.new(source, self, nm_dtype)
         when :mdarray then raise NotImplementedError, 'MDArray not yet supported.'
         else raise ArgumentError, "Unknown dtype #{dtype}"
         end

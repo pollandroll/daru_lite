@@ -11,9 +11,6 @@ matrix:
   fast_finish:
     true
 
-env:
-  - DARU_TEST_NMATRIX=1
-
 script:
   - bundle add yard-junk
   - bundle install
