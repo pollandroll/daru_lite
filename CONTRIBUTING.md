@@ -6,8 +6,6 @@ To install dependencies, execute the following commands:
 
 ``` bash
 sudo apt-get update -qq
-sudo apt-get install -y r-base r-base-dev
-sudo Rscript -e "install.packages(c('Rserve','irr'),,'http://cran.us.r-project.org')"
 sudo apt-get install libmagickwand-dev imagemagick
 bundle install
 ```

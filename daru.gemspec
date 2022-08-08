@@ -32,7 +32,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~>13.0'
   spec.add_development_dependency 'pry', '~> 0.10'
   spec.add_development_dependency 'pry-byebug'
-  spec.add_development_dependency 'rserve-client', '~> 0.3'
   spec.add_development_dependency 'rspec', '~> 3.4'
   spec.add_development_dependency 'rspec-its'
   spec.add_development_dependency 'awesome_print'
