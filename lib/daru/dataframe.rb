@@ -120,49 +120,6 @@ module Daru
         Daru::IO.from_plaintext path, fields
       end
 
-      # Read the table data from a remote html file. Please note that this module
-      # works only for static table elements on a HTML page, and won't work in
-      # cases where the data is being loaded into the HTML table by Javascript.
-      #
-      # By default - all <th> tag elements in the first proper row are considered
-      # as the order, and all the <th> tag elements in the first column are
-      # considered as the index.
-      #
-      # == Arguments
-      #
-      # * path [String] - URL of the target HTML file.
-      # * fields [Hash] -
-      #
-      #   +:match+ - A *String* to match and choose a particular table(s) from multiple tables of a HTML page.
-      #
-      #   +:order+ - An *Array* which would act as the user-defined order, to override the parsed *Daru::DataFrame*.
-      #
-      #   +:index+ - An *Array* which would act as the user-defined index, to override the parsed *Daru::DataFrame*.
-      #
-      #   +:name+ - A *String* that manually assigns a name to the scraped *Daru::DataFrame*, for user's preference.
-      #
-      # == Returns
-      # An Array of +Daru::DataFrame+s, with each dataframe corresponding to a
-      # HTML table on that webpage.
-      #
-      # == Usage
-      #   dfs = Daru::DataFrame.from_html("http://www.moneycontrol.com/", match: "Sun Pharma")
-      #   dfs.count
-      #   # => 4
-      #
-      #   dfs.first
-      #   #
-      #   # => <Daru::DataFrame(5x4)>
-      #   #          Company      Price     Change Value (Rs
-      #   #     0 Sun Pharma     502.60     -65.05   2,117.87
-      #   #     1   Reliance    1356.90      19.60     745.10
-      #   #     2 Tech Mahin     379.45     -49.70     650.22
-      #   #     3        ITC     315.85       6.75     621.12
-      #   #     4       HDFC    1598.85      50.95     553.91
-      def from_html path, fields={}
-        Daru::IO.from_html path, fields
-      end
-
       # Create DataFrame by specifying rows as an Array of Arrays or Array of
       # Daru::Vector objects.
       def rows source, opts={}
@@ -2068,13 +2025,6 @@ module Daru
       self
     end
 
-    # Convert all numeric vectors to GSL::Matrix
-    def to_gsl
-      numerics_as_arrays = numeric_vectors.map { |n| self[n].to_a }
-
-      GSL::Matrix.alloc(*numerics_as_arrays.transpose)
-    end
-
     # Convert all vectors of type *:numeric* into a Matrix.
     def to_matrix
       Matrix.columns each_vector.select(&:numeric?).map(&:to_a)
@@ -2086,13 +2036,6 @@ module Daru
       Nyaplot::DataFrame.new(to_a[0])
     end
     # :nocov:
-
-    # Convert all vectors of type *:numeric* and not containing nils into an NMatrix.
-    def to_nmatrix
-      each_vector.select do |vector|
-        vector.numeric? && !vector.include_values?(*Daru::MISSING_VALUES)
-      end.map(&:to_a).transpose.to_nm
-    end
 
     # Converts the DataFrame into an array of hashes where key is vector name
     # and value is the corresponding element. The 0th index of the array contains
@@ -2236,17 +2179,6 @@ module Daru
         index: h[:index],
         order: h[:order],
         name:  h[:name])
-    end
-
-    # Change dtypes of vectors by supplying a hash of :vector_name => :new_dtype
-    #
-    # == Usage
-    #   df = Daru::DataFrame.new({a: [1,2,3], b: [1,2,3], c: [1,2,3]})
-    #   df.recast a: :nmatrix, c: :nmatrix
-    def recast opts={}
-      opts.each do |vector_name, dtype|
-        self[vector_name].cast(dtype: dtype)
-      end
     end
 
     # Transpose a DataFrame, tranposing elements and row, column indexing.
