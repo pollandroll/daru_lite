@@ -4,7 +4,6 @@ require 'daru/plotting/gruff.rb'
 require 'daru/plotting/nyaplot.rb'
 require 'daru/accessors/array_wrapper.rb'
 require 'daru/accessors/nmatrix_wrapper.rb'
-require 'daru/accessors/gsl_wrapper.rb'
 require 'daru/category.rb'
 
 module Daru
@@ -137,7 +136,7 @@ module Daru
     attr_reader :name
     # The row index. Can be either Daru::Index or Daru::MultiIndex.
     attr_reader :index
-    # The underlying dtype of the Vector. Can be either :array, :nmatrix or :gsl.
+    # The underlying dtype of the Vector. Can be either :array or :nmatrix.
     attr_reader :dtype
     # If the dtype is :nmatrix, this attribute represents the data type of the
     # underlying NMatrix object. See NMatrix docs for more details on NMatrix
@@ -171,7 +170,7 @@ module Daru
     #
     # * +:index+ - Index of the vector
     #
-    # * +:dtype+ - The underlying data type. Can be :array, :nmatrix or :gsl.
+    # * +:dtype+ - The underlying data type. Can be :array or :nmatrix.
     # Default :array.
     #
     # * +:nm_dtype+ - For NMatrix, the data type of the numbers. See the NMatrix docs for
@@ -550,7 +549,7 @@ module Daru
     # * +:dtype+ - :array for Ruby Array. :nmatrix for NMatrix.
     def cast opts={}
       dt = opts[:dtype]
-      raise ArgumentError, "Unsupported dtype #{opts[:dtype]}" unless %i[array nmatrix gsl].include?(dt)
+      raise ArgumentError, "Unsupported dtype #{opts[:dtype]}" unless %i[array nmatrix].include?(dt)
 
       @data = cast_vector_to dt unless @dtype == dt
     end
@@ -976,17 +975,6 @@ module Daru
       else
         raise ArgumentError, 'Invalid axis specified. '\
           'Valid axis are :horizontal and :vertical'
-      end
-    end
-
-    # If dtype != gsl, will convert data to GSL::Vector with to_a. Otherwise returns
-    # the stored GSL::Vector object.
-    def to_gsl
-      raise NoMethodError, 'Install gsl-nmatrix for access to this functionality.' unless Daru.has_gsl?
-      if dtype == :gsl
-        @data.data
-      else
-        GSL::Vector.alloc(reject_values(*Daru::MISSING_VALUES).to_a)
       end
     end
 
@@ -1634,7 +1622,6 @@ module Daru
         case dtype
         when :array   then Daru::Accessors::ArrayWrapper.new(source, self)
         when :nmatrix then Daru::Accessors::NMatrixWrapper.new(source, self, nm_dtype)
-        when :gsl then Daru::Accessors::GSLWrapper.new(source, self)
         when :mdarray then raise NotImplementedError, 'MDArray not yet supported.'
         else raise ArgumentError, "Unknown dtype #{dtype}"
         end

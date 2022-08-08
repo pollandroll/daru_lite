@@ -17,7 +17,7 @@ Tested with MRI 2.5.1 and 2.7.1.
 
 - **[daru-view](https://github.com/SciRuby/daru-view)**
 
-daru-view is for easy and interactive plotting in web application & IRuby 
+daru-view is for easy and interactive plotting in web application & IRuby
 notebook. It can work in any Ruby web application frameworks like Rails, Sinatra, Nanoc and hopefully in others too.
 
 Articles/Blogs, that summarize powerful features of daru-view:
@@ -42,7 +42,7 @@ This gem extends support for many Import and Export methods of `Daru::DataFrame`
 * Flexible and intuitive API for manipulation and analysis of data.
 * Easy plotting, statistics and arithmetic.
 * Plentiful iterators.
-* Optional speed and space optimization on MRI with [NMatrix](https://github.com/SciRuby/nmatrix) and GSL.
+* Optional speed and space optimization on MRI with [NMatrix](https://github.com/SciRuby/nmatrix).
 * Easy splitting, aggregation and grouping of data.
 * Quickly reducing data with pivot tables for quick data summary.
 * Import and export data from and to Excel, CSV, SQL Databases, ActiveRecord and plain text files.

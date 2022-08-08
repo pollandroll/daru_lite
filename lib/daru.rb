@@ -80,7 +80,6 @@ module Daru
     end
   end
 
-  create_has_library :gsl
   create_has_library :nmatrix
   create_has_library :nyaplot
   create_has_library :gruff

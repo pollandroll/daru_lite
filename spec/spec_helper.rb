@@ -39,7 +39,7 @@ else
   end
 end
 
-ALL_DTYPES = [:nmatrix, :gsl, :array]
+ALL_DTYPES = [:nmatrix, :array]
 
 # FIXME: This must go! Need to be able to use be_within
 def expect_correct_vector_in_delta v1, v2, delta

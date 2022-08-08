@@ -42,12 +42,11 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'nyaplot', '~> 0.1.5'
   spec.add_development_dependency 'nmatrix', '~> 0.2.1' if ENV['DARU_TEST_NMATRIX']
   spec.add_development_dependency 'distribution', '~> 0.7'
-  spec.add_development_dependency 'gsl', '~>2.1.0.2' if ENV['DARU_TEST_GSL']
   spec.add_development_dependency 'dbd-sqlite3'
   spec.add_development_dependency 'dbi'
   spec.add_development_dependency 'activerecord', '~> 6.0'
   spec.add_development_dependency 'mechanize'
-  # issue : https://github.com/SciRuby/daru/issues/493 occured 
+  # issue : https://github.com/SciRuby/daru/issues/493 occured
   # with latest version of sqlite3
   spec.add_development_dependency  'sqlite3'
   spec.add_development_dependency 'rubocop', '~> 0.49.0'
