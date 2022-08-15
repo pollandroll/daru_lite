@@ -66,7 +66,6 @@ $ gem install daru
 
 #### Visualization
 * [Visualizing Data With Daru::DataFrame](http://nbviewer.ipython.org/github/SciRuby/sciruby-notebooks/blob/master/Visualization/Visualizing%20data%20with%20daru%20DataFrame.ipynb)
-* [Plotting using Nyaplot](http://nbviewer.jupyter.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Plotting/Visualization.ipynb)
 * [Plotting using GnuplotRB](http://nbviewer.jupyter.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Plotting/Gnuplotrb.ipynb)
 * [Vector plotting with Gruff](http://nbviewer.jupyter.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Plotting/Gruff%20Vector.ipynb)
 * [DataFrame plotting with Gruff](http://nbviewer.jupyter.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Plotting/Gruff%20DataFrame.ipynb)
@@ -197,19 +196,7 @@ data_frame.where(
 
 *Plotting*
 
-Daru supports plotting of interactive graphs with [nyaplot](https://github.com/domitry/nyaplot). You can easily create a plot with the `#plot` method. Here we plot the gallons sold on the Y axis and name of the brand on the X axis in a bar graph.
-``` ruby
-data_frame.plot type: :bar, x: 'Beer', y: 'Gallons sold' do |plot, diagram|
-  plot.x_label "Beer"
-  plot.y_label "Gallons Sold"
-  plot.yrange [0,600]
-  plot.width 500
-  plot.height 400
-end
-```
-![plot0](images/plot0.png)
-
-In addition to nyaplot, daru also supports plotting out of the box with [gnuplotrb](https://github.com/SciRuby/gnuplotrb).
+daru supports plotting out of the box with [gnuplotrb](https://github.com/SciRuby/gnuplotrb).
 
 ## Documentation
 
