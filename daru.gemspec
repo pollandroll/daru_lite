@@ -43,6 +43,7 @@ Gem::Specification.new do |spec|
   # with latest version of sqlite3
   spec.add_development_dependency  'sqlite3'
   spec.add_development_dependency 'rubocop', '~> 0.49.0'
+  spec.add_development_dependency 'yard-junk'
   spec.add_development_dependency 'ruby-prof'
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'gruff'
