@@ -751,7 +751,7 @@ module Daru
         #   ts.ema   # => [ ... nil, 0.455... , 0.395..., 0.323..., ... ]
         #
         # @return [Daru::Vector] Contains EMA
-        def ema(n=10, wilder=false) # rubocop:disable Metrics/AbcSize
+        def ema(n=10, wilder=false)
           smoother = wilder ? 1.0 / n : 2.0 / (n + 1)
           # need to start everything from the first non-nil observation
           start = @data.index { |i| !i.nil? }
@@ -892,7 +892,7 @@ module Daru
         # == Returns
         #
         # Autocovariance value
-        def acvf(demean=true, unbiased=true) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+        def acvf(demean=true, unbiased=true) # rubocop:disable Metrics/MethodLength
           opts = {
             demean: true,
             unbaised: true
@@ -962,7 +962,7 @@ module Daru
             end
         end
 
-        def midpoint_percentile(q) # rubocop:disable Metrics/AbcSize
+        def midpoint_percentile(q)
           sorted = reject_values(*Daru::MISSING_VALUES).to_a.sort
 
           v = ((size - count_values(*Daru::MISSING_VALUES)) * q).quo(100)
@@ -973,7 +973,7 @@ module Daru
           end
         end
 
-        def linear_percentile(q) # rubocop:disable Metrics/AbcSize
+        def linear_percentile(q)
           sorted = reject_values(*Daru::MISSING_VALUES).to_a.sort
           index = (q / 100.0) * ((size - count_values(*Daru::MISSING_VALUES)) + 1)
 

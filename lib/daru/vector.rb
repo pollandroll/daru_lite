@@ -1201,7 +1201,7 @@ module Daru
     #
     # == Reference:
     # * Sawyer, S. (2005). Resampling Data: Using a Statistical Jacknife.
-    def jackknife(estimators, k=1) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def jackknife(estimators, k=1) # rubocop:disable Metrics/MethodLength
       raise "n should be divisible by k:#{k}" unless (size % k).zero?
 
       nb = (size / k).to_i

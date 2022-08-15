@@ -17,7 +17,7 @@ module Daru
         end
       end
 
-      def initialize left_df, right_df, opts={} # rubocop:disable Metrics/AbcSize -- quick-fix for issue #171
+      def initialize left_df, right_df, opts={} # quick-fix for issue #171
         init_opts(opts)
         validate_on!(left_df, right_df)
         key_sanitizer = ->(h) { sanitize_merge_keys(h.values_at(*on)) }

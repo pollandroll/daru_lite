@@ -23,7 +23,7 @@ module Daru
 
       private
 
-      def build_rows threshold # rubocop:disable Metrics/AbcSize
+      def build_rows threshold
         @row_headers.first(threshold).zip(@data).map do |(r, datarow)|
           [*[r].flatten.map(&:to_s), *(datarow || []).map(&method(:pretty_to_s))]
         end.tap do |rows|
