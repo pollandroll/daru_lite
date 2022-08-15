@@ -17,13 +17,13 @@ module Daru
                 .group_by(&:itself)
                 .select { |_, g| g.size > 1 }
                 .map(&:first)
-                .collect { |n| [n, 0] }.to_h
+                .to_h { |n| [n, 0] }
 
       # ...and use this hash for actual recode
       array.collect do |n|
         if counter.key?(n)
           counter[n] += 1
-          new_n = '%s_%d' % [n, counter[n]]
+          new_n = format('%s_%d', n, counter[n])
           n.is_a?(Symbol) ? new_n.to_sym : new_n
         else
           n
@@ -34,7 +34,7 @@ module Daru
     def array_of?(array, match)
       array.is_a?(Array) &&
         !array.empty? &&
-        array.all? { |el| match === el } # rubocop:disable Style/CaseEquality
+        array.all? { |el| match === el } # rubocop:disable Style/CaseEquality,Performance/RedundantEqualityComparisonBlock
     end
   end
 end

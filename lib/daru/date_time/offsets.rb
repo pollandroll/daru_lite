@@ -1,6 +1,4 @@
 module Daru
-  # rubocop:disable Style/OpMethod
-
   # Generic class for generating date offsets.
   class DateOffset
     # A Daru::DateOffset object is created by a passing certain options
@@ -35,7 +33,7 @@ module Daru
     #   offset = Daru::DateOffset.new(mins: 2, n: 5)
     #   offset + DateTime.new(2011,5,3,3,5)
     #   #=> #<DateTime: 2011-05-03T03:15:00+00:00 ((2455685j,11700s,0n),+0s,2299161j)>
-    def initialize opts={}
+    def initialize(opts = {})
       n = opts[:n] || 1
       Offsets::LIST.each do |key, klass|
         if opts.key?(key)
@@ -44,21 +42,21 @@ module Daru
         end
       end
 
-      @offset = Offsets::Day.new(7*n*opts[:weeks]) if opts[:weeks]
+      @offset = Offsets::Day.new(7 * n * opts[:weeks]) if opts[:weeks]
     end
 
     # Offset a DateTime forward.
     #
-    # @param date_time [DateTime] A DateTime object which is to offset.
-    def + date_time
-      @offset + date_time
+    # @param other [DateTime] A DateTime object which is to offset.
+    def +(other)
+      @offset + other
     end
 
     # Offset a DateTime backward.
     #
-    # @param date_time [DateTime] A DateTime object which is to offset.
-    def - date_time
-      @offset - date_time
+    # @param other [DateTime] A DateTime object which is to offset.
+    def -(other)
+      @offset - other
     end
 
     def -@
@@ -71,12 +69,12 @@ module Daru
       @offset = offset
     end
 
-    def + date_time
-      @offset - date_time
+    def +(other)
+      @offset - other
     end
 
-    def - date_time
-      @offset + date_time
+    def -(other)
+      @offset + other
     end
 
     def -@
@@ -91,7 +89,7 @@ module Daru
       # the offset should be applied, which is the supplied as the argument.
       #
       # @param n [Integer] The number of times an offset should be applied.
-      def initialize n=1
+      def initialize(n = 1)
         @n = n
       end
 
@@ -104,16 +102,16 @@ module Daru
     # @abstract
     # @private
     class Tick < DateOffsetType
-      def + date_time
-        date_time + @n*multiplier
+      def +(other)
+        other + (@n * multiplier)
       end
 
-      def - date_time
-        date_time - @n*multiplier
+      def -(other)
+        other - (@n * multiplier)
       end
 
-      def ==(other_obj)
-        other_obj.is_a?(Tick) && period == other_obj.period
+      def ==(other)
+        other.is_a?(Tick) && period == other.period
       end
 
       def period
@@ -191,12 +189,12 @@ module Daru
     class Month < Tick
       FREQ = 'MONTH'.freeze
 
-      def + date_time
-        date_time >> @n
+      def +(other)
+        other >> @n
       end
 
-      def - date_time
-        date_time << @n
+      def -(other)
+        other << @n
       end
     end
 
@@ -210,48 +208,48 @@ module Daru
     class Year < Tick
       FREQ = 'YEAR'.freeze
 
-      def + date_time
-        date_time >> @n*12
+      def +(other)
+        other >> (@n * 12)
       end
 
-      def - date_time
-        date_time << @n*12
+      def -(other)
+        other << (@n * 12)
       end
     end
 
     class Week < DateOffset
-      def initialize *args
+      def initialize(*args)
         @n = args[0].is_a?(Hash) ? 1 : args[0]
         opts = args[-1]
         @weekday = opts[:weekday] || 0
       end
 
-      def + date_time
-        wday = date_time.wday
+      def +(other)
+        wday = other.wday
         distance = (@weekday - wday).abs
         if @weekday > wday
-          date_time + distance + 7*(@n-1)
+          other + distance + (7 * (@n - 1))
         else
-          date_time + (7-distance) + 7*(@n -1)
+          other + (7 - distance) + (7 * (@n - 1))
         end
       end
 
-      def - date_time
-        wday = date_time.wday
+      def -(other)
+        wday = other.wday
         distance = (@weekday - wday).abs
         if @weekday >= wday
-          date_time - ((7 - distance) + 7*(@n -1))
+          other - ((7 - distance) + (7 * (@n - 1)))
         else
-          date_time - (distance + 7*(@n-1))
+          other - (distance + (7 * (@n - 1)))
         end
       end
 
-      def on_offset? date_time
+      def on_offset?(date_time)
         date_time.wday == @weekday
       end
 
       def freq_string
-        (@n == 1 ? '' : @n.to_s) + 'W' + '-' + Daru::DAYS_OF_WEEK.key(@weekday)
+        "#{@n == 1 ? '' : @n.to_s}W-#{Daru::DAYS_OF_WEEK.key(@weekday)}"
       end
     end
 
@@ -265,27 +263,27 @@ module Daru
     class MonthBegin < DateOffsetType
       FREQ = 'MB'.freeze
 
-      def + date_time
+      def +(other)
         @n.times do
-          days_in_month = Daru::MONTH_DAYS[date_time.month]
-          days_in_month += 1 if date_time.leap? && date_time.month == 2
-          date_time += (days_in_month - date_time.day + 1)
+          days_in_month = Daru::MONTH_DAYS[other.month]
+          days_in_month += 1 if other.leap? && other.month == 2
+          other += (days_in_month - other.day + 1)
         end
 
-        date_time
+        other
       end
 
-      def - date_time
+      def -(other)
         @n.times do
-          date_time = date_time << 1 if on_offset?(date_time)
-          date_time = DateTime.new(date_time.year, date_time.month, 1,
-            date_time.hour, date_time.min, date_time.sec)
+          other = other << 1 if on_offset?(other)
+          other = DateTime.new(other.year, other.month, 1,
+                               other.hour, other.min, other.sec)
         end
 
-        date_time
+        other
       end
 
-      def on_offset? date_time
+      def on_offset?(date_time)
         date_time.day == 1
       end
     end
@@ -300,31 +298,31 @@ module Daru
     class MonthEnd < DateOffsetType
       FREQ = 'ME'.freeze
 
-      def + date_time
+      def +(other)
         @n.times do
-          date_time     = date_time >> 1 if on_offset?(date_time)
-          days_in_month = Daru::MONTH_DAYS[date_time.month]
-          days_in_month += 1 if date_time.leap? && date_time.month == 2
+          other = other >> 1 if on_offset?(other)
+          days_in_month = Daru::MONTH_DAYS[other.month]
+          days_in_month += 1 if other.leap? && other.month == 2
 
-          date_time += (days_in_month - date_time.day)
+          other += (days_in_month - other.day)
         end
 
-        date_time
+        other
       end
 
-      def - date_time
+      def -(other)
         @n.times do
-          date_time = date_time << 1
-          days_in_month = Daru::MONTH_DAYS[date_time.month]
-          days_in_month += 1 if date_time.leap? && date_time.month == 2
+          other = other << 1
+          days_in_month = Daru::MONTH_DAYS[other.month]
+          days_in_month += 1 if other.leap? && other.month == 2
 
-          date_time += (days_in_month - date_time.day)
+          other += (days_in_month - other.day)
         end
 
-        date_time
+        other
       end
 
-      def on_offset? date_time
+      def on_offset?(date_time)
         (date_time + 1).day == 1
       end
     end
@@ -339,21 +337,21 @@ module Daru
     class YearBegin < DateOffsetType
       FREQ = 'YB'.freeze
 
-      def + date_time
-        DateTime.new(date_time.year + @n, 1, 1,
-          date_time.hour,date_time.min, date_time.sec)
+      def +(other)
+        DateTime.new(other.year + @n, 1, 1,
+                     other.hour, other.min, other.sec)
       end
 
-      def - date_time
-        if on_offset?(date_time)
-          DateTime.new(date_time.year - @n, 1, 1,
-            date_time.hour,date_time.min, date_time.sec)
+      def -(other)
+        if on_offset?(other)
+          DateTime.new(other.year - @n, 1, 1,
+                       other.hour, other.min, other.sec)
         else
-          DateTime.new(date_time.year - (@n-1), 1, 1)
+          DateTime.new(other.year - (@n - 1), 1, 1)
         end
       end
 
-      def on_offset? date_time
+      def on_offset?(date_time)
         date_time.month == 1 && date_time.day == 1
       end
     end
@@ -368,21 +366,21 @@ module Daru
     class YearEnd < DateOffsetType
       FREQ = 'YE'.freeze
 
-      def + date_time
-        if on_offset?(date_time)
-          DateTime.new(date_time.year + @n, 12, 31,
-            date_time.hour, date_time.min, date_time.sec)
+      def +(other)
+        if on_offset?(other)
+          DateTime.new(other.year + @n, 12, 31,
+                       other.hour, other.min, other.sec)
         else
-          DateTime.new(date_time.year + (@n-1), 12, 31,
-            date_time.hour, date_time.min, date_time.sec)
+          DateTime.new(other.year + (@n - 1), 12, 31,
+                       other.hour, other.min, other.sec)
         end
       end
 
-      def - date_time
-        DateTime.new(date_time.year - 1, 12, 31)
+      def -(other)
+        DateTime.new(other.year - 1, 12, 31)
       end
 
-      def on_offset? date_time
+      def on_offset?(date_time)
         date_time.month == 12 && date_time.day == 31
       end
     end
@@ -396,6 +394,4 @@ module Daru
       years: Year
     }.freeze
   end
-
-  # rubocop:enable Style/OpMethod
 end

@@ -65,7 +65,7 @@ module Daru
       end
     end
 
-    def plotting_library= lib
+    def plotting_library=(lib)
       case lib
       when :gruff
         @plotting_library = lib
@@ -74,8 +74,8 @@ module Daru
       end
     end
 
-    def error msg
-      error_stream.puts msg if error_stream
+    def error(msg)
+      error_stream&.puts msg
     end
   end
 
@@ -88,26 +88,26 @@ require 'forwardable'
 require 'erb'
 require 'date'
 
-require 'daru/version.rb'
+require 'daru/version'
 
 require 'open-uri'
 
-require 'daru/index/index.rb'
-require 'daru/index/multi_index.rb'
-require 'daru/index/categorical_index.rb'
+require 'daru/index/index'
+require 'daru/index/multi_index'
+require 'daru/index/categorical_index'
 
-require 'daru/helpers/array.rb'
-require 'daru/configuration.rb'
-require 'daru/vector.rb'
-require 'daru/dataframe.rb'
-require 'daru/monkeys.rb'
+require 'daru/helpers/array'
+require 'daru/configuration'
+require 'daru/vector'
+require 'daru/dataframe'
+require 'daru/monkeys'
 require 'daru/formatters/table'
 require 'daru/iruby/helpers'
-require 'daru/exceptions.rb'
+require 'daru/exceptions'
 
-require 'daru/core/group_by.rb'
-require 'daru/core/query.rb'
-require 'daru/core/merge.rb'
+require 'daru/core/group_by'
+require 'daru/core/query'
+require 'daru/core/merge'
 
-require 'daru/date_time/offsets.rb'
-require 'daru/date_time/index.rb'
+require 'daru/date_time/offsets'
+require 'daru/date_time/index'
