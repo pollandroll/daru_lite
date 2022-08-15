@@ -56,7 +56,7 @@ module Daru
       end
 
       def read_from_excel path, opts
-        optional_gem 'spreadsheet', '~>1.1.1'
+        optional_gem 'spreadsheet', '~>1.3.0'
 
         worksheet_id = opts[:worksheet_id]
         row_id       = opts[:row_id]
