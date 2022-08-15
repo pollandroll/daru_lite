@@ -181,16 +181,6 @@ module Daru
         end
       end
 
-      def from_html path, opts
-        optional_gem 'mechanize', '~>2.7.5'
-        page = Mechanize.new.get(path)
-        page.search('table').map { |table| html_parse_table table }
-            .keep_if { |table| html_search table, opts[:match] }
-            .compact
-            .map { |table| html_decide_values table, opts }
-            .map { |table| html_table_to_dataframe table }
-      end
-
       private
 
       def optional_gem(name, version)

@@ -36,7 +36,7 @@ module Daru
 
   SPLIT_TOKEN = ','.freeze
 
-  @plotting_library = :nyaplot
+  @plotting_library = :gruff
 
   @error_stream = $stderr
 
@@ -53,7 +53,6 @@ module Daru
         cv = "@@#{lib_underscore}"
         unless class_variable_defined? cv
           begin
-            library = 'nmatrix/nmatrix' if library == :nmatrix
             require library.to_s
             class_variable_set(cv, true)
           rescue LoadError
@@ -68,7 +67,7 @@ module Daru
 
     def plotting_library= lib
       case lib
-      when :gruff, :nyaplot
+      when :gruff
         @plotting_library = lib
       else
         raise ArgumentError, "Unsupported library #{lib}"
@@ -80,9 +79,6 @@ module Daru
     end
   end
 
-  create_has_library :gsl
-  create_has_library :nmatrix
-  create_has_library :nyaplot
   create_has_library :gruff
 end
 

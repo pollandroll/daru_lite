@@ -1,345 +1,344 @@
 describe Daru::Vector do
-  [:array, :gsl].each do |dtype| #nmatrix still unstable
-    describe dtype do
-      before do
-        @dv = Daru::Vector.new [323, 11, 555, 666, 234, 21, 666, 343, 1, 2], dtype: dtype
-        @dv_with_nils = Daru::Vector.new [323, 11, 555, nil, 666, 234, 21, 666, 343, nil, 1, 2]
-      end
+  describe 'array' do
+    let(:dtype) { :array }
 
-      context "#mean" do
-        it "calculates mean" do
-          expect(@dv.mean).to eq(282.2)
-        end
-      end
+    before do
+      @dv = Daru::Vector.new [323, 11, 555, 666, 234, 21, 666, 343, 1, 2], dtype: dtype
+      @dv_with_nils = Daru::Vector.new [323, 11, 555, nil, 666, 234, 21, 666, 343, nil, 1, 2]
+    end
 
-      let(:dv) { dv = Daru::Vector.new (["Tyrion", "Daenerys", nil, "Jon Starkgaryen"]), index: Daru::Index.new([:t, :d, :n, :j]) }
-
-      context "#max" do
-        it "returns max value" do
-          expect(dv.max).to eq("Tyrion")
-        end
-        it "returns N max values" do
-          expect(dv.max(2)).to eq(["Tyrion","Jon Starkgaryen"])
-        end
-        it "returns max value, sorted by comparitive block input" do
-          expect(dv.max { |a,b| a.size <=> b.size }).to eq("Jon Starkgaryen")
-        end
-        it "returns N max values, sorted by comparitive block input" do
-          expect(dv.max(2) {|a,b| a.size <=> b.size}).to eq(["Jon Starkgaryen","Daenerys"])
-        end
-      end
-
-      context "#max_by" do
-        it "raises error without object block" do
-          expect { dv.max_by }.to raise_error(ArgumentError)
-        end
-        it "raises error without object block when N is given" do
-          expect { dv.max_by(2) }.to raise_error(ArgumentError)
-        end
-        it "returns max value, sorted by object block input" do
-          expect(dv.max_by { |x| x.size }).to eq("Jon Starkgaryen")
-        end
-        it "returns N max values, sorted by object block input" do
-          expect(dv.max_by(2) {|x| x.size }).to eq(["Jon Starkgaryen","Daenerys"])
-        end
-      end
-
-      context "#index_of_max" do
-        it "returns index_of_max value" do
-          expect(dv.index_of_max).to eq(:t)
-        end
-        it "returns N index_of_max values" do
-          expect(dv.index_of_max(2)).to eq([:t, :j])
-        end
-        it "returns index_of_max value, sorted by comparitive block input" do
-          expect(dv.index_of_max { |a,b| a.size <=> b.size }).to eq(:j)
-        end
-        it "returns N index_of_max values, sorted by comparitive block input" do
-          expect(dv.index_of_max(2) {|a,b| a.size <=> b.size}).to eq([:j, :d])
-        end
-      end
-
-      context "#index_of_max_by" do
-        it "raises error without object block" do
-          expect { dv.index_of_max_by }.to raise_error(ArgumentError)
-        end
-        it "raises error without object block when N is given" do
-          expect { dv.index_of_max_by(2) }.to raise_error(ArgumentError)
-        end
-        it "returns index_of_max value, sorted by object block input" do
-          expect(dv.index_of_max_by { |x| x.size }).to eq(:j)
-        end
-        it "returns N index_of_max values, sorted by object block input" do
-          expect(dv.index_of_max_by(2) {|x| x.size }).to eq([:j, :d])
-        end
-      end
-
-      context "#min" do
-        it "returns min value" do
-          expect(dv.min).to eq("Daenerys")
-        end
-        it "returns N min values" do
-          expect(dv.min(2)).to eq(["Daenerys","Jon Starkgaryen"])
-        end
-        it "returns min value, sorted by comparitive block input" do
-          expect(dv.min { |a,b| a.size <=> b.size }).to eq("Tyrion")
-        end
-        it "returns N min values, sorted by comparitive block input" do
-          expect(dv.min(2) {|a,b| a.size <=> b.size}).to eq(["Tyrion","Daenerys"])
-        end
-      end
-
-      context "#min_by" do
-        it "raises error without object block" do
-          expect { dv.min_by }.to raise_error(ArgumentError)
-        end
-        it "raises error without object block when N is given" do
-          expect { dv.min_by(2) }.to raise_error(ArgumentError)
-        end
-        it "returns min value, sorted by object block input" do
-          expect(dv.min_by { |x| x.size }).to eq("Tyrion")
-        end
-        it "returns N min values, sorted by object block input" do
-          expect(dv.min_by(2) {|x| x.size }).to eq(["Tyrion","Daenerys"])
-        end
-      end
-
-      context "#index_of_min" do
-        it "returns index of min value" do
-          expect(dv.index_of_min).to eq(:d)
-        end
-        it "returns N index of min values" do
-          expect(dv.index_of_min(2)).to eq([:d, :j])
-        end
-        it "returns index of min value, sorted by comparitive block input" do
-          expect(dv.index_of_min { |a,b| a.size <=> b.size }).to eq(:t)
-        end
-        it "returns N index of min values, sorted by comparitive block input" do
-          expect(dv.index_of_min(2) {|a,b| a.size <=> b.size}).to eq([:t, :d])
-        end
-      end
-
-      context "#index_of_min_by" do
-        it "raises error without object block" do
-          expect { dv.index_of_min_by }.to raise_error(ArgumentError)
-        end
-        it "raises error without object block when N is given" do
-          expect { dv.index_of_min_by(2) }.to raise_error(ArgumentError)
-        end
-        it "returns index of min value, sorted by object block input" do
-          expect(dv.index_of_min_by { |x| x.size }).to eq(:t)
-        end
-        it "returns N index of min values, sorted by object block input" do
-          expect(dv.index_of_min_by(2) {|x| x.size }).to eq([:t, :d])
-        end
-      end
-
-      context "#sum_of_squares" do
-        it "calcs sum of squares, omits nil values" do
-          v = Daru::Vector.new [1,2,3,4,5,6], dtype: dtype
-          expect(v.sum_of_squares).to eq(17.5)
-        end
-      end
-
-      context "#standard_deviation_sample" do
-        it "calcs standard deviation sample" do
-          @dv_with_nils.standard_deviation_sample
-        end
-      end
-
-      context "#variance_sample" do
-        it "calculates sample variance" do
-          expect(@dv.variance).to be_within(0.01).of(75118.84)
-        end
-      end
-
-      context "#standard_deviation_population" do
-        it "calculates standard deviation population" do
-          @dv.standard_deviation_population
-        end
-      end
-
-      context "#variance_population" do
-        it "calculates population variance" do
-          expect(@dv.variance_population).to be_within(0.001).of(67606.95999999999)
-        end
-      end
-
-      context "#covariance_sample" do
-        it "calculates sample covariance" do
-          @dv_1 = Daru::Vector.new [323, 11, 555, 666, 234, 21, 666, 343, 1, 2]
-          @dv_2 = Daru::Vector.new [123, 22, 444, 555, 324, 21, 666, 434, 5, 8]
-          expect(@dv_1.covariance @dv_2).to be_within(0.00001).of(65603.62222)
-        end
-      end
-
-      context "#covariance_population" do
-        it "calculates population covariance" do
-          @dv_1 = Daru::Vector.new [323, 11, 555, 666, 234, 21, 666, 343, 1, 2]
-          @dv_2 = Daru::Vector.new [123, 22, 444, 555, 324, 21, 666, 434, 5, 8]
-          expect(@dv_1.covariance_population @dv_2).to be_within(0.01).of(59043.26)
-        end
-      end
-
-      context "#sum_of_squared_deviation" do
-        it "calculates sum of squared deviation" do
-          expect(@dv.sum_of_squared_deviation).to eq(676069.6)
-        end
-      end
-
-      context "#skew" do
-        it "calculates skewness" do
-          @dv.skew
-        end
-      end
-
-      context "#max" do
-        it "returns the max value" do
-          expect(@dv.max).to eq(666)
-        end
-      end
-
-      context "#min" do
-        it "returns the min value" do
-          expect(@dv.min).to eq(1)
-        end
-      end
-
-      context "#sum" do
-        it "returns the sum" do
-          expect(@dv.sum).to eq(2822)
-        end
-      end
-
-      context "#product" do
-        it "returns the product" do
-          v = Daru::Vector.new [1, 2, 3, 4, 5], dtype: dtype
-          expect(v.product).to eq(120)
-        end
-      end
-
-      context "#median" do
-        it "returns the median" do
-          @dv.median
-        end
-      end
-
-      context "#mode" do
-        it "returns the single modal value as a numeric" do
-          mode_test_example = Daru::Vector.new [1,2,3,2,4,4,4,4], dtype: dtype
-          expect(mode_test_example.mode).to eq(4)
-        end
-
-        it "returns multiple modal values as a vector" do
-          mode_test_example = Daru::Vector.new [1,2,2,2,3,2,4,4,4,4], dtype: dtype
-          expect(mode_test_example.mode).to eq(Daru::Vector.new [2,4], dtype: dtype)
-        end
-      end
-
-      context "#describe" do
-        it "generates count, mean, std, min and max of vectors in one shot" do
-          expect(@dv.describe.round(2)).to eq(Daru::Vector.new([10.00, 282.20, 274.08, 1.00, 666.00],
-            index: [:count, :mean, :std, :min, :max],
-            name:  :statistics
-          ))
-        end
-      end
-
-      context "#kurtosis" do
-        it "calculates kurtosis" do
-          @dv.kurtosis
-        end
-      end
-
-      context "#count" do
-        it "counts specified element" do
-          expect(@dv.count(323)).to eq(1)
-        end
-
-        it "counts total number of elements" do
-          expect(@dv.count).to eq(10)
-        end
-
-        it "counts by block provided" do
-          expect(@dv.count{|e| e.to_i.even? }).to eq(4)
-        end
-      end
-
-      context "#value_counts" do
-        it "counts number of unique values in the Vector" do
-          vector = Daru::Vector.new(
-            ["America","America","America","America","America",
-              "India","India", "China", "India", "China"])
-          expect(vector.value_counts).to eq(
-            Daru::Vector.new([5,3,2], index: ["America", "India", "China"]))
-        end
-      end
-
-      context "#coefficient_of_variation" do
-        it "calculates coefficient_of_variation" do
-          @dv.coefficient_of_variation
-        end
-      end
-
-      context "#percentile" do
-        it "calculates mid point percentile" do
-          expect(@dv.percentile(50)).to eq(278.5)
-        end
-
-        it "calculates linear percentile" do
-          # FIXME: Not enough testing?..
-          expect(@dv.percentile(50, :linear)).to eq(278.5)
-        end
-
-        it "fails on unknown strategy" do
-          expect { @dv.percentile(50, :killemall) }.to raise_error(ArgumentError, /strategy/)
-        end
-      end
-
-      context "#average_deviation_population" do
-        it "calculates average_deviation_population" do
-          a = Daru::Vector.new([1, 2, 3, 4, 5, 6, 7, 8, 9], dtype: dtype)
-          expect(a.average_deviation_population).to eq(20.quo(9).to_f)
-        end
-      end
-
-      context "#proportion" do
-        it "calculates proportion" do
-          expect(@dv.proportion(dtype == :gsl ? 1.0 : 1)).to eq(0.1)
-        end
-      end
-
-      context "#proportions" do
-        it "calculates proportions" do
-          actual_proportions = {
-            array: {323=>0.1,11=>0.1,555=>0.1,666=>0.2,234=>0.1,21=>0.1,343=>0.1,1=>0.1,2=>0.1},
-            gsl: {323.0=>0.1, 11.0=>0.1, 555.0=>0.1, 666.0=>0.2, 234.0=>0.1, 21.0=>0.1, 343.0=>0.1, 1.0=>0.1, 2.0=>0.1}
-          }
-          expect(@dv.proportions).to eq(actual_proportions[dtype])
-        end
-      end
-
-      context "#standard_error" do
-        it "calculates standard error" do
-          @dv.standard_error
-        end
-      end
-
-      context "#vector_standardized_compute" do
-        it "calculates vector_standardized_compute" do
-          @dv.vector_standardized_compute(@dv.mean, @dv.sd)
-          @dv_with_nils.vector_standardized_compute(@dv.mean, @dv.sd)
-        end
-      end
-
-      context "#vector_centered_compute" do
-        it "calculates vector_centered_compute" do
-          @dv.vector_centered_compute(@dv.mean)
-          @dv_with_nils.vector_centered_compute(@dv.mean)
-        end
+    context "#mean" do
+      it "calculates mean" do
+        expect(@dv.mean).to eq(282.2)
       end
     end
-  end # ALL DTYPE tests
+
+    let(:dv) { dv = Daru::Vector.new (["Tyrion", "Daenerys", nil, "Jon Starkgaryen"]), index: Daru::Index.new([:t, :d, :n, :j]) }
+
+    context "#max" do
+      it "returns max value" do
+        expect(dv.max).to eq("Tyrion")
+      end
+      it "returns N max values" do
+        expect(dv.max(2)).to eq(["Tyrion","Jon Starkgaryen"])
+      end
+      it "returns max value, sorted by comparitive block input" do
+        expect(dv.max { |a,b| a.size <=> b.size }).to eq("Jon Starkgaryen")
+      end
+      it "returns N max values, sorted by comparitive block input" do
+        expect(dv.max(2) {|a,b| a.size <=> b.size}).to eq(["Jon Starkgaryen","Daenerys"])
+      end
+    end
+
+    context "#max_by" do
+      it "raises error without object block" do
+        expect { dv.max_by }.to raise_error(ArgumentError)
+      end
+      it "raises error without object block when N is given" do
+        expect { dv.max_by(2) }.to raise_error(ArgumentError)
+      end
+      it "returns max value, sorted by object block input" do
+        expect(dv.max_by { |x| x.size }).to eq("Jon Starkgaryen")
+      end
+      it "returns N max values, sorted by object block input" do
+        expect(dv.max_by(2) {|x| x.size }).to eq(["Jon Starkgaryen","Daenerys"])
+      end
+    end
+
+    context "#index_of_max" do
+      it "returns index_of_max value" do
+        expect(dv.index_of_max).to eq(:t)
+      end
+      it "returns N index_of_max values" do
+        expect(dv.index_of_max(2)).to eq([:t, :j])
+      end
+      it "returns index_of_max value, sorted by comparitive block input" do
+        expect(dv.index_of_max { |a,b| a.size <=> b.size }).to eq(:j)
+      end
+      it "returns N index_of_max values, sorted by comparitive block input" do
+        expect(dv.index_of_max(2) {|a,b| a.size <=> b.size}).to eq([:j, :d])
+      end
+    end
+
+    context "#index_of_max_by" do
+      it "raises error without object block" do
+        expect { dv.index_of_max_by }.to raise_error(ArgumentError)
+      end
+      it "raises error without object block when N is given" do
+        expect { dv.index_of_max_by(2) }.to raise_error(ArgumentError)
+      end
+      it "returns index_of_max value, sorted by object block input" do
+        expect(dv.index_of_max_by { |x| x.size }).to eq(:j)
+      end
+      it "returns N index_of_max values, sorted by object block input" do
+        expect(dv.index_of_max_by(2) {|x| x.size }).to eq([:j, :d])
+      end
+    end
+
+    context "#min" do
+      it "returns min value" do
+        expect(dv.min).to eq("Daenerys")
+      end
+      it "returns N min values" do
+        expect(dv.min(2)).to eq(["Daenerys","Jon Starkgaryen"])
+      end
+      it "returns min value, sorted by comparitive block input" do
+        expect(dv.min { |a,b| a.size <=> b.size }).to eq("Tyrion")
+      end
+      it "returns N min values, sorted by comparitive block input" do
+        expect(dv.min(2) {|a,b| a.size <=> b.size}).to eq(["Tyrion","Daenerys"])
+      end
+    end
+
+    context "#min_by" do
+      it "raises error without object block" do
+        expect { dv.min_by }.to raise_error(ArgumentError)
+      end
+      it "raises error without object block when N is given" do
+        expect { dv.min_by(2) }.to raise_error(ArgumentError)
+      end
+      it "returns min value, sorted by object block input" do
+        expect(dv.min_by { |x| x.size }).to eq("Tyrion")
+      end
+      it "returns N min values, sorted by object block input" do
+        expect(dv.min_by(2) {|x| x.size }).to eq(["Tyrion","Daenerys"])
+      end
+    end
+
+    context "#index_of_min" do
+      it "returns index of min value" do
+        expect(dv.index_of_min).to eq(:d)
+      end
+      it "returns N index of min values" do
+        expect(dv.index_of_min(2)).to eq([:d, :j])
+      end
+      it "returns index of min value, sorted by comparitive block input" do
+        expect(dv.index_of_min { |a,b| a.size <=> b.size }).to eq(:t)
+      end
+      it "returns N index of min values, sorted by comparitive block input" do
+        expect(dv.index_of_min(2) {|a,b| a.size <=> b.size}).to eq([:t, :d])
+      end
+    end
+
+    context "#index_of_min_by" do
+      it "raises error without object block" do
+        expect { dv.index_of_min_by }.to raise_error(ArgumentError)
+      end
+      it "raises error without object block when N is given" do
+        expect { dv.index_of_min_by(2) }.to raise_error(ArgumentError)
+      end
+      it "returns index of min value, sorted by object block input" do
+        expect(dv.index_of_min_by { |x| x.size }).to eq(:t)
+      end
+      it "returns N index of min values, sorted by object block input" do
+        expect(dv.index_of_min_by(2) {|x| x.size }).to eq([:t, :d])
+      end
+    end
+
+    context "#sum_of_squares" do
+      it "calcs sum of squares, omits nil values" do
+        v = Daru::Vector.new [1,2,3,4,5,6], dtype: dtype
+        expect(v.sum_of_squares).to eq(17.5)
+      end
+    end
+
+    context "#standard_deviation_sample" do
+      it "calcs standard deviation sample" do
+        @dv_with_nils.standard_deviation_sample
+      end
+    end
+
+    context "#variance_sample" do
+      it "calculates sample variance" do
+        expect(@dv.variance).to be_within(0.01).of(75118.84)
+      end
+    end
+
+    context "#standard_deviation_population" do
+      it "calculates standard deviation population" do
+        @dv.standard_deviation_population
+      end
+    end
+
+    context "#variance_population" do
+      it "calculates population variance" do
+        expect(@dv.variance_population).to be_within(0.001).of(67606.95999999999)
+      end
+    end
+
+    context "#covariance_sample" do
+      it "calculates sample covariance" do
+        @dv_1 = Daru::Vector.new [323, 11, 555, 666, 234, 21, 666, 343, 1, 2]
+        @dv_2 = Daru::Vector.new [123, 22, 444, 555, 324, 21, 666, 434, 5, 8]
+        expect(@dv_1.covariance @dv_2).to be_within(0.00001).of(65603.62222)
+      end
+    end
+
+    context "#covariance_population" do
+      it "calculates population covariance" do
+        @dv_1 = Daru::Vector.new [323, 11, 555, 666, 234, 21, 666, 343, 1, 2]
+        @dv_2 = Daru::Vector.new [123, 22, 444, 555, 324, 21, 666, 434, 5, 8]
+        expect(@dv_1.covariance_population @dv_2).to be_within(0.01).of(59043.26)
+      end
+    end
+
+    context "#sum_of_squared_deviation" do
+      it "calculates sum of squared deviation" do
+        expect(@dv.sum_of_squared_deviation).to eq(676069.6)
+      end
+    end
+
+    context "#skew" do
+      it "calculates skewness" do
+        @dv.skew
+      end
+    end
+
+    context "#max" do
+      it "returns the max value" do
+        expect(@dv.max).to eq(666)
+      end
+    end
+
+    context "#min" do
+      it "returns the min value" do
+        expect(@dv.min).to eq(1)
+      end
+    end
+
+    context "#sum" do
+      it "returns the sum" do
+        expect(@dv.sum).to eq(2822)
+      end
+    end
+
+    context "#product" do
+      it "returns the product" do
+        v = Daru::Vector.new [1, 2, 3, 4, 5], dtype: dtype
+        expect(v.product).to eq(120)
+      end
+    end
+
+    context "#median" do
+      it "returns the median" do
+        @dv.median
+      end
+    end
+
+    context "#mode" do
+      it "returns the single modal value as a numeric" do
+        mode_test_example = Daru::Vector.new [1,2,3,2,4,4,4,4], dtype: dtype
+        expect(mode_test_example.mode).to eq(4)
+      end
+
+      it "returns multiple modal values as a vector" do
+        mode_test_example = Daru::Vector.new [1,2,2,2,3,2,4,4,4,4], dtype: dtype
+        expect(mode_test_example.mode).to eq(Daru::Vector.new [2,4], dtype: dtype)
+      end
+    end
+
+    context "#describe" do
+      it "generates count, mean, std, min and max of vectors in one shot" do
+        expect(@dv.describe.round(2)).to eq(Daru::Vector.new([10.00, 282.20, 274.08, 1.00, 666.00],
+          index: [:count, :mean, :std, :min, :max],
+          name:  :statistics
+        ))
+      end
+    end
+
+    context "#kurtosis" do
+      it "calculates kurtosis" do
+        @dv.kurtosis
+      end
+    end
+
+    context "#count" do
+      it "counts specified element" do
+        expect(@dv.count(323)).to eq(1)
+      end
+
+      it "counts total number of elements" do
+        expect(@dv.count).to eq(10)
+      end
+
+      it "counts by block provided" do
+        expect(@dv.count{|e| e.to_i.even? }).to eq(4)
+      end
+    end
+
+    context "#value_counts" do
+      it "counts number of unique values in the Vector" do
+        vector = Daru::Vector.new(
+          ["America","America","America","America","America",
+            "India","India", "China", "India", "China"])
+        expect(vector.value_counts).to eq(
+          Daru::Vector.new([5,3,2], index: ["America", "India", "China"]))
+      end
+    end
+
+    context "#coefficient_of_variation" do
+      it "calculates coefficient_of_variation" do
+        @dv.coefficient_of_variation
+      end
+    end
+
+    context "#percentile" do
+      it "calculates mid point percentile" do
+        expect(@dv.percentile(50)).to eq(278.5)
+      end
+
+      it "calculates linear percentile" do
+        # FIXME: Not enough testing?..
+        expect(@dv.percentile(50, :linear)).to eq(278.5)
+      end
+
+      it "fails on unknown strategy" do
+        expect { @dv.percentile(50, :killemall) }.to raise_error(ArgumentError, /strategy/)
+      end
+    end
+
+    context "#average_deviation_population" do
+      it "calculates average_deviation_population" do
+        a = Daru::Vector.new([1, 2, 3, 4, 5, 6, 7, 8, 9], dtype: dtype)
+        expect(a.average_deviation_population).to eq(20.quo(9).to_f)
+      end
+    end
+
+    context "#proportion" do
+      it "calculates proportion" do
+        expect(@dv.proportion(1)).to eq(0.1)
+      end
+    end
+
+    context "#proportions" do
+      it "calculates proportions" do
+        actual_proportions = {
+          323=>0.1,11=>0.1,555=>0.1,666=>0.2,234=>0.1,21=>0.1,343=>0.1,1=>0.1,2=>0.1
+        }
+        expect(@dv.proportions).to eq(actual_proportions)
+      end
+    end
+
+    context "#standard_error" do
+      it "calculates standard error" do
+        @dv.standard_error
+      end
+    end
+
+    context "#vector_standardized_compute" do
+      it "calculates vector_standardized_compute" do
+        @dv.vector_standardized_compute(@dv.mean, @dv.sd)
+        @dv_with_nils.vector_standardized_compute(@dv.mean, @dv.sd)
+      end
+    end
+
+    context "#vector_centered_compute" do
+      it "calculates vector_centered_compute" do
+        @dv.vector_centered_compute(@dv.mean)
+        @dv_with_nils.vector_centered_compute(@dv.mean)
+      end
+    end
+  end
 
   # Only Array tests
   context "#percentile" do

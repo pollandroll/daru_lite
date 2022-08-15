@@ -17,7 +17,7 @@ Tested with MRI 2.5.1 and 2.7.1.
 
 - **[daru-view](https://github.com/SciRuby/daru-view)**
 
-daru-view is for easy and interactive plotting in web application & IRuby 
+daru-view is for easy and interactive plotting in web application & IRuby
 notebook. It can work in any Ruby web application frameworks like Rails, Sinatra, Nanoc and hopefully in others too.
 
 Articles/Blogs, that summarize powerful features of daru-view:
@@ -42,7 +42,6 @@ This gem extends support for many Import and Export methods of `Daru::DataFrame`
 * Flexible and intuitive API for manipulation and analysis of data.
 * Easy plotting, statistics and arithmetic.
 * Plentiful iterators.
-* Optional speed and space optimization on MRI with [NMatrix](https://github.com/SciRuby/nmatrix) and GSL.
 * Easy splitting, aggregation and grouping of data.
 * Quickly reducing data with pivot tables for quick data summary.
 * Import and export data from and to Excel, CSV, SQL Databases, ActiveRecord and plain text files.
@@ -67,7 +66,6 @@ $ gem install daru
 
 #### Visualization
 * [Visualizing Data With Daru::DataFrame](http://nbviewer.ipython.org/github/SciRuby/sciruby-notebooks/blob/master/Visualization/Visualizing%20data%20with%20daru%20DataFrame.ipynb)
-* [Plotting using Nyaplot](http://nbviewer.jupyter.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Plotting/Visualization.ipynb)
 * [Plotting using GnuplotRB](http://nbviewer.jupyter.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Plotting/Gnuplotrb.ipynb)
 * [Vector plotting with Gruff](http://nbviewer.jupyter.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Plotting/Gruff%20Vector.ipynb)
 * [DataFrame plotting with Gruff](http://nbviewer.jupyter.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Plotting/Gruff%20DataFrame.ipynb)
@@ -198,19 +196,7 @@ data_frame.where(
 
 *Plotting*
 
-Daru supports plotting of interactive graphs with [nyaplot](https://github.com/domitry/nyaplot). You can easily create a plot with the `#plot` method. Here we plot the gallons sold on the Y axis and name of the brand on the X axis in a bar graph.
-``` ruby
-data_frame.plot type: :bar, x: 'Beer', y: 'Gallons sold' do |plot, diagram|
-  plot.x_label "Beer"
-  plot.y_label "Gallons Sold"
-  plot.yrange [0,600]
-  plot.width 500
-  plot.height 400
-end
-```
-![plot0](images/plot0.png)
-
-In addition to nyaplot, daru also supports plotting out of the box with [gnuplotrb](https://github.com/SciRuby/gnuplotrb).
+daru supports plotting out of the box with [gnuplotrb](https://github.com/SciRuby/gnuplotrb).
 
 ## Documentation
 
