@@ -32,7 +32,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~>13.0'
   spec.add_development_dependency 'pry', '~> 0.10'
   spec.add_development_dependency 'pry-byebug'
-  spec.add_development_dependency 'rspec', '~> 3.4'
+  spec.add_development_dependency 'rspec', '~> 3.11'
   spec.add_development_dependency 'rspec-its'
   spec.add_development_dependency 'awesome_print'
   spec.add_development_dependency 'distribution', '~> 0.7'
@@ -42,12 +42,14 @@ Gem::Specification.new do |spec|
   # issue : https://github.com/SciRuby/daru/issues/493 occured
   # with latest version of sqlite3
   spec.add_development_dependency  'sqlite3'
-  spec.add_development_dependency 'rubocop', '~> 0.49.0'
+  spec.add_development_dependency 'rubocop', '~> 1.35.0'
+  spec.add_development_dependency 'rubocop-performance', '~> 1.14.3'
+  spec.add_development_dependency 'rubocop-rspec', '~> 2.12.1'
+  spec.add_development_dependency 'yard-junk'
   spec.add_development_dependency 'ruby-prof'
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'gruff'
   spec.add_development_dependency 'webmock'
 
   spec.add_development_dependency 'nokogiri'
-  spec.add_development_dependency 'guard-rspec'
 end

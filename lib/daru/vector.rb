@@ -1201,7 +1201,7 @@ module Daru
     #
     # == Reference:
     # * Sawyer, S. (2005). Resampling Data: Using a Statistical Jacknife.
-    def jackknife(estimators, k=1) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+    def jackknife(estimators, k=1) # rubocop:disable Metrics/MethodLength
       raise "n should be divisible by k:#{k}" unless (size % k).zero?
 
       nb = (size / k).to_i
@@ -1577,7 +1577,7 @@ module Daru
 
     # Note: To maintain sanity, this _MUST_ be the _ONLY_ place in daru where the
     # @param dtype [db_type] variable is set and the underlying data type of vector changed.
-    def cast_vector_to dtype, source=nil, nm_dtype=nil
+    def cast_vector_to dtype, source=nil, _nm_dtype=nil
       source = @data.to_a if source.nil?
 
       new_vector =

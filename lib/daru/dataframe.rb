@@ -1883,7 +1883,7 @@ module Daru
     # the vectors names are changed to x_1, x_2 ....
     #
     # @return {Daru::DataFrame}
-    def merge other_df # rubocop:disable Metrics/AbcSize
+    def merge other_df
       unless nrows == other_df.nrows
         raise ArgumentError,
           "Number of rows must be equal in this: #{nrows} and other: #{other_df.nrows}"

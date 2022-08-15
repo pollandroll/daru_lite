@@ -433,7 +433,7 @@ module Daru
     #   #       0 second
     #   #       1 second
     #   #       2  third
-    def sort! # rubocop:disable Metrics/AbcSize
+    def sort!
       # TODO: Simply the code
       assert_ordered :sort
 
