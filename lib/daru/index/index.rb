@@ -9,18 +9,18 @@ module Daru
     # Object) is once again the default .new for the subclass.
     # Refer http://blog.sidu.in/2007/12/rubys-new-as-factory.html
     class << self
-      alias :__new__ :new
+      alias __new__ new
 
-      def inherited subclass
+      def inherited(subclass)
         class << subclass
-          alias :new :__new__
+          alias_method :new, :__new__
         end
       end
     end
 
     # We over-ride the .new method so that any sort of Index can be generated
     # from Daru::Index based on the types of arguments supplied.
-    def self.new *args, &block
+    def self.new(*args, &block)
       # FIXME: I'm not sure this clever trick really deserves our attention.
       # Most of common ruby libraries just avoid it in favor of usual
       # factor method, like `Index.create`. When `Index.new(...).class != Index`
@@ -32,12 +32,12 @@ module Daru
         allocate.tap { |i| i.send :initialize, *args, &block }
     end
 
-    def self.coerce maybe_index
+    def self.coerce(maybe_index)
       maybe_index.is_a?(Index) ? maybe_index : Daru::Index.new(maybe_index)
     end
 
     def each(&block)
-      return to_enum(:each) unless block_given?
+      return to_enum(:each) unless block
 
       @relation_hash.each_key(&block)
       self
@@ -63,7 +63,7 @@ module Daru
     #
     #   idx = Daru::Index.new [:one, 'one', 1, 2, :two], name: "index_name"
     #   => #<Daru::Index(5): index_name {one, one, 1, 2, two}>
-    def initialize index, opts={}
+    def initialize(index, opts = {})
       index = guess_index index
       @relation_hash = index.each_with_index.to_h.freeze
       @keys = @relation_hash.keys
@@ -79,10 +79,9 @@ module Daru
     end
 
     def [](key, *rest)
-      case
-      when key.is_a?(Range)
+      if key.is_a?(Range)
         by_range key
-      when !rest.empty?
+      elsif !rest.empty?
         by_multi_key key, *rest
       else
         by_single_key key
@@ -97,7 +96,7 @@ module Daru
     #   # => true
     #   idx.valid? 3
     #   # => false
-    def valid? *indexes
+    def valid?(*indexes)
       indexes.all? { |i| to_a.include?(i) || (i.is_a?(Numeric) && i < size) }
     end
 
@@ -109,7 +108,7 @@ module Daru
     #   x = Daru::Index.new [:a, :b, :c]
     #   x.pos :a, 1
     #   # => [0, 1]
-    def pos *indexes
+    def pos(*indexes)
       indexes = preprocess_range(indexes.first) if indexes.first.is_a? Range
 
       if indexes.size == 1
@@ -119,7 +118,7 @@ module Daru
       end
     end
 
-    def subset *indexes
+    def subset(*indexes)
       if indexes.first.is_a? Range
         start = indexes.first.begin
         en = indexes.first.end
@@ -142,17 +141,17 @@ module Daru
     #   idx = Daru::Index.new [:a, :b, :c]
     #   idx.at 0, 1
     #   # => #<Daru::Index(2): {a, b}>
-    def at *positions
+    def at(*positions)
       positions = preprocess_positions(*positions)
       validate_positions(*positions)
       if positions.is_a? Integer
         key(positions)
       else
-        self.class.new positions.map(&method(:key))
+        self.class.new(positions.map { |v| key(v) })
       end
     end
 
-    def inspect threshold=20
+    def inspect(threshold = 20)
       name_part = @name ? "#{@name} " : ''
       if size <= threshold
         "#<#{self.class}(#{size}): #{name_part}{#{to_a.join(', ')}}>"
@@ -161,7 +160,7 @@ module Daru
       end
     end
 
-    def slice *args
+    def slice(*args)
       start = args[0]
       en = args[1]
 
@@ -171,13 +170,13 @@ module Daru
       if start_idx.nil?
         nil
       elsif en_idx.nil?
-        Array(start_idx..size-1)
+        Array(start_idx..size - 1)
       else
         Array(start_idx..en_idx)
       end
     end
 
-    def subset_slice *args
+    def subset_slice(*args)
       start = args[0]
       en = args[1]
 
@@ -196,7 +195,7 @@ module Daru
     end
 
     # Produce a new index from the set intersection of two indexes
-    def & other
+    def &(other)
       Index.new(to_a & other.to_a)
     end
 
@@ -206,10 +205,11 @@ module Daru
 
     def key(value)
       return nil unless value.is_a?(Numeric)
+
       @keys[value]
     end
 
-    def include? index
+    def include?(index)
       @relation_hash.key? index
     end
 
@@ -229,7 +229,7 @@ module Daru
     #   #     2  false
     #   #     3  false
     #   #     4  true
-    def is_values(*indexes) # rubocop:disable Style/PredicateName
+    def is_values(*indexes) # rubocop:disable Naming/PredicateName
       bool_array = @keys.map { |r| indexes.include?(r) }
       Daru::Vector.new(bool_array)
     end
@@ -242,7 +242,7 @@ module Daru
       Daru::Index.new @keys, name: @name
     end
 
-    def add *indexes
+    def add(*indexes)
       Daru::Index.new(to_a + indexes)
     end
 
@@ -250,7 +250,7 @@ module Daru
       Marshal.dump(relation_hash: @relation_hash)
     end
 
-    def self._load data
+    def self._load(data)
       h = Marshal.load data
 
       Daru::Index.new(h[:relation_hash].keys)
@@ -283,8 +283,8 @@ module Daru
     #   di.sort(ascending: false) #=> Daru::Index.new [101, 100, 99, 2, 1]
     #   # Say you want to sort in ascending order
     #   di.sort #=> Daru::Index.new [1, 2, 99, 100, 101]
-    def sort opts={}
-      opts = {ascending: true}.merge(opts)
+    def sort(opts = {})
+      opts = { ascending: true }.merge(opts)
 
       new_index = @keys.sort
       new_index = new_index.reverse unless opts[:ascending]
@@ -298,7 +298,7 @@ module Daru
 
     private
 
-    def guess_index index
+    def guess_index(index)
       case index
       when nil
         []
@@ -308,11 +308,11 @@ module Daru
         index.to_a
       else
         raise ArgumentError,
-          "Cannot create index from #{index.class} #{index.inspect}"
+              "Cannot create index from #{index.class} #{index.inspect}"
       end
     end
 
-    def preprocess_range rng
+    def preprocess_range(rng)
       start   = rng.begin
       en      = rng.end
 
@@ -326,31 +326,27 @@ module Daru
       end
     end
 
-    def by_range rng
+    def by_range(rng)
       slice rng.begin, rng.end
     end
 
-    def by_multi_key *key
+    def by_multi_key(*key)
       key.map { |k| by_single_key k }
     end
 
-    def by_single_key key
-      if @relation_hash.key?(key)
-        @relation_hash[key]
-      else
-        nil
-      end
+    def by_single_key(key)
+      @relation_hash[key] if @relation_hash.key?(key)
     end
 
     # Raises IndexError when one of the positions is an invalid position
-    def validate_positions *positions
+    def validate_positions(*positions)
       positions.each do |pos|
         raise IndexError, "#{pos} is not a valid position." if pos >= size || pos < -size
       end
     end
 
     # Preprocess ranges, integers and array in appropriate ways
-    def preprocess_positions *positions
+    def preprocess_positions(*positions)
       if positions.size == 1
         case positions.first
         when Integer
@@ -365,7 +361,7 @@ module Daru
       end
     end
 
-    def numeric_pos key
+    def numeric_pos(key)
       if @relation_hash.key?(key)
         @relation_hash[key]
       elsif key.is_a?(Numeric) && (key < size && key >= -size)

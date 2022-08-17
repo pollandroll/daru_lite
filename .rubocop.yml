@@ -22,3 +22,6 @@ AllCops:
 require:
   - rubocop-performance
   - rubocop-rspec
+
+Style/FrozenStringLiteralComment:
+  EnforcedStyle: never

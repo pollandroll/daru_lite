@@ -30,9 +30,7 @@ module Daru
     end
 
     def `(vector_name)
-      if !@df.has_vector?(vector_name) && @df.has_vector?(vector_name.to_sym)
-        vector_name = vector_name.to_sym
-      end
+      vector_name = vector_name.to_sym if !@df.has_vector?(vector_name) && @df.has_vector?(vector_name.to_sym)
       VectorWrapper.new(@df[vector_name])
     end
 
@@ -40,9 +38,9 @@ module Daru
       {
         :== => :eq,
         :!= => :not_eq,
-        :<  => :lt,
+        :< => :lt,
         :<= => :lteq,
-        :>  => :mt,
+        :> => :mt,
         :>= => :mteq,
         :=~ => :in
       }.each do |opt, method|

@@ -14,7 +14,7 @@ module Daru
 
           if sort # TODO: maybe add a more "stable" sorting option?
             sorted_keys = index_to_positions.keys.sort(&Daru::Core::GroupBy::TUPLE_SORTER)
-            index_to_positions = sorted_keys.map { |k| [k, index_to_positions[k]] }.to_h
+            index_to_positions = sorted_keys.to_h { |k| [k, index_to_positions[k]] }
           end
 
           index_to_positions
@@ -23,7 +23,7 @@ module Daru
         deprecate :get_positions_group_map_on, :group_by_index_to_positions, 2019, 10
 
         # @private
-        def get_positions_group_for_aggregation(multi_index, level=-1)
+        def get_positions_group_for_aggregation(multi_index, level = -1)
           raise unless multi_index.is_a?(Daru::MultiIndex)
 
           new_index = multi_index.dup
@@ -41,7 +41,7 @@ module Daru
 
         # @private
         def group_map_from_positions_to_indexes(positions_group_map, index)
-          positions_group_map.map { |k, positions| [k, positions.map { |pos| index.at(pos) }] }.to_h
+          positions_group_map.transform_values { |positions| positions.map { |pos| index.at(pos) } }
         end
 
         # @private
@@ -68,20 +68,20 @@ module Daru
       def groups
         @groups ||= GroupBy.group_map_from_positions_to_indexes(@groups_by_pos, @context.index)
       end
-      alias :groups_by_idx :groups
+      alias groups_by_idx groups
 
       # lazy accessor/attr_reader for the attribute df
       def df
         @df ||= GroupBy.df_from_group_map(@context, @groups_by_pos, @non_group_vectors)
       end
-      alias :grouped_df :df
+      alias grouped_df df
 
       # Iterate over each group created by group_by. A DataFrame is yielded in
       # block.
       def each_group
         return to_enum(:each_group) unless block_given?
 
-        groups.keys.each do |k|
+        groups.each_key do |k|
           yield get_group(k)
         end
       end
@@ -93,10 +93,11 @@ module Daru
         left = left.compact
         right = right.compact
         return left <=> right || 0 if left.length == right.length
+
         left.length <=> right.length
       end
 
-      def initialize context, names
+      def initialize(context, names)
         @group_vectors     = names
         @non_group_vectors = context.vectors.to_a - names
 
@@ -149,7 +150,7 @@ module Daru
       #   #          0        foo        one          1         11
       #   #          7        foo      three          8         88
       #   #          2        foo        two          3         33
-      def head quantity=5
+      def head(quantity = 5)
         select_groups_from :first, quantity
       end
 
@@ -172,7 +173,7 @@ module Daru
       #   #          6        foo        one          3         77
       #   #          7        foo      three          8         88
       #   #          4        foo        two          3         55
-      def tail quantity=5
+      def tail(quantity = 5)
         select_groups_from :last, quantity
       end
 
@@ -227,7 +228,7 @@ module Daru
       #   # ["foo", "two"]            2          2
       def count
         width = @non_group_vectors.size
-        Daru::DataFrame.new([size]*width, order: @non_group_vectors)
+        Daru::DataFrame.new([size] * width, order: @non_group_vectors)
       end
 
       # Calculate sample standard deviation of numeric vector groups, excluding
@@ -262,7 +263,7 @@ module Daru
       #   ##<Daru::DataFrame:83258980 @name = 687ee3f6-8874-4899-97fa-9b31d84fa1d5 @size = 1>
       #   #                    a          b          c          d
       #   #         5        bar        two          6         66
-      def get_group group
+      def get_group(group)
         indexes   = groups_by_idx[group]
         elements  = @context.each_vector.map(&:to_a)
         transpose = elements.transpose
@@ -289,7 +290,7 @@ module Daru
       #   #     nil
       #   #   a ACE
       #   #   b BDF
-      def reduce(init=nil)
+      def reduce(init = nil)
         result_hash = groups_by_idx.each_with_object({}) do |(group, indices), h|
           group_indices = indices.map { |v| @context.index.to_a[v] }
 
@@ -346,7 +347,7 @@ module Daru
       #       Krishna Delhi,Raipur,Banglore
       #           Ram Hyderabad,Mumbai
       #
-      def aggregate(options={})
+      def aggregate(options = {})
         new_index = get_grouped_index
 
         @context.aggregate(options) { [@groups_by_pos.values, new_index] }
@@ -354,9 +355,10 @@ module Daru
 
       private
 
-      def select_groups_from method, quantity
-        selection     = @context
-        rows, indexes = [], []
+      def select_groups_from(method, quantity)
+        selection = @context
+        rows = []
+        indexes = []
 
         groups_by_idx.each_value do |index|
           index.send(method, quantity).each do |idx|
@@ -373,14 +375,15 @@ module Daru
         @non_group_vectors.select { |ngvec| @context[ngvec].type == :numeric }
       end
 
-      def apply_method method_type, method
+      def apply_method(method_type, method)
         raise 'To implement' if method_type != :numeric
+
         aggregation_options = select_numeric_non_group_vectors.map { |k| [k, method] }.to_h
 
         aggregate(aggregation_options)
       end
 
-      def get_grouped_index(index_tuples=nil)
+      def get_grouped_index(index_tuples = nil)
         index_tuples = @groups_by_pos.keys if index_tuples.nil?
 
         if multi_indexed_grouping?
@@ -392,6 +395,7 @@ module Daru
 
       def multi_indexed_grouping?
         return false unless @groups_by_pos.keys[0]
+
         @groups_by_pos.keys[0].size > 1
       end
     end
