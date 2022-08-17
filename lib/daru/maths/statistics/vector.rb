@@ -543,7 +543,7 @@ module Daru
         def standardize(use_population = false)
           m ||= mean
           sd = use_population ? sdp : sds
-          return Daru::Vector.new([nil] * size) if m.nil? || sd == 0.0
+          return Daru::Vector.new([nil] * size) if m.nil? || sd.to_d == BigDecimal('0.0')
 
           vector_standardized_compute m, sd
         end
@@ -894,14 +894,7 @@ module Daru
         # == Returns
         #
         # Autocovariance value
-        def acvf(demean = true, unbiased = true) # rubocop:disable Metrics/MethodLength
-          opts = {
-            demean: true,
-            unbaised: true
-          }.merge(opts)
-
-          demean   = opts[:demean]
-          unbiased = opts[:unbiased]
+        def acvf(demean = true, unbiased = true)
           demeaned_series = demean ? self - mean : self
 
           n = (10 * Math.log10(size)).to_i + 1

@@ -30,7 +30,7 @@ module Daru
           end
         end
         grouped.flat_map do |items|
-          [[items.first, items.count], *[nil] * (items.count - 1)]
+          [[items.first, items.count], *Array.new(items.count - 1)]
         end
       end
     end

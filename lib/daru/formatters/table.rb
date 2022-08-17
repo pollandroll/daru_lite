@@ -25,7 +25,7 @@ module Daru
 
       def build_rows(threshold)
         @row_headers.first(threshold).zip(@data).map do |(r, datarow)|
-          [*[r].flatten.map(&:to_s), *(datarow || []).map(&method(:pretty_to_s))]
+          [*[r].flatten.map(&:to_s), *(datarow || []).map { |v| pretty_to_s(v) }]
         end.tap do |rows|
           unless @headers.empty?
             spaces_to_add = rows.empty? ? 0 : rows.first.size - @headers.size

@@ -147,7 +147,7 @@ module Daru
       if positions.is_a? Integer
         key(positions)
       else
-        self.class.new positions.map(&method(:key))
+        self.class.new(positions.map { |v| key(v) })
       end
     end
 

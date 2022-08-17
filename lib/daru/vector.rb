@@ -688,14 +688,14 @@ module Daru
 
     # Like map, but returns a Daru::Vector with the returned values.
     def recode(dt = nil, &block)
-      return to_enum(:recode) unless block
+      return to_enum(:recode, dt) unless block
 
       dup.recode! dt, &block
     end
 
     # Destructive version of recode!
     def recode!(dt = nil, &block)
-      return to_enum(:recode!) unless block
+      return to_enum(:recode!, dt) unless block
 
       @data.map!(&block).data
       @data = cast_vector_to(dt || @dtype)
@@ -1043,15 +1043,15 @@ module Daru
     # @return [String] String containing numeric vector summary
     def numeric_summary
       summary = "\n  median: #{median}" +
-                ("\n  mean: %0.4f" % mean)
+                format("\n  mean: %0.4f", mean)
       if sd
-        summary << (("\n  std.dev.: %0.4f" % sd) +
-                   ("\n  std.err.: %0.4f" % se))
+        summary << (format("\n  std.dev.: %0.4f", sd) +
+                   format("\n  std.err.: %0.4f", se))
       end
 
       if count_values(*Daru::MISSING_VALUES).zero?
-        summary << (("\n  skew: %0.4f" % skew) +
-                   ("\n  kurtosis: %0.4f" % kurtosis))
+        summary << (format("\n  skew: %0.4f", skew) +
+                   format("\n  kurtosis: %0.4f", kurtosis))
       end
       summary
     end
@@ -1123,13 +1123,9 @@ module Daru
     end
 
     def index=(idx)
-      idx = Index.coerce idx
+      idx = Index.coerce(idx)
 
-      if idx.size != size
-        raise ArgumentError,
-              "Size of supplied index #{idx.size} does not match size of Vector"
-      end
-
+      raise ArgumentError, "Size of supplied index #{idx.size} does not match size of Vector" if idx.size != size
       raise ArgumentError, 'Can only assign type Index and its subclasses.' unless idx.is_a?(Daru::Index)
 
       @index = idx

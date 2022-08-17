@@ -57,8 +57,7 @@ module Daru
         elsif index.is_a?(Numeric) && index < @array.size
           index
         else
-          raise IndexError, "#{index.inspect} is neither a valid category" \
-                            ' nor a valid position'
+          raise IndexError, "#{index.inspect} is neither a valid category nor a valid position"
         end
       end
 
@@ -174,7 +173,7 @@ module Daru
       if positions.is_a? Integer
         index_from_pos(positions)
       else
-        Daru::CategoricalIndex.new positions.map(&method(:index_from_pos))
+        Daru::CategoricalIndex.new(positions.map { |p| index_from_pos(p) })
       end
     end
 

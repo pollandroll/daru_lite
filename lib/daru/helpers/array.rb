@@ -23,7 +23,7 @@ module Daru
       array.collect do |n|
         if counter.key?(n)
           counter[n] += 1
-          new_n = format('%s_%d', n, counter[n])
+          new_n = format('%<index>s_%<counter>d', index: n, counter: counter[n])
           n.is_a?(Symbol) ? new_n.to_sym : new_n
         else
           n

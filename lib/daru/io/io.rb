@@ -188,8 +188,7 @@ module Daru
         gem name, version
         require name
       rescue LoadError
-        Daru.error "\nInstall the #{name} gem version #{version} for using" \
-                   " #{name} functions."
+        Daru.error "\nInstall the #{name} gem version #{version} for using  #{name} functions."
       end
 
       DARU_OPT_KEYS = %i[clone order index name].freeze

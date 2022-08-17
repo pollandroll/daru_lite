@@ -110,12 +110,12 @@ module Daru
       end
 
       def row(lkey, rkey)
-        if !lkey && !rkey
-          # :nocov:
-          # It's just an impossibility handler, can't be covered :)
-          raise 'Unexpected condition met during merge'
-          # :nocov:
-        elsif lkey == rkey
+        # :nocov:
+        # It's just an impossibility handler, can't be covered :)
+        raise 'Unexpected condition met during merge' if !lkey && !rkey
+
+        # :nocov:
+        if lkey == rkey
           self.merge_key = lkey
           add_indicator(merge_matching_rows, :both)
         elsif !rkey || lt(lkey, rkey)

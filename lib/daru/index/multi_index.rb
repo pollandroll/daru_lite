@@ -188,7 +188,7 @@ module Daru
       if positions.is_a? Integer
         key(positions)
       else
-        Daru::MultiIndex.from_tuples positions.map(&method(:key))
+        Daru::MultiIndex.from_tuples(positions.map { |v| key(v) })
       end
     end
 
@@ -363,7 +363,7 @@ module Daru
       tuples = to_a
       [tuples.first] + each_cons(2).map do |prev, cur|
         left = cur.zip(prev).drop_while { |c, p| c == p }
-        ([nil] * (cur.size - left.size)) + left.map(&:first)
+        Array.new(cur.size - left.size) + left.map(&:first)
       end
     end
 

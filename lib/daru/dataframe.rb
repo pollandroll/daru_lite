@@ -1470,12 +1470,12 @@ module Daru
 
       cl = Daru::DataFrame.new({}, order: new_vectors, index: @index, name: @name)
       new_vectors.each_with_object(cl) do |vec, memo|
-        memo[vec] = @vectors.include?(vec) ? self[vec] : [nil] * nrows
+        memo[vec] = @vectors.include?(vec) ? self[vec] : Array.new(nrows)
       end
     end
 
     def get_vector_anyways(v)
-      @vectors.include?(v) ? self[v].to_a : [nil] * size
+      @vectors.include?(v) ? self[v].to_a : Array.new(size)
     end
 
     # Concatenate another DataFrame along corresponding columns.
@@ -1582,7 +1582,7 @@ module Daru
 
       cl = Daru::DataFrame.new({}, order: @vectors, index: new_index, name: @name)
       new_index.each_with_object(cl) do |idx, memo|
-        memo.row[idx] = @index.include?(idx) ? row[idx] : [nil] * ncols
+        memo.row[idx] = @index.include?(idx) ? row[idx] : Array.new(ncols)
       end
     end
 
@@ -2890,12 +2890,7 @@ module Daru
 
     def verify_error_message(row, test, id, i)
       description, fields, = test
-      values =
-        if fields.empty?
-          ''
-        else
-          ' (' + fields.collect { |k| "#{k}=#{row[k]}" }.join(', ') + ')'
-        end
+      values = fields.empty? ? '' : " (#{fields.collect { |k| "#{k}=#{row[k]}" }.join(', ')})"
       "#{i + 1} [#{row[id]}]: #{description}#{values}"
     end
 
