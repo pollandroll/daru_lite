@@ -3448,10 +3448,10 @@ describe Daru::DataFrame do
   end
 
   context "#verify" do
-    def create_test(*args, &_proc)
+    def create_test(*args, &proc)
       description = args.shift
       fields = args
-      [description, fields, Proc.new {}]
+      [description, fields, proc]
     end
 
     before do
