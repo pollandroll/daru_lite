@@ -18,9 +18,9 @@ Gem::Specification.new do |spec|
   spec.name          = 'daru_lite'
   spec.version       = DaruLite::VERSION
   spec.authors       = ['Thomas Naude-Filonnière', 'Maxime Lasserre', 'Julie Thomas', 'Amar Slaoua', 'Mourtada Belhantri']
-  spec.summary       = %q{Data Analysis in RUby}
+  spec.summary       = %q{Data Analysis in RUby, stripped down}
   spec.description   = DaruLite::DESCRIPTION
-  spec.homepage      = "http://github.com/SciRuby/daru"
+  spec.homepage      = "https://github.com/pollandroll/daru"
   spec.license       = 'BSD-2'
 
   spec.files         = `git ls-files -z`.split("\x0")
