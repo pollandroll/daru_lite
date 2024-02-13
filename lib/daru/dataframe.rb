@@ -1224,7 +1224,7 @@ module Daru
     def nest(*tree_keys, &_block)
       tree_keys = tree_keys[0] if tree_keys[0].is_a? Array
 
-      each_row.each_with_object({}) do |row, current|
+      each_row.with_object({}) do |row, current|
         # Create tree
         *keys, last = tree_keys
         current = keys.inject(current) { |c, f| c[row[f]] ||= {} }
@@ -1250,7 +1250,7 @@ module Daru
     def add_vectors_by_split(name, join = '-', sep = Daru::SPLIT_TOKEN)
       self[name]
         .split_by_separator(sep)
-        .each { |k, v| self["#{name}#{join}#{k}".to_sym] = v }
+        .each { |k, v| self[:"#{name}#{join}#{k}"] = v }
     end
 
     # Return the number of rows and columns of the DataFrame in an Array.
@@ -1400,7 +1400,7 @@ module Daru
       # here we are not. Is this by design or ...? - zverok, 2016-05-18
       mean_vec = Daru::Vector.new [0] * @size, index: @index, name: "mean_#{@name}"
 
-      each_row_with_index.each_with_object(mean_vec) do |(row, i), memo|
+      each_row_with_index.with_object(mean_vec) do |(row, i), memo|
         memo[i] = row.indexes(*Daru::MISSING_VALUES).size > max_missing ? nil : row.mean
       end
     end
@@ -1963,7 +1963,7 @@ module Daru
         .split_by_separator(sep)
         .each_with_index do |(k, v), i|
           v.rename "#{nm}:#{k}"
-          self["#{nm}#{join}#{i + 1}".to_sym] = v
+          self[:"#{nm}#{join}#{i + 1}"] = v
         end
     end
 

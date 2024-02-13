@@ -86,7 +86,7 @@ module Daru
         end
 
         def v2o_binary(operation, other)
-          Daru::Vector.new map { |e| e.nil? ? nil : e.send(operation, other) },
+          Daru::Vector.new map { |e| e&.send(operation, other) },
                            name: @name, index: @index
         end
 

@@ -476,7 +476,7 @@ module Daru
         user_defined_coding(opts[:user_defined])
       else
         # TODO: Make various coding schemes code DRY
-        send("#{coding_scheme}_coding".to_sym, opts[:full] || false)
+        send(:"#{coding_scheme}_coding", opts[:full] || false)
       end
     end
 
@@ -865,7 +865,7 @@ module Daru
 
     def create_names(categories)
       categories.map do |cat|
-        name.is_a?(Symbol) ? "#{name}_#{cat}".to_sym : "#{name}_#{cat}"
+        name.is_a?(Symbol) ? :"#{name}_#{cat}" : "#{name}_#{cat}"
       end
     end
 

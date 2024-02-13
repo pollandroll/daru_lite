@@ -265,7 +265,7 @@ module Daru
       error_msg = "'names' and 'levels' should be of same size. Size of the " \
                   "'name' array is #{names.size} and size of the MultiIndex 'levels' and " \
                   "'labels' is #{labels.size}."
-      suggestion_msg = "If you don\'t want to set name for particular level " \
+      suggestion_msg = 'If you do not want to set name for particular level ' \
                        "(say level 'i') then put empty string on index 'i' of the 'name' Array."
 
       raise SizeError, error_msg if names.size > levels.size
@@ -284,7 +284,7 @@ module Daru
     end
 
     def dup
-      MultiIndex.new levels: levels.dup, labels: labels.dup, name: (@name.nil? ? nil : @name.dup)
+      MultiIndex.new levels: levels.dup, labels: labels.dup, name: @name&.dup
     end
 
     def drop_left_level(by = 1)

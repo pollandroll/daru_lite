@@ -725,7 +725,7 @@ module Daru
         #   Calculate rolling variance
         #   @yieldparam [Integer] n (10) Loopback length
         %i[count mean median max min sum std variance].each do |meth|
-          define_method("rolling_#{meth}".to_sym) do |n = 10|
+          define_method(:"rolling_#{meth}") do |n = 10|
             rolling(meth, n)
           end
         end

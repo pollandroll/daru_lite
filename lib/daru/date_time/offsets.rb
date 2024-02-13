@@ -275,7 +275,7 @@ module Daru
 
       def -(other)
         @n.times do
-          other = other << 1 if on_offset?(other)
+          other <<= 1 if on_offset?(other)
           other = DateTime.new(other.year, other.month, 1,
                                other.hour, other.min, other.sec)
         end
@@ -300,7 +300,7 @@ module Daru
 
       def +(other)
         @n.times do
-          other = other >> 1 if on_offset?(other)
+          other >>= 1 if on_offset?(other)
           days_in_month = Daru::MONTH_DAYS[other.month]
           days_in_month += 1 if other.leap? && other.month == 2
 
@@ -312,7 +312,7 @@ module Daru
 
       def -(other)
         @n.times do
-          other = other << 1
+          other <<= 1
           days_in_month = Daru::MONTH_DAYS[other.month]
           days_in_month += 1 if other.leap? && other.month == 2
 
