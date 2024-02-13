@@ -4229,7 +4229,7 @@ describe Daru::DataFrame do
     }
 
     it 'works as group_by + aggregate' do
-      expect(spending_df.group_by_and_aggregate(:year, {spending: :sum})).to eq(
+      expect(spending_df.group_by_and_aggregate(:year, spending: :sum)).to eq(
         spending_df.group_by(:year).aggregate(spending: :sum))
       expect(spending_df.group_by_and_aggregate([:year, :category], spending: :sum, nb_spending: :size)).to eq(
         spending_df.group_by([:year, :category]).aggregate(spending: :sum, nb_spending: :size))
