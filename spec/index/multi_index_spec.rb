@@ -1,6 +1,6 @@
 require 'spec_helper.rb'
 
-describe Daru::MultiIndex do
+describe DaruLite::MultiIndex do
   before(:each) do
     @index_tuples = [
       [:a,:one,:bar],
@@ -16,12 +16,12 @@ describe Daru::MultiIndex do
       [:c,:two,:foo],
       [:c,:two,:bar]
     ]
-    @multi_mi = Daru::MultiIndex.from_tuples(@index_tuples)
+    @multi_mi = DaruLite::MultiIndex.from_tuples(@index_tuples)
   end
 
   context ".initialize" do
     it "accepts labels and levels as arguments" do
-      mi = Daru::MultiIndex.new(
+      mi = DaruLite::MultiIndex.new(
         levels: [[:a,:b,:c], [:one, :two]],
         labels: [[0,0,1,1,2,2], [0,1,0,1,0,1]])
 
@@ -30,7 +30,7 @@ describe Daru::MultiIndex do
 
     it "raises error for wrong number of labels or levels" do
       expect {
-        Daru::MultiIndex.new(
+        DaruLite::MultiIndex.new(
           levels: [[:a,:a,:b,:b,:c,:c], [:one, :two]],
           labels: [[0,0,1,1,2,2]])
       }.to raise_error
@@ -38,14 +38,14 @@ describe Daru::MultiIndex do
 
     context "create an MultiIndex with name" do
       context 'if no name is set' do
-        subject { Daru::MultiIndex.new(
+        subject { DaruLite::MultiIndex.new(
                     levels: [[:a,:b,:c], [:one, :two]],
                     labels: [[0,0,1,1,2,2], [0,1,0,1,0,1]]) }
         its(:name) { is_expected.to be_nil }
       end
 
       context 'correctly return the MultiIndex name' do
-        subject { Daru::MultiIndex.new(
+        subject { DaruLite::MultiIndex.new(
                   levels: [[:a,:b,:c], [:one, :two]],
                   labels: [[0,0,1,1,2,2], [0,1,0,1,0,1]], name: ['n1', 'n2']) }
         its(:name) { is_expected.to eq ['n1', 'n2'] }
@@ -53,7 +53,7 @@ describe Daru::MultiIndex do
 
       context "set new MultiIndex name" do
         subject {
-          Daru::MultiIndex.new(
+          DaruLite::MultiIndex.new(
                   levels: [[:a,:b,:c], [:one, :two]],
                   labels: [[0,0,1,1,2,2], [0,1,0,1,0,1]], name: ['n1', 'n2']) }
         before(:each) { subject.name = ['k1', 'k2'] }
@@ -62,7 +62,7 @@ describe Daru::MultiIndex do
 
       context "set new MultiIndex name having empty string" do
         subject {
-          Daru::MultiIndex.new(
+          DaruLite::MultiIndex.new(
                   levels: [[:a,:b,:c], [:one, :two]],
                   labels: [[0,0,1,1,2,2], [0,1,0,1,0,1]], name: ['n1', 'n2']) }
         before { subject.name = ['k1', ''] }
@@ -95,7 +95,7 @@ describe Daru::MultiIndex do
         [:c, :one],
         [:c, :two]
       ]
-      mi = Daru::MultiIndex.from_tuples(tuples)
+      mi = DaruLite::MultiIndex.from_tuples(tuples)
       expect(mi.levels).to eq([[:a, :b, :c], [:one,:two]])
       expect(mi.labels).to eq([[0,0,1,1,2,2], [0,1,0,1,0,1]])
     end
@@ -120,12 +120,12 @@ describe Daru::MultiIndex do
         [:c, :one],
         [:c, :two]
       ]
-      mi = Daru::MultiIndex.try_from_tuples(tuples)
-      expect(mi).to be_a Daru::MultiIndex
+      mi = DaruLite::MultiIndex.try_from_tuples(tuples)
+      expect(mi).to be_a DaruLite::MultiIndex
     end
 
     it 'returns nil, if MultiIndex can not be created' do
-      mi = Daru::MultiIndex.try_from_tuples([:a, :b, :c])
+      mi = DaruLite::MultiIndex.try_from_tuples([:a, :b, :c])
       expect(mi).to be_nil
     end
   end
@@ -142,21 +142,21 @@ describe Daru::MultiIndex do
     end
 
     it "returns MultiIndex when specifying incomplete tuple" do
-      expect(@multi_mi[:b]).to eq(Daru::MultiIndex.from_tuples([
+      expect(@multi_mi[:b]).to eq(DaruLite::MultiIndex.from_tuples([
         [:b,:one,:bar],
         [:b,:two,:bar],
         [:b,:two,:baz],
         [:b,:one,:foo]
       ]))
-      expect(@multi_mi[:b, :one]).to eq(Daru::MultiIndex.from_tuples([
+      expect(@multi_mi[:b, :one]).to eq(DaruLite::MultiIndex.from_tuples([
         [:b,:one,:bar],
         [:b,:one,:foo]
       ]))
-      # TODO: Return Daru::Index if a single layer of indexes is present.
+      # TODO: Return DaruLite::Index if a single layer of indexes is present.
     end
 
     it "returns MultiIndex when specifying wholly numeric ranges" do
-      expect(@multi_mi[3..6]).to eq(Daru::MultiIndex.from_tuples([
+      expect(@multi_mi[3..6]).to eq(DaruLite::MultiIndex.from_tuples([
         [:a,:two,:baz],
         [:b,:one,:bar],
         [:b,:two,:bar],
@@ -173,14 +173,14 @@ describe Daru::MultiIndex do
     end
 
     it "works with numerical first levels" do
-      mi = Daru::MultiIndex.from_tuples([
+      mi = DaruLite::MultiIndex.from_tuples([
         [2000, 'M'],
         [2000, 'F'],
         [2001, 'M'],
         [2001, 'F']
       ])
 
-      expect(mi[2000]).to eq(Daru::MultiIndex.from_tuples([
+      expect(mi[2000]).to eq(DaruLite::MultiIndex.from_tuples([
         [2000, 'M'],
         [2000, 'F']
         ]))
@@ -244,7 +244,7 @@ describe Daru::MultiIndex do
   context "#inspect" do
     context 'small index' do
       subject {
-        Daru::MultiIndex.from_tuples [
+        DaruLite::MultiIndex.from_tuples [
           [:a,:one,:bar],
           [:a,:one,:baz],
           [:a,:two,:bar],
@@ -261,7 +261,7 @@ describe Daru::MultiIndex do
       }
 
       its(:inspect) { is_expected.to eq %Q{
-        |#<Daru::MultiIndex(12x3)>
+        |#<DaruLite::MultiIndex(12x3)>
         |   a one bar
         |         baz
         |     two bar
@@ -280,13 +280,13 @@ describe Daru::MultiIndex do
 
     context 'large index' do
       subject {
-        Daru::MultiIndex.from_tuples(
+        DaruLite::MultiIndex.from_tuples(
           (1..100).map { |i| %w[a b c].map { |c| [i, c] } }.flatten(1)
         )
       }
 
       its(:inspect) { is_expected.to eq %Q{
-        |#<Daru::MultiIndex(300x2)>
+        |#<DaruLite::MultiIndex(300x2)>
         |   1   a
         |       b
         |       c
@@ -314,7 +314,7 @@ describe Daru::MultiIndex do
 
     context 'multi index with name' do
       subject {
-        Daru::MultiIndex.new(
+        DaruLite::MultiIndex.new(
           levels: [[:a,:b,:c],[:one,:two],[:bar, :baz, :foo]],
           labels: [
             [0,0,0,0,1,1,1,1,2,2,2,2],
@@ -323,7 +323,7 @@ describe Daru::MultiIndex do
       }
 
       its(:inspect) { is_expected.to start_with %Q{
-        |#<Daru::MultiIndex(12x3)>
+        |#<DaruLite::MultiIndex(12x3)>
         |  n1  n2  n3
         }.unindent
       }
@@ -331,7 +331,7 @@ describe Daru::MultiIndex do
 
     context 'multi index with name having empty string' do
       subject {
-        mi= Daru::MultiIndex.new(
+        mi= DaruLite::MultiIndex.new(
                   levels: [[:a,:b,:c],[:one,:two],[:bar, :baz, :foo]],
                   labels: [
                     [0,0,0,0,1,1,1,1,2,2,2,2],
@@ -341,7 +341,7 @@ describe Daru::MultiIndex do
       before { subject.name = ['n1', '', 'n3'] }
 
       its(:inspect) { is_expected.to start_with %Q{
-        |#<Daru::MultiIndex(12x3)>
+        |#<DaruLite::MultiIndex(12x3)>
         |  n1      n3
         }.unindent
       }
@@ -351,13 +351,13 @@ describe Daru::MultiIndex do
 
   context "#==" do
     it "returns false for unequal MultiIndex comparisons" do
-      mi1 = Daru::MultiIndex.from_tuples([
+      mi1 = DaruLite::MultiIndex.from_tuples([
         [:a, :one, :bar],
         [:a, :two, :baz],
         [:b, :one, :foo],
         [:b, :two, :bar]
         ])
-      mi2 = Daru::MultiIndex.from_tuples([
+      mi2 = DaruLite::MultiIndex.from_tuples([
         [:a, :two, :bar],
         [:b, :one, :foo],
         [:a, :one, :baz],
@@ -370,7 +370,7 @@ describe Daru::MultiIndex do
 
   context "#values" do
     it "returns an array of indices in order" do
-      mi = Daru::MultiIndex.from_tuples([
+      mi = DaruLite::MultiIndex.from_tuples([
         [:a, :one, :bar],
         [:a, :two, :baz],
         [:b, :one, :foo],
@@ -383,13 +383,13 @@ describe Daru::MultiIndex do
 
   context "#|" do
     before do
-      @mi1 = Daru::MultiIndex.from_tuples([
+      @mi1 = DaruLite::MultiIndex.from_tuples([
         [:a, :one, :bar],
         [:a, :two, :baz],
         [:b, :one, :foo],
         [:b, :two, :bar]
         ])
-      @mi2 = Daru::MultiIndex.from_tuples([
+      @mi2 = DaruLite::MultiIndex.from_tuples([
         [:a, :two, :bar],
         [:b, :one, :foo],
         [:a, :one, :baz],
@@ -398,7 +398,7 @@ describe Daru::MultiIndex do
     end
 
     it "returns a union of two MultiIndex objects" do
-      expect(@mi1 | @mi2).to eq(Daru::MultiIndex.new(
+      expect(@mi1 | @mi2).to eq(DaruLite::MultiIndex.new(
         levels: [[:a, :b], [:one, :two], [:bar, :baz, :foo]],
         labels: [
           [0, 0, 1, 1, 0, 0, 1],
@@ -411,12 +411,12 @@ describe Daru::MultiIndex do
 
   context "#&" do
     before do
-      @mi1 = Daru::MultiIndex.from_tuples([
+      @mi1 = DaruLite::MultiIndex.from_tuples([
         [:a, :one],
         [:a, :two],
         [:b, :two]
         ])
-      @mi2 = Daru::MultiIndex.from_tuples([
+      @mi2 = DaruLite::MultiIndex.from_tuples([
         [:a, :two],
         [:b, :one],
         [:b, :three]
@@ -424,7 +424,7 @@ describe Daru::MultiIndex do
     end
 
     it "returns the intersection of two MI objects" do
-      expect(@mi1 & @mi2).to eq(Daru::MultiIndex.from_tuples([
+      expect(@mi1 & @mi2).to eq(DaruLite::MultiIndex.from_tuples([
         [:a, :two],
       ]))
     end
@@ -432,20 +432,20 @@ describe Daru::MultiIndex do
 
   context "#empty?" do
     it "returns true if nothing present in MultiIndex" do
-      expect(Daru::MultiIndex.new(labels: [[]], levels: [[]]).empty?).to eq(true)
+      expect(DaruLite::MultiIndex.new(labels: [[]], levels: [[]]).empty?).to eq(true)
     end
   end
 
   context "#drop_left_level" do
     it "drops the leftmost level" do
       expect(
-        Daru::MultiIndex.from_tuples([
+        DaruLite::MultiIndex.from_tuples([
           [:c,:one,:bar],
           [:c,:one,:baz],
           [:c,:two,:foo],
           [:c,:two,:bar]
         ]).drop_left_level).to eq(
-          Daru::MultiIndex.from_tuples([
+          DaruLite::MultiIndex.from_tuples([
             [:one,:bar],
             [:one,:baz],
             [:two,:foo],
@@ -457,7 +457,7 @@ describe Daru::MultiIndex do
 
   context 'other forms of tuple list representation' do
     let(:index) {
-      Daru::MultiIndex.from_tuples [
+      DaruLite::MultiIndex.from_tuples [
         [:a,:one,:bar],
         [:a,:one,:baz],
         [:a,:two,:bar],
@@ -671,7 +671,7 @@ describe Daru::MultiIndex do
     end
 
     subject { idx.to_df }
-    it { is_expected.to eq Daru::DataFrame.new(
+    it { is_expected.to eq DaruLite::DataFrame.new(
            'col1' => %w[a a b b],
            'col2' => %w[one two two one],
            'col3' => %w[bar bar baz foo]

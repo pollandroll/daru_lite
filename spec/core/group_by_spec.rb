@@ -1,6 +1,6 @@
-describe Daru::Core::GroupBy do
+describe DaruLite::Core::GroupBy do
   before do
-    @df = Daru::DataFrame.new({
+    @df = DaruLite::DataFrame.new({
       a: %w{foo bar foo bar   foo bar foo foo},
       b: %w{one one two three two two one three},
       c:   [1  ,2   ,3  ,1     ,3   ,6  ,3  ,8],
@@ -11,8 +11,8 @@ describe Daru::Core::GroupBy do
     @dl_group = @df.group_by([:a, :b])
     @tl_group = @df.group_by([:a,:b,:c])
 
-    @sl_index = Daru::Index.new(['bar', 'foo'])
-    @dl_multi_index = Daru::MultiIndex.from_tuples([
+    @sl_index = DaruLite::Index.new(['bar', 'foo'])
+    @dl_multi_index = DaruLite::MultiIndex.from_tuples([
       ['bar', 'one'],
       ['bar', 'three'],
       ['bar', 'two'],
@@ -20,7 +20,7 @@ describe Daru::Core::GroupBy do
       ['foo', 'three'],
       ['foo', 'two']
     ])
-    @tl_multi_index = Daru::MultiIndex.from_tuples([
+    @tl_multi_index = DaruLite::MultiIndex.from_tuples([
       ['bar', 'one'  , 2],
       ['bar', 'three', 1],
       ['bar', 'two'  , 6],
@@ -34,7 +34,7 @@ describe Daru::Core::GroupBy do
 
   context 'with nil values' do
     before do
-      @df[:w_nils] = Daru::Vector.new([11 ,nil ,33 ,nil   ,nil ,66 ,77 ,88])
+      @df[:w_nils] = DaruLite::Vector.new([11 ,nil ,33 ,nil   ,nil ,66 ,77 ,88])
     end
 
     it 'groups by nil values' do
@@ -47,20 +47,20 @@ describe Daru::Core::GroupBy do
   end
 
   context "#initialize" do
-    let(:df_emp) { Daru::DataFrame.new(
+    let(:df_emp) { DaruLite::DataFrame.new(
       employee: %w[John Jane Mark John Jane Mark],
       month: %w[June June June July July July],
       salary: [1000, 500, 700, 1200, 600, 600]
     ) }
     let(:employee_grp) { df_emp.group_by(:employee).df }
-    let(:mi_single) { Daru::MultiIndex.from_tuples([
+    let(:mi_single) { DaruLite::MultiIndex.from_tuples([
         ['Jane', 1], ['Jane', 4], ['John', 0],
         ['John', 3], ['Mark', 2], ['Mark', 5]
         ]
       )}
 
     let(:emp_month_grp) { df_emp.group_by([:employee, :month]).df }
-    let(:mi_double) { Daru::MultiIndex.from_tuples([
+    let(:mi_double) { DaruLite::MultiIndex.from_tuples([
         ['Jane', 'July', 4], ['Jane', 'June', 1], ['John', 'July', 3],
         ['John', 'June', 0], ['Mark', 'July', 5], ['Mark', 'June', 2]
         ]
@@ -68,7 +68,7 @@ describe Daru::Core::GroupBy do
 
     let(:emp_month_salary_grp) {
       df_emp.group_by([:employee, :month, :salary]).df }
-    let(:mi_triple) { Daru::MultiIndex.from_tuples([
+    let(:mi_triple) { DaruLite::MultiIndex.from_tuples([
         ['Jane', 'July', 600, 4], ['Jane', 'June', 500, 1],
         ['John', 'July', 1200, 3], ['John', 'June', 1000, 0],
         ['Mark', 'July', 600, 5], ['Mark', 'June', 700, 2]
@@ -83,20 +83,20 @@ describe Daru::Core::GroupBy do
     end
 
     it "returns dataframe with MultiIndex, groups by single layer hierarchy" do
-      expect(employee_grp).to eq(Daru::DataFrame.new({
+      expect(employee_grp).to eq(DaruLite::DataFrame.new({
         month: ["June", "July", "June", "July", "June", "July"],
         salary: [500, 600, 1000, 1200, 700, 600]
         }, index: mi_single))
     end
 
     it "returns dataframe with MultiIndex, groups by double layer hierarchy" do
-      expect(emp_month_grp).to eq(Daru::DataFrame.new({
+      expect(emp_month_grp).to eq(DaruLite::DataFrame.new({
         salary: [600, 500, 1200, 1000, 600, 700]
         }, index: mi_double))
     end
 
     it "returns dataframe with MultiIndex, groups by triple layer hierarchy" do
-      expect(emp_month_salary_grp).to eq(Daru::DataFrame.new({
+      expect(emp_month_salary_grp).to eq(DaruLite::DataFrame.new({
         }, index: mi_triple))
     end
 
@@ -132,18 +132,18 @@ describe Daru::Core::GroupBy do
 
   context "#size" do
     it "returns a vector containing the size of each group" do
-      expect(@dl_group.size).to eq(Daru::Vector.new([1,1,1,2,1,2], index: @dl_multi_index))
+      expect(@dl_group.size).to eq(DaruLite::Vector.new([1,1,1,2,1,2], index: @dl_multi_index))
     end
 
     it "returns an empty vector if given an empty dataframe" do
-      df = Daru::DataFrame.new({ a: [], b: [] })
-      expect(df.group_by(:a).size).to eq(Daru::Vector.new([]))
+      df = DaruLite::DataFrame.new({ a: [], b: [] })
+      expect(df.group_by(:a).size).to eq(DaruLite::Vector.new([]))
     end
   end
 
   context "#get_group" do
     it "returns the whole sub-group for single layer grouping" do
-      expect(@sl_group.get_group(['bar'])).to eq(Daru::DataFrame.new({
+      expect(@sl_group.get_group(['bar'])).to eq(DaruLite::DataFrame.new({
         a: ['bar', 'bar', 'bar'],
         b: ['one', 'three', 'two'],
         c: [2,1,6],
@@ -153,7 +153,7 @@ describe Daru::Core::GroupBy do
     end
 
     it "returns the whole sub-group for double layer grouping" do
-      expect(@dl_group.get_group(['bar', 'one'])).to eq(Daru::DataFrame.new({
+      expect(@dl_group.get_group(['bar', 'one'])).to eq(DaruLite::DataFrame.new({
         a: ['bar'],
         b: ['one'],
         c: [2],
@@ -163,7 +163,7 @@ describe Daru::Core::GroupBy do
     end
 
     it "returns the whole sub-group for triple layer grouping" do
-      expect(@tl_group.get_group(['foo','two',3])).to eq(Daru::DataFrame.new({
+      expect(@tl_group.get_group(['foo','two',3])).to eq(DaruLite::DataFrame.new({
         a: ['foo', 'foo'],
         b: ['two', 'two'],
         c: [3,3],
@@ -190,8 +190,8 @@ describe Daru::Core::GroupBy do
       ret = []
       @dl_group.each_group { |g| ret << g }
       expect(ret.count).to eq 6
-      expect(ret).to all be_a(Daru::DataFrame)
-      expect(ret.first).to eq(Daru::DataFrame.new({
+      expect(ret).to all be_a(DaruLite::DataFrame)
+      expect(ret.first).to eq(DaruLite::DataFrame.new({
         a: ['bar'],
         b: ['one'],
         c: [2],
@@ -206,8 +206,8 @@ describe Daru::Core::GroupBy do
       enum = @dl_group.each_group
 
       expect(enum.count).to eq 6
-      expect(enum).to all be_a(Daru::DataFrame)
-      expect(enum.to_a.last).to eq(Daru::DataFrame.new({
+      expect(enum).to all be_a(DaruLite::DataFrame)
+      expect(enum.to_a.last).to eq(DaruLite::DataFrame.new({
         a: ['foo', 'foo'],
         b: ['two', 'two'],
         c: [3, 3],
@@ -219,7 +219,7 @@ describe Daru::Core::GroupBy do
 
   context '#first' do
     it 'gets the first row from each group' do
-      expect(@dl_group.first).to eq(Daru::DataFrame.new({
+      expect(@dl_group.first).to eq(DaruLite::DataFrame.new({
         a: %w{bar bar   bar foo foo   foo },
         b: %w{one three two one three two },
         c:   [2  ,1    ,6  ,1  ,8    ,3   ],
@@ -230,7 +230,7 @@ describe Daru::Core::GroupBy do
 
   context '#last' do
     it 'gets the last row from each group' do
-      expect(@dl_group.last).to eq(Daru::DataFrame.new({
+      expect(@dl_group.last).to eq(DaruLite::DataFrame.new({
         a: %w{bar bar   bar foo foo   foo },
         b: %w{one three two one three two },
         c:   [2  ,1    ,6  ,3  ,8    ,3   ],
@@ -241,7 +241,7 @@ describe Daru::Core::GroupBy do
 
   context "#mean" do
     it "computes mean of the numeric columns of a single layer group" do
-      expect(@sl_group.mean).to eq(Daru::DataFrame.new({
+      expect(@sl_group.mean).to eq(DaruLite::DataFrame.new({
         :c => [3.0, 3.6],
         :d => [44.0, 52.8]
         }, index: @sl_index
@@ -249,14 +249,14 @@ describe Daru::Core::GroupBy do
     end
 
     it "computes mean of the numeric columns of a double layer group" do
-      expect(@dl_group.mean).to eq(Daru::DataFrame.new({
+      expect(@dl_group.mean).to eq(DaruLite::DataFrame.new({
         c: [2,1,6,2,8,3],
         d: [22,44,66,44,88,44]
         }, index: @dl_multi_index))
     end
 
     it "computes mean of the numeric columns of a triple layer group" do
-      expect(@tl_group.mean).to eq(Daru::DataFrame.new({
+      expect(@tl_group.mean).to eq(DaruLite::DataFrame.new({
         d: [22,44,66,11,77,88,44]
         }, index: @tl_multi_index
       ))
@@ -265,7 +265,7 @@ describe Daru::Core::GroupBy do
 
   context "#sum" do
     it "calculates the sum of the numeric columns of a single layer group" do
-      expect(@sl_group.sum).to eq(Daru::DataFrame.new({
+      expect(@sl_group.sum).to eq(DaruLite::DataFrame.new({
         c: [9, 18],
         d: [132, 264]
         }, index: @sl_index
@@ -273,14 +273,14 @@ describe Daru::Core::GroupBy do
     end
 
     it "calculates the sum of the numeric columns of a double layer group" do
-      expect(@dl_group.sum).to eq(Daru::DataFrame.new({
+      expect(@dl_group.sum).to eq(DaruLite::DataFrame.new({
         c: [2,1,6,4,8,6],
         d: [22,44,66,88,88,88]
         }, index: @dl_multi_index))
     end
 
     it "calculates the sum of the numeric columns of a triple layer group" do
-      expect(@tl_group.sum).to eq(Daru::DataFrame.new({
+      expect(@tl_group.sum).to eq(DaruLite::DataFrame.new({
         d: [22,44,66,11,77,88,88]
         }, index: @tl_multi_index))
     end
@@ -310,7 +310,7 @@ describe Daru::Core::GroupBy do
 
   context "#count" do
     it "counts the number of elements in a single layer group" do
-      expect(@sl_group.count).to eq(Daru::DataFrame.new({
+      expect(@sl_group.count).to eq(DaruLite::DataFrame.new({
         b: [3,5],
         c: [3,5],
         d: [3,5]
@@ -318,14 +318,14 @@ describe Daru::Core::GroupBy do
     end
 
     it "counts the number of elements in a double layer group" do
-      expect(@dl_group.count).to eq(Daru::DataFrame.new({
+      expect(@dl_group.count).to eq(DaruLite::DataFrame.new({
         c: [1,1,1,2,1,2],
         d: [1,1,1,2,1,2]
         }, index: @dl_multi_index))
     end
 
     it "counts the number of elements in a triple layer group" do
-      expect(@tl_group.count).to eq(Daru::DataFrame.new({
+      expect(@tl_group.count).to eq(DaruLite::DataFrame.new({
         d: [1,1,1,1,1,1,2]
         }, index: @tl_multi_index))
     end
@@ -389,7 +389,7 @@ describe Daru::Core::GroupBy do
 
   context "#head" do
     it "returns first n rows of each single layer group" do
-      expect(@sl_group.head(2)).to eq(Daru::DataFrame.new({
+      expect(@sl_group.head(2)).to eq(DaruLite::DataFrame.new({
         a: ['bar', 'bar','foo','foo'],
         b: ['one', 'three','one', 'two'],
         c: [2, 1, 1, 3],
@@ -398,7 +398,7 @@ describe Daru::Core::GroupBy do
     end
 
     it "returns first n rows of each double layer group" do
-      expect(@dl_group.head(2)).to eq(Daru::DataFrame.new({
+      expect(@dl_group.head(2)).to eq(DaruLite::DataFrame.new({
         a: ['bar','bar','bar','foo','foo','foo','foo','foo'],
         b: ['one','three','two','one','one','three','two','two'],
         c: [2,1,6,1,3,8,3,3],
@@ -407,7 +407,7 @@ describe Daru::Core::GroupBy do
     end
 
     it "returns first n rows of each triple layer group" do
-      expect(@tl_group.head(1)).to eq(Daru::DataFrame.new({
+      expect(@tl_group.head(1)).to eq(DaruLite::DataFrame.new({
         a: ['bar','bar','bar','foo','foo','foo','foo'],
         b: ['one','three','two','one','one','three','two'],
         c: [2,1,6,1,3,8,3],
@@ -418,7 +418,7 @@ describe Daru::Core::GroupBy do
 
   context "#tail" do
     it "returns last n rows of each single layer group" do
-      expect(@sl_group.tail(1)).to eq(Daru::DataFrame.new({
+      expect(@sl_group.tail(1)).to eq(DaruLite::DataFrame.new({
         a: ['bar','foo'],
         b: ['two', 'three'],
         c: [6,8],
@@ -427,7 +427,7 @@ describe Daru::Core::GroupBy do
     end
 
     it "returns last n rows of each double layer group" do
-      expect(@dl_group.tail(2)).to eq(Daru::DataFrame.new({
+      expect(@dl_group.tail(2)).to eq(DaruLite::DataFrame.new({
         a: ['bar','bar','bar','foo','foo','foo','foo','foo'],
         b: ['one','three','two','one','one','three','two','two'],
         c: [2,1,6,1,3,8,3,3],
@@ -436,7 +436,7 @@ describe Daru::Core::GroupBy do
     end
 
     it "returns last n rows of each triple layer group" do
-      expect(@tl_group.tail(1)).to eq(Daru::DataFrame.new({
+      expect(@tl_group.tail(1)).to eq(DaruLite::DataFrame.new({
         a: ['bar','bar','bar','foo','foo','foo','foo'],
         b: ['one','three','two','one','one','three','two'],
         c: [2,1,6,1,3,8,3],
@@ -452,36 +452,36 @@ describe Daru::Core::GroupBy do
   context "#reduce" do
     it "returns a vector that concatenates strings in a group" do
       string_concat = lambda { |result, row| result += row[:b] }
-      expect(@sl_group.reduce('', &string_concat)).to eq(Daru::Vector.new(['onethreetwo', 'onetwotwoonethree'], index: @sl_index))
+      expect(@sl_group.reduce('', &string_concat)).to eq(DaruLite::Vector.new(['onethreetwo', 'onetwotwoonethree'], index: @sl_index))
     end
 
     it "works with multi-indexes" do
       string_concat = lambda { |result, row| result += row[:b] }
       expect(@dl_group.reduce('', &string_concat)).to eq \
-        Daru::Vector.new(['one', 'three', 'two', 'oneone', 'three', 'twotwo'], index: @dl_multi_index)
+        DaruLite::Vector.new(['one', 'three', 'two', 'oneone', 'three', 'twotwo'], index: @dl_multi_index)
     end
   end
 
   context 'groups by first vector if no vector mentioned' do
     subject { @df.group_by }
 
-    it { is_expected.to be_a Daru::Core::GroupBy }
+    it { is_expected.to be_a DaruLite::Core::GroupBy }
     its(:groups) { is_expected.to eq @sl_group.groups }
     its(:size) { is_expected.to eq @sl_group.size }
   end
 
   context 'group and sum with numeric indices' do
-    let(:df) { Daru::DataFrame.new({ g: ['a','a','a'], num: [1,2,3]}, index: [2,12,23]) }
+    let(:df) { DaruLite::DataFrame.new({ g: ['a','a','a'], num: [1,2,3]}, index: [2,12,23]) }
 
     subject { df.group_by([:g]).sum }
 
-    it { is_expected.to eq Daru::DataFrame.new({num: [6]}, index: ['a']) }
+    it { is_expected.to eq DaruLite::DataFrame.new({num: [6]}, index: ['a']) }
   end
 
   context 'when dataframe tuples contain nils in mismatching positions' do
 
     let(:df){
-      Daru::DataFrame.new(
+      DaruLite::DataFrame.new(
         {
           'string1' => ["Color", "Color", "Color", "Color", nil, "Color", "Color", " Black and White"],
           'string2' => ["Test", "test2", nil, "test3", nil, "test", "test3", "test5"],
@@ -496,7 +496,7 @@ describe Daru::Core::GroupBy do
   end
   
   context '#aggregate' do
-    let(:dataframe) { Daru::DataFrame.new({
+    let(:dataframe) { DaruLite::DataFrame.new({
       employee: %w[John Jane Mark John Jane Mark],
       month: %w[June June June July July July],
       salary: [1000, 500, 700, 1200, 600, 600]})
@@ -504,7 +504,7 @@ describe Daru::Core::GroupBy do
     context 'group and aggregate sum for particular single vector' do
       subject { dataframe.group_by([:employee]).aggregate(salary: :sum) }
 
-      it { is_expected.to eq Daru::DataFrame.new({
+      it { is_expected.to eq DaruLite::DataFrame.new({
               salary: [1100, 2200, 1300]},
               index: ['Jane', 'John', 'Mark'])
       }
@@ -515,7 +515,7 @@ describe Daru::Core::GroupBy do
         salary: :sum,
         month: ->(vec) { vec.to_a.join('/') }) }
 
-      it { is_expected.to eq Daru::DataFrame.new({
+      it { is_expected.to eq DaruLite::DataFrame.new({
         salary: [1100, 2200, 1300],
         month: ['June/July', 'June/July', 'June/July']},
         index: ['Jane', 'John', 'Mark'],
@@ -531,7 +531,7 @@ describe Daru::Core::GroupBy do
         periods: ->(df) { df.size }
       )}
 
-      it { is_expected.to eq Daru::DataFrame.new({
+      it { is_expected.to eq DaruLite::DataFrame.new({
         salary: [1100, 2200, 1300],
         month: ['June/July', 'June/July', 'June/July'],
         mean_salary: [550.0, 1100.0, 650.0],
@@ -541,13 +541,13 @@ describe Daru::Core::GroupBy do
     end
 
     context 'group_by and aggregate on mixed MultiIndex' do
-      let(:df) { Daru::DataFrame.new(
+      let(:df) { DaruLite::DataFrame.new(
                     name: ['Ram','Krishna','Ram','Krishna','Krishna'],
                     visited: [
                       'Hyderabad', 'Delhi', 'Mumbai', 'Raipur', 'Banglore']
                  )
                 }
-      let(:df_mixed) { Daru::DataFrame.new(
+      let(:df_mixed) { DaruLite::DataFrame.new(
                     name: ['Krishna','Ram','Krishna','Krishna'],
                     visited: [
                       'Delhi', 'Mumbai', 'Raipur', 'Banglore']
@@ -555,9 +555,9 @@ describe Daru::Core::GroupBy do
                 }
       it 'group_by' do
         expect(df.group_by(:name).df).to eq(
-          Daru::DataFrame.new({
+          DaruLite::DataFrame.new({
             visited: ['Delhi', 'Raipur', 'Banglore', 'Hyderabad', 'Mumbai']},
-            index: Daru::MultiIndex.from_tuples(
+            index: DaruLite::MultiIndex.from_tuples(
                 [['Krishna', 1], ['Krishna', 3], ['Krishna', 4],
                 ['Ram', 0], ['Ram', 2]]
             )
@@ -569,7 +569,7 @@ describe Daru::Core::GroupBy do
         expect(
           df.group_by(:name).aggregate(
             visited: -> (vec){vec.to_a.join(',')})).to eq(
-              Daru::DataFrame.new({
+              DaruLite::DataFrame.new({
                 visited: ['Delhi,Raipur,Banglore', 'Hyderabad,Mumbai']},
                 index: ['Krishna', 'Ram']
               )
@@ -580,7 +580,7 @@ describe Daru::Core::GroupBy do
         expect(
           df_mixed.group_by(:name).aggregate(
             visited: -> (vec){vec.to_a.join(',')})).to eq(
-              Daru::DataFrame.new({
+              DaruLite::DataFrame.new({
                 visited: ['Delhi,Raipur,Banglore', 'Mumbai']},
                 index: ['Krishna', 'Ram']
               )
@@ -589,7 +589,7 @@ describe Daru::Core::GroupBy do
     end
 
     let(:spending_df) {
-      Daru::DataFrame.rows([
+      DaruLite::DataFrame.rows([
         [2010,    'dev',  50, 1],
         [2010,    'dev', 150, 1],
         [2010,    'dev', 200, 1],
@@ -607,7 +607,7 @@ describe Daru::Core::GroupBy do
         order: [:year, :category, :spending, :nb_spending])
     }
     let(:multi_index_year_category) {
-      Daru::MultiIndex.from_tuples([
+      DaruLite::MultiIndex.from_tuples([
                        [2010, "dev"], [2010, "market"],
                        [2011, "dev"], [2011, "market"], [2011, "office"],
         [2012, "R&D"], [2012, "dev"], [2012, "market"]])
@@ -616,7 +616,7 @@ describe Daru::Core::GroupBy do
     context 'group_by and aggregate on multiple elements' do
       it 'does aggregate' do
         expect(spending_df.group_by([:year, :category]).aggregate(spending: :sum)).to eq(
-          Daru::DataFrame.new({spending: [400, 50, 50, 500, 300, 10, 150, 800]}, index: multi_index_year_category))
+          DaruLite::DataFrame.new({spending: [400, 50, 50, 500, 300, 10, 150, 800]}, index: multi_index_year_category))
       end
 
       it 'works as older methods' do
@@ -632,17 +632,17 @@ describe Daru::Core::GroupBy do
 
       context 'can aggregate on MultiIndex' do
         let(:multi_indexed_aggregated_df) { spending_df.group_by([:year, :category]).aggregate(spending: :sum) }
-        let(:index_year) { Daru::Index.new([2010, 2011, 2012]) }
-        let(:index_category) { Daru::Index.new(["dev", "market", "office", "R&D"]) }
+        let(:index_year) { DaruLite::Index.new([2010, 2011, 2012]) }
+        let(:index_category) { DaruLite::Index.new(["dev", "market", "office", "R&D"]) }
 
         it 'aggregates by default on the last layer of MultiIndex' do
           expect(multi_indexed_aggregated_df.aggregate(spending: :sum)).to eq(
-            Daru::DataFrame.new({spending: [450, 850, 960]}, index: index_year))
+            DaruLite::DataFrame.new({spending: [450, 850, 960]}, index: index_year))
         end
 
         it 'can aggregate on the first layer of MultiIndex' do
           expect(multi_indexed_aggregated_df.aggregate({spending: :sum},0)).to eq(
-            Daru::DataFrame.new({spending: [600, 1350, 300, 10]}, index: index_category))
+            DaruLite::DataFrame.new({spending: [600, 1350, 300, 10]}, index: index_category))
         end
 
         it 'does coercion: when one layer is remaining, MultiIndex is coerced in Index that does not aggregate anymore' do

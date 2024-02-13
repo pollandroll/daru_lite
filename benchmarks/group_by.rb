@@ -1,9 +1,9 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
 
 require 'benchmark'
-require 'daru'
+require 'daru_lite'
 
-data = Daru::DataFrame.from_csv 'TradeoffData.csv'
+data = DaruLite::DataFrame.from_csv 'TradeoffData.csv'
 
 Benchmark.bm do |x|
   x.report("Single column grouping") do

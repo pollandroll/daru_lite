@@ -1,0 +1,12 @@
+<table>
+  <tr>
+    <th colspan="<%= width %>">DaruLite::MultiIndex(<%= size %>x<%= width %>)</th>
+  </tr>
+  <% DaruLite::IRuby::Helpers.tuples_with_rowspans(self).each do |row| %>
+    <tr>
+      <% row.each do |val, span| %>
+        <th rowspan="<%= span %>"><%= val %></th>
+      <% end %>
+    </tr>
+  <% end %>
+</table>
