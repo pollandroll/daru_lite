@@ -2806,6 +2806,26 @@ describe DaruLite::DataFrame do
     end
   end
 
+  context "#add_level_to_vectors" do
+    subject { df.add_level_to_vectors(top_level_label) }
+
+    let(:df) do
+      DaruLite::DataFrame.new({
+        a: [1, 2, 3, 4, 5],
+        b: [11, 22, 33, 44, 55],
+        c: %w(a b c d e)
+      })
+    end
+    let(:top_level_label) { :percentages }
+
+    it 'converts vectors to a Multi::Index' do
+      expected_index = DaruLite::MultiIndex.from_tuples([
+        [:percentages, :a], [:percentages, :b],[:percentages, :c],
+      ])
+      expect(subject).to eq(expected_index)
+    end
+  end
+
   context "#reindex" do
     it "re indexes and aligns accordingly" do
       df = DaruLite::DataFrame.new({
