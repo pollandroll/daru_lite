@@ -1,11 +1,11 @@
-describe Daru::Vector do
+describe DaruLite::Vector do
   # TODO: Add inspect specs for category
   context '#inspect' do
     context 'simple' do
-      subject(:vector) { Daru::Vector.new [1,2,3],
+      subject(:vector) { DaruLite::Vector.new [1,2,3],
         index: [:a, :b, :c], name: 'test'}
       its(:inspect) { is_expected.to eq %Q{
-        |#<Daru::Vector(3)>
+        |#<DaruLite::Vector(3)>
         |      test
         |    a    1
         |    b    2
@@ -14,9 +14,9 @@ describe Daru::Vector do
     end
 
     context 'no name' do
-      subject(:vector) { Daru::Vector.new [1,2,3], index: [:a, :b, :c]}
+      subject(:vector) { DaruLite::Vector.new [1,2,3], index: [:a, :b, :c]}
       its(:inspect) { is_expected.to eq %Q{
-        |#<Daru::Vector(3)>
+        |#<DaruLite::Vector(3)>
         |   a   1
         |   b   2
         |   c   3
@@ -24,10 +24,10 @@ describe Daru::Vector do
     end
 
     context 'with nils' do
-      subject(:vector) { Daru::Vector.new [1,nil,3],
+      subject(:vector) { DaruLite::Vector.new [1,nil,3],
         index: [:a, :b, :c], name: 'test'}
       its(:inspect) { is_expected.to eq %Q{
-        |#<Daru::Vector(3)>
+        |#<DaruLite::Vector(3)>
         |      test
         |    a    1
         |    b  nil
@@ -36,9 +36,9 @@ describe Daru::Vector do
     end
 
     context 'very large amount of data' do
-      subject(:vector) { Daru::Vector.new [1,2,3] * 100, name: 'test'}
+      subject(:vector) { DaruLite::Vector.new [1,2,3] * 100, name: 'test'}
       its(:inspect) { is_expected.to eq %Q{
-        |#<Daru::Vector(300)>
+        |#<DaruLite::Vector(300)>
         |      test
         |    0    1
         |    1    2
@@ -60,10 +60,10 @@ describe Daru::Vector do
     end
 
     context 'really long name or data' do
-      subject(:vector) { Daru::Vector.new [1,2,'this is ridiculously long'],
+      subject(:vector) { DaruLite::Vector.new [1,2,'this is ridiculously long'],
         index: [:a, :b, :c], name: 'and this is not much better faithfully'}
       its(:inspect) { is_expected.to eq %Q{
-        |#<Daru::Vector(3)>
+        |#<DaruLite::Vector(3)>
         |                      and this is not much
         |                    a                    1
         |                    b                    2
@@ -73,10 +73,10 @@ describe Daru::Vector do
 
     context 'with multiindex' do
       subject(:vector) {
-        Daru::Vector.new(
+        DaruLite::Vector.new(
           [1,2,3,4,5,6,7],
           name: 'test',
-          index: Daru::MultiIndex.from_tuples([
+          index: DaruLite::MultiIndex.from_tuples([
               %w[foo one],
               %w[foo two],
               %w[foo three],
@@ -89,7 +89,7 @@ describe Daru::Vector do
       }
 
       its(:inspect) { is_expected.to eq %Q{
-        |#<Daru::Vector(7)>
+        |#<DaruLite::Vector(7)>
         |              test
         |   foo   one     1
         |         two     2
@@ -112,14 +112,14 @@ describe Daru::Vector do
       let(:header) { doc.at('b') }
 
       context 'simple' do
-        let(:vector) { Daru::Vector.new [1,nil,3],
+        let(:vector) { DaruLite::Vector.new [1,nil,3],
           index: [:a, :b, :c], name: 'test', type: type }
         it { is_expected.not_to be_nil }
 
         describe 'header' do
           subject { header }
           it { is_expected.not_to be_nil }
-          its(:text) { is_expected.to eq " Daru::Vector(3)"\
+          its(:text) { is_expected.to eq " DaruLite::Vector(3)"\
             "#{":category" if type == :category} " }
         end
 
@@ -129,7 +129,7 @@ describe Daru::Vector do
           its(:text) { is_expected.to eq 'test' }
 
           context 'withought name' do
-            let(:vector) { Daru::Vector.new [1,nil,3], index: [:a, :b, :c], type: type }
+            let(:vector) { DaruLite::Vector.new [1,nil,3], index: [:a, :b, :c], type: type }
 
             it { is_expected.to be_nil }
           end
@@ -149,7 +149,7 @@ describe Daru::Vector do
       end
 
       context 'large vector' do
-        subject(:vector) { Daru::Vector.new [1,2,3] * 100, name: 'test', type: type }
+        subject(:vector) { DaruLite::Vector.new [1,2,3] * 100, name: 'test', type: type }
         it 'has only 30 rows (+ 1 header rows, + 2 finishing rows)' do
           expect(table.search('tr').size).to eq 33
         end
@@ -169,11 +169,11 @@ describe Daru::Vector do
 
       context 'multi-index' do
         subject(:vector) {
-          Daru::Vector.new(
+          DaruLite::Vector.new(
             [1,2,3,4,5,6,7],
             name: 'test',
             type: type,
-            index: Daru::MultiIndex.from_tuples([
+            index: DaruLite::MultiIndex.from_tuples([
                 %w[foo one],
                 %w[foo two],
                 %w[foo three],
@@ -188,7 +188,7 @@ describe Daru::Vector do
         describe 'header' do
           subject { header }
           it { is_expected.not_to be_nil }
-          its(:text) { is_expected.to eq " Daru::Vector(7)"\
+          its(:text) { is_expected.to eq " DaruLite::Vector(7)"\
             "#{":category" if type == :category} " }
         end
 

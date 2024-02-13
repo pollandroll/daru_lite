@@ -1,7 +1,7 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
 
 require 'benchmark'
-require 'daru'
+require 'daru_lite'
 
 # Check scaling
 base_n = 10000
@@ -11,8 +11,8 @@ base_n = 10000
   base_data = { idx: 1.upto(n).to_a, keys: 1.upto(n).map { |v| keys[Random.rand(n)]}}
   lookup_hash = keys.map { |k| [k, k * 100]}.to_h
 
-  base_data_df = Daru::DataFrame.new(base_data)
-  lookup_df = Daru::DataFrame.new({ keys: lookup_hash.keys, values: lookup_hash.values })
+  base_data_df = DaruLite::DataFrame.new(base_data)
+  lookup_df = DaruLite::DataFrame.new({ keys: lookup_hash.keys, values: lookup_hash.values })
 
   Benchmark.bm do |bm|
     bm.report("Inner join (n=#{n})") do

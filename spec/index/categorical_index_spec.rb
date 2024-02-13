@@ -1,6 +1,6 @@
 require 'spec_helper.rb'
 
-describe Daru::CategoricalIndex do
+describe DaruLite::CategoricalIndex do
   context "#pos" do
     context "when the category is non-numeric" do
       let(:idx) { described_class.new [:a, :b, :a, :a, :c] }

@@ -1,4 +1,4 @@
-include Daru
+include DaruLite
 
 describe DateOffset do
   context "#initialize, #+, #-" do
@@ -120,7 +120,7 @@ describe NegativeDateOffset do
   end
 end
 
-include Daru::Offsets
+include DaruLite::Offsets
 describe Offsets do
   describe Second do
     before do

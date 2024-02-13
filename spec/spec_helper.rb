@@ -28,7 +28,7 @@ end
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
-require 'daru'
+require 'daru_lite'
 
 if jruby?
   require 'mdarray'

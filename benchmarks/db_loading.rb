@@ -1,12 +1,12 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
 
 require 'benchmark'
-require 'daru'
+require 'daru_lite'
 require 'sqlite3'
 require 'dbi'
 require 'active_record'
 
-db_name = 'daru_test.sqlite'
+db_name = 'daru_lite_test.sqlite'
 FileUtils.rm(db_name) if File.file?(db_name)
 
 SQLite3::Database.new(db_name).tap do |db|
@@ -23,11 +23,11 @@ class Account < ActiveRecord::Base; end
 
 Benchmark.bm do |x|
   x.report("DataFrame.from_sql") do
-    Daru::DataFrame.from_sql(ActiveRecord::Base.connection, "SELECT * FROM accounts")
+    DaruLite::DataFrame.from_sql(ActiveRecord::Base.connection, "SELECT * FROM accounts")
   end
 
   x.report("DataFrame.from_activerecord") do
-    Daru::DataFrame.from_activerecord(Account.all)
+    DaruLite::DataFrame.from_activerecord(Account.all)
   end
 end
 

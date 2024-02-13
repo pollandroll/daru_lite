@@ -1,6 +1,6 @@
-describe Daru::Core::Query::BoolArray do
+describe DaruLite::Core::Query::BoolArray do
   before do
-    @klass = Daru::Core::Query::BoolArray
+    @klass = DaruLite::Core::Query::BoolArray
     @left = @klass.new([true, true, true, false, false, true])
     @right = @klass.new([false, false, false, false, true, false])
   end
@@ -29,19 +29,19 @@ describe Daru::Core::Query::BoolArray do
 
   context '#inspect' do
     it 'is reasonable' do
-      expect(@left.inspect).to eq "#<Daru::Core::Query::BoolArray:#{@left.object_id} bool_arry=[true, true, true, false, false, true]>"
+      expect(@left.inspect).to eq "#<DaruLite::Core::Query::BoolArray:#{@left.object_id} bool_arry=[true, true, true, false, false, true]>"
     end
   end
 end
 
 describe "Arel-like syntax" do
   describe "comparison operators" do
-    describe Daru::Vector do
+    describe DaruLite::Vector do
       describe "non-categorical type" do
         before do
-          @vector = Daru::Vector.new([23,51,1214,352,32,11])
-          @comparator = Daru::Vector.new([45,22,1214,55,32,9])
-          @klass = Daru::Core::Query::BoolArray
+          @vector = DaruLite::Vector.new([23,51,1214,352,32,11])
+          @comparator = DaruLite::Vector.new([45,22,1214,55,32,9])
+          @klass = DaruLite::Core::Query::BoolArray
         end
 
         context "#eq" do
@@ -125,11 +125,11 @@ describe "Arel-like syntax" do
       end
 
       describe "categorical type" do
-        let(:dv) { Daru::Vector.new ['e', 'd', 'd', 'x', 'x'],
+        let(:dv) { DaruLite::Vector.new ['e', 'd', 'd', 'x', 'x'],
           categories: ['a', 'x', 'c', 'd', 'e'], type: :category }
-        let(:comp) { Daru::Vector.new ['a', 'd', 'x', 'e', 'x'],
+        let(:comp) { DaruLite::Vector.new ['a', 'd', 'x', 'e', 'x'],
           categories: ['a', 'x', 'c', 'd', 'e'], type: :category }
-        let(:query_bool_class) { Daru::Core::Query::BoolArray }
+        let(:query_bool_class) { DaruLite::Core::Query::BoolArray }
 
         context "#eq" do
           context "scalar" do
@@ -237,9 +237,9 @@ describe "Arel-like syntax" do
   end
 
   describe "where clause" do
-    context Daru::DataFrame do
+    context DaruLite::DataFrame do
       before do
-        @df = Daru::DataFrame.new({
+        @df = DaruLite::DataFrame.new({
           number: [1,2,3,4,5,6,Float::NAN],
           sym: [:one, :two, :three, :four, :five, :six, :seven],
           names: ['sameer', 'john', 'james', 'omisha', 'priyanka', 'shravan',nil]
@@ -247,62 +247,62 @@ describe "Arel-like syntax" do
       end
 
       it "accepts simple single eq statement" do
-        answer = Daru::DataFrame.new({
+        answer = DaruLite::DataFrame.new({
           number: [4],
           sym: [:four],
           names: ['omisha']
-          }, index: Daru::Index.new([3])
+          }, index: DaruLite::Index.new([3])
         )
         expect(@df.where(@df[:number].eq(4))).to eq(answer)
       end
 
       it "accepts somewhat complex comparison operator chaining" do
-        answer = Daru::DataFrame.new({
+        answer = DaruLite::DataFrame.new({
           number: [3,4],
           sym: [:three, :four],
           names: ['james', 'omisha']
-        }, index: Daru::Index.new([2,3]))
+        }, index: DaruLite::Index.new([2,3]))
         expect(
           @df.where (@df[:names].eq('james') | @df[:sym].eq(:four))
           ).to eq(answer)
       end
 
-      let(:dv) { Daru::Vector.new([1,11,32,Float::NAN,nil]) }
+      let(:dv) { DaruLite::Vector.new([1,11,32,Float::NAN,nil]) }
       it "handles empty data" do
-        expect(dv.where(dv.lt(14))).to eq(Daru::Vector.new([1,11]))
+        expect(dv.where(dv.lt(14))).to eq(DaruLite::Vector.new([1,11]))
       end
 
       it "does not give SystemStackError" do
-        v = Daru::Vector.new [1]*300_000
+        v = DaruLite::Vector.new [1]*300_000
         expect { v.where v.eq(1) }.not_to raise_error
       end
     end
 
-    context Daru::Vector do
+    context DaruLite::Vector do
       context "non-categorical type" do
         before do
-          @vector = Daru::Vector.new([2,5,1,22,51,4,nil,Float::NAN])
+          @vector = DaruLite::Vector.new([2,5,1,22,51,4,nil,Float::NAN])
         end
 
         it "accepts a simple single statement" do
           expect(@vector.where(@vector.lt(10))).to eq(
-            Daru::Vector.new([2,5,1,4], index: Daru::Index.new([0,1,2,5])))
+            DaruLite::Vector.new([2,5,1,4], index: DaruLite::Index.new([0,1,2,5])))
         end
 
         it "accepts somewhat complex operator chaining" do
           expect(@vector.where((@vector.lt(6) | @vector.eq(51)))).to eq(
-            Daru::Vector.new([2,5,1,51,4], index: Daru::Index.new([0,1,2,4,5])))
+            DaruLite::Vector.new([2,5,1,51,4], index: DaruLite::Index.new([0,1,2,4,5])))
         end
       end
 
       context "categorical type" do
-        let(:dv) { Daru::Vector.new ['a', 'c', 'x', 'x', 'c'],
+        let(:dv) { DaruLite::Vector.new ['a', 'c', 'x', 'x', 'c'],
           categories: ['a', 'x', 'c'], type: :category }
 
         context "simple single statement" do
           subject { dv.where(dv.lt('x')) }
 
-          it { is_expected.to be_a Daru::Vector }
+          it { is_expected.to be_a DaruLite::Vector }
           its(:type) { is_expected.to eq :category }
           its(:to_a) { is_expected.to eq ['a'] }
           its(:'index.to_a') { is_expected.to eq [0] }
@@ -311,7 +311,7 @@ describe "Arel-like syntax" do
         context "complex operator chaining" do
           subject { dv.where((dv.lt('x') | dv.eq('c'))) }
 
-          it { is_expected.to be_a Daru::Vector }
+          it { is_expected.to be_a DaruLite::Vector }
           its(:type) { is_expected.to eq :category }
           its(:to_a) { is_expected.to eq ['a', 'c', 'c'] }
           its(:'index.to_a') { is_expected.to eq [0, 1, 4] }
@@ -320,7 +320,7 @@ describe "Arel-like syntax" do
         context "preserve categories" do
           subject { dv.where((dv.lt('x') | dv.eq('c'))) }
 
-          it { is_expected.to be_a Daru::Vector }
+          it { is_expected.to be_a DaruLite::Vector }
           its(:type) { is_expected.to eq :category }
           its(:to_a) { is_expected.to eq ['a', 'c', 'c'] }
           its(:'index.to_a') { is_expected.to eq [0, 1, 4] }
@@ -329,7 +329,7 @@ describe "Arel-like syntax" do
       end
 
       it "preserves name" do
-        named_vector = Daru::Vector.new([1,2,3], name: 'named')
+        named_vector = DaruLite::Vector.new([1,2,3], name: 'named')
         expect(named_vector.where(named_vector.lteq(2)).name).to eq('named')
       end
     end
@@ -339,9 +339,9 @@ describe "Arel-like syntax" do
     context "matches regexp with block input" do
       subject { dv.apply_where(dv.match /weeks/) { |x| "#{x.split.first.to_i * 7} days" } }
 
-      let(:dv) { Daru::Vector.new ['3 days', '5 weeks', '2 weeks'] }
+      let(:dv) { DaruLite::Vector.new ['3 days', '5 weeks', '2 weeks'] }
 
-      it { is_expected.to eq(Daru::Vector.new ['3 days', '35 days', '14 days']) }
+      it { is_expected.to eq(DaruLite::Vector.new ['3 days', '35 days', '14 days']) }
     end
   end
 end

@@ -1,9 +1,9 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
 
 require 'benchmark'
-require 'daru'
+require 'daru_lite'
 
-df = Daru::DataFrame.new({
+df = DaruLite::DataFrame.new({
   a: 100000.times.map { rand },
   b: 100000.times.map { rand },
   c: 100000.times.map { rand }
@@ -25,7 +25,7 @@ Benchmark.bm do |x|
       rows << df.row[a].to_a
     end
 
-    Daru::DataFrame.rows(rows, order: [:a,:b,:c], index: index)
+    DaruLite::DataFrame.rows(rows, order: [:a,:b,:c], index: index)
   end
 
   x.report("Access rows by range") do
