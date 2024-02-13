@@ -6,18 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 2
-# Configuration parameters: IgnoreLiteralBranches, IgnoreConstantBranches.
-Lint/DuplicateBranch:
-  Exclude:
-    - 'lib/daru_lite/dataframe.rb'
-    - 'lib/daru_lite/vector.rb'
-
-# Offense count: 2
-Lint/DuplicateMethods:
-  Exclude:
-    - 'lib/daru_lite/vector.rb'
-
 # Offense count: 1
 # Configuration parameters: AllowComments.
 Lint/EmptyClass:
@@ -31,12 +19,6 @@ Lint/MissingSuper:
     - 'lib/daru_lite/index/categorical_index.rb'
     - 'lib/daru_lite/index/index.rb'
     - 'lib/daru_lite/index/multi_index.rb'
-
-# Offense count: 1
-# Configuration parameters: AllowKeywordBlockArguments.
-Lint/UnderscorePrefixedVariableName:
-  Exclude:
-    - 'lib/daru_lite/dataframe.rb'
 
 # Offense count: 6
 # Configuration parameters: CheckForMethodsWithNoSideEffects.
@@ -114,11 +96,6 @@ Security/MarshalLoad:
     - 'lib/daru_lite/index/index.rb'
     - 'lib/daru_lite/io/io.rb'
     - 'lib/daru_lite/vector.rb'
-
-# Offense count: 2
-Security/Open:
-  Exclude:
-    - 'lib/daru_lite/io/io.rb'
 
 # Offense count: 2
 Style/ClassVars:

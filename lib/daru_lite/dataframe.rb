@@ -296,7 +296,7 @@ module DaruLite
     #    #    1   4  14  44
     #    #    2   5  15  55
 
-    def initialize(source = {}, opts = {}) # rubocop:disable Metrics/MethodLength
+    def initialize(source = {}, opts = {})
       vectors = opts[:order]
       index = opts[:index] # FIXME: just keyword arges after Ruby 2.1
       @data = []
@@ -309,8 +309,6 @@ module DaruLite
         initialize_from_array source, vectors, index, opts
       when Hash
         initialize_from_hash source, vectors, index, opts
-      when ->(s) { s.empty? } # TODO: likely want to remove this case
-        create_empty_vectors(vectors, index)
       end
 
       set_size
@@ -1221,7 +1219,7 @@ module DaruLite
     # hashes with other values. If block provided, is used to provide the
     # values, with parameters +row+ of dataset, +current+ last hash on
     # hierarchy and +name+ of the key to include
-    def nest(*tree_keys, &_block)
+    def nest(*tree_keys, &block)
       tree_keys = tree_keys[0] if tree_keys[0].is_a? Array
 
       each_row.with_object({}) do |row, current|
@@ -1230,7 +1228,7 @@ module DaruLite
         current = keys.inject(current) { |c, f| c[row[f]] ||= {} }
         name = row[last]
 
-        if _block
+        if block
           current[name] = yield(row, current, name)
         else
           current[name] ||= []
@@ -1502,7 +1500,6 @@ module DaruLite
       def self.new_index(df, cols)
         DaruLite::MultiIndex.from_arrays(df[*cols].map_vectors(&:to_a)).tap do |mi|
           mi.name = cols
-          mi
         end
       end
 
