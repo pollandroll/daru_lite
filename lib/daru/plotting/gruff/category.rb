@@ -7,7 +7,7 @@ module Daru
           size = opts[:size] || 500
           case type
           when :bar, :pie, :sidebar
-            plot = send("category_#{type}_plot".to_sym, size, opts[:method])
+            plot = send(:"category_#{type}_plot", size, opts[:method])
           else
             raise ArgumentError, 'This type of plot is not supported.'
           end
@@ -37,7 +37,7 @@ module Daru
 
         def category_sidebar_plot(size, method)
           plot = Gruff::SideBar.new size
-          plot.labels = { 0 => (name.to_s || 'vector') }
+          plot.labels = { 0 => name.to_s || 'vector' }
           method ||= :count
           frequencies(method).each_with_index do |data, index|
             plot.data index, data

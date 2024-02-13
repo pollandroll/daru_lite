@@ -16,7 +16,7 @@ module Daru
       counter = array
                 .group_by(&:itself)
                 .select { |_, g| g.size > 1 }
-                .map(&:first)
+                .keys
                 .to_h { |n| [n, 0] }
 
       # ...and use this hash for actual recode

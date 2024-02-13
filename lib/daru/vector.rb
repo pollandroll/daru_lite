@@ -199,7 +199,7 @@ module Daru
       case lib
       when :gruff
         @plotting_library = lib
-        if Daru.send("has_#{lib}?".to_sym)
+        if Daru.send(:"has_#{lib}?")
           extend Module.const_get(
             "Daru::Plotting::Vector::#{lib.to_s.capitalize}Library"
           )

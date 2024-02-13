@@ -253,7 +253,7 @@ module Daru
     #     DateTime.new(2012,4,11), DateTime.new(2012,4,12)], freq: :infer)
     #   #=>#<DateTimeIndex:84198340 offset=D periods=8 data=[2012-04-05T00:00:00+00:00...2012-04-12T00:00:00+00:00]>
     def initialize(data, opts = { freq: nil })
-      super data
+      super(data)
       Helper.possibly_convert_to_date_time data
 
       @offset =
@@ -263,7 +263,7 @@ module Daru
         else  Helper.offset_from_frequency(opts[:freq])
         end
 
-      @frequency = @offset ? @offset.freq_string : nil
+      @frequency = @offset&.freq_string
       @data      = data.each_with_index.to_a.sort_by(&:first)
 
       @periods = data.size
