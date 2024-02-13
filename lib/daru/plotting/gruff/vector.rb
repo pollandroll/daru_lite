@@ -47,7 +47,7 @@ module Daru
 
         def sidebar_plot(size)
           plot = Gruff::SideBar.new size
-          plot.labels = { 0 => (name.to_s || 'vector') }
+          plot.labels = { 0 => name.to_s || 'vector' }
           each_with_index { |data, index| plot.data index, data }
           plot
         end
