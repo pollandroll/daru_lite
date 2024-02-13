@@ -1492,6 +1492,16 @@ module DaruLite
       end
     end
 
+    module SetCategoricalIndexStrategy
+      def self.new_index(df, col)
+        DaruLite::CategoricalIndex.new(df[col].to_a)
+      end
+
+      def self.delete_vector(df, col)
+        df.delete_vector(col)
+      end
+    end
+
     module SetMultiIndexStrategy
       def self.uniq_size(df, cols)
         df[*cols].uniq.size
@@ -1509,20 +1519,23 @@ module DaruLite
     end
 
     # Set a particular column as the new DF
-    def set_index(new_index_col, opts = {})
-      if new_index_col.respond_to?(:to_a)
+    def set_index(new_index_col, keep: false, categorical: false)
+      if categorical
+        strategy = SetCategoricalIndexStrategy
+      elsif new_index_col.respond_to?(:to_a)
         strategy = SetMultiIndexStrategy
         new_index_col = new_index_col.to_a
       else
         strategy = SetSingleIndexStrategy
       end
 
-      uniq_size = strategy.uniq_size(self, new_index_col)
-      raise ArgumentError, 'All elements in new index must be unique.' if
-        @size != uniq_size
+      unless categorical
+        uniq_size = strategy.uniq_size(self, new_index_col)
+        raise ArgumentError, 'All elements in new index must be unique.' if @size != uniq_size
+      end
 
       self.index = strategy.new_index(self, new_index_col)
-      strategy.delete_vector(self, new_index_col) unless opts[:keep]
+      strategy.delete_vector(self, new_index_col) unless keep
       self
     end
 
