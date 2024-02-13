@@ -5,7 +5,7 @@ describe Daru::IO do
       before do
         %w[matrix_test repeated_fields scientific_notation sales-funnel].each do |file|
           WebMock
-            .stub_request(:get,"http://dummy-remote-url/#{file}.csv")
+            .stub_request(:get,"http://example.com/#{file}.csv")
             .to_return(status: 200, body: File.read("spec/fixtures/#{file}.csv"))
         end
       end
@@ -65,7 +65,7 @@ describe Daru::IO do
       it "checks for equal parsing of local CSV files and remote CSV files" do
         %w[matrix_test repeated_fields scientific_notation sales-funnel].each do |file|
           df_local  = Daru::DataFrame.from_csv("spec/fixtures/#{file}.csv")
-          df_remote = Daru::DataFrame.from_csv("http://dummy-remote-url/#{file}.csv")
+          df_remote = Daru::DataFrame.from_csv("http://example.com/#{file}.csv")
           expect(df_local).to eq(df_remote)
         end
       end

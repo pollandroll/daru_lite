@@ -49,8 +49,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'spreadsheet', '~> 1.3.0'
   spec.add_development_dependency 'sqlite3'
-  spec.add_development_dependency 'webmock'
-  spec.add_development_dependency 'yard-junk'
   # issue : https://github.com/SciRuby/daru/issues/493 occured
   # with latest version of sqlite3
+  spec.add_development_dependency 'webmock'
+  spec.add_development_dependency 'yard-junk'
 end
