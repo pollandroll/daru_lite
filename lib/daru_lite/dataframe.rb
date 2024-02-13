@@ -1520,11 +1520,11 @@ module DaruLite
 
     # Set a particular column as the new DF
     def set_index(new_index_col, keep: false, categorical: false)
-      if new_index_col.respond_to?(:to_a)
+      if categorical
+        strategy = SetCategoricalIndexStrategy
+      elsif new_index_col.respond_to?(:to_a)
         strategy = SetMultiIndexStrategy
         new_index_col = new_index_col.to_a
-      elsif categorical
-        strategy = SetCategoricalIndexStrategy
       else
         strategy = SetSingleIndexStrategy
       end
