@@ -77,10 +77,9 @@ module DaruLite
 
       def mean
         values_to_sum = compact
-        return nil if values_to_sum.empty?
+        return if values_to_sum.empty?
 
-        sum = values_to_sum.sum
-        sum.quo(values_to_sum.size).to_f
+        values_to_sum.sum.quo(values_to_sum.size).to_f
       end
 
       def product
@@ -96,8 +95,8 @@ module DaruLite
       end
 
       def sum
-        compact_data = compact
-        compact_data.sum if compact_data.any?
+        values_to_sum = compact
+        values_to_sum.sum if values_to_sum.any?
       end
 
       private
