@@ -92,7 +92,6 @@ Naming/MethodParameterName:
     - 'lib/daru_lite/io/io.rb'
     - 'lib/daru_lite/maths/statistics/dataframe.rb'
     - 'lib/daru_lite/maths/statistics/vector.rb'
-    - 'lib/daru_lite/plotting/gruff/dataframe.rb'
     - 'lib/daru_lite/vector.rb'
 
 # Offense count: 5

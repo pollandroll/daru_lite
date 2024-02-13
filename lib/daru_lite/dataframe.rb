@@ -1,7 +1,6 @@
 require 'daru_lite/accessors/dataframe_by_row'
 require 'daru_lite/maths/arithmetic/dataframe'
 require 'daru_lite/maths/statistics/dataframe'
-require 'daru_lite/plotting/gruff'
 require 'daru_lite/io/io'
 
 module DaruLite
@@ -317,28 +316,6 @@ module DaruLite
       set_size
       validate
       update
-    end
-
-    def plotting_library=(lib)
-      case lib
-      when :gruff
-        @plotting_library = lib
-        if DaruLite.send(:"has_#{lib}?")
-          extend Module.const_get(
-            "DaruLite::Plotting::DataFrame::#{lib.to_s.capitalize}Library"
-          )
-        end
-      else
-        raise ArgumentError, "Plotting library #{lib} not supported. " \
-                             'Supported library is :gruff'
-      end
-    end
-
-    # this method is overwritten: see DaruLite::DataFrame#plotting_library=
-    def plot(...)
-      init_plotting_library
-
-      plot(...)
     end
 
     # Access row or vector. Specify name of row/vector followed by axis(:row, :vector).
@@ -2395,11 +2372,6 @@ module DaruLite
     end
 
     private
-
-    # Will lazily load the plotting library being used for this dataframe
-    def init_plotting_library
-      self.plotting_library = DaruLite.plotting_library
-    end
 
     def headers
       DaruLite::Index.new(Array(index.name) + @vectors.to_a)
