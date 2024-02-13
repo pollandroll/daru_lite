@@ -7,7 +7,7 @@ module Daru
           size = opts[:size] || 500
           case type
           when :line, :bar, :pie, :scatter, :sidebar
-            plot = send("#{type}_plot", size)
+            plot = send(:"#{type}_plot", size)
           # TODO: hist, box
           # It turns out hist and box are not supported in Gruff yet
           else

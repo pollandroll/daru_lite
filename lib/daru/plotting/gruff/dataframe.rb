@@ -10,7 +10,7 @@ module Daru
           type = process_type type, opts[:categorized]
           case type
           when :line, :bar, :scatter
-            plot = send("#{type}_plot", size, x, y)
+            plot = send(:"#{type}_plot", size, x, y)
           when :scatter_categorized
             plot = scatter_with_category(size, x, y, opts[:categorized])
           # TODO: hist, box
