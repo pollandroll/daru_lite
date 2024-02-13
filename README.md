@@ -49,7 +49,7 @@ This gem extends support for many Import and Export methods of `DaruLite::DataFr
 ## Installation
 
 ```console
-$ gem install daru
+$ gem install daru_lite
 ```
 
 ## Notebooks
