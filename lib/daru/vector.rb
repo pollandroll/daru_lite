@@ -285,7 +285,9 @@ module Daru
       case other
       when Daru::Vector
         @index == other.index && size == other.size &&
-          @index.all? { |index| self[index] == other[index] }
+          each_with_index.with_index.all? do |(e, index), position|
+            e == other.at(position) && index == other.index.to_a[position]
+          end
       else
         super
       end

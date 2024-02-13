@@ -718,6 +718,149 @@ describe Daru::Vector do
         end
       end
 
+      context "#==" do
+        subject { vector == other_vector }
+
+        let(:vector) { Daru::Vector.new(data, name:, index:, dtype:) }
+        let(:data) { [1, 2, 3, 4, 5] }
+        let(:index) { [:yoda, :anakin, :obi, :padme, :r2d2] }
+        let(:name) { :yoga }
+        let(:other_vector) { Daru::Vector.new(other_data, name: other_name, index: other_index, dtype:) }
+        let(:other_data) { data }
+        let(:other_index) { index }
+        let(:other_name) { name }
+
+        context Daru::Index do
+
+          context 'vectors are identical' do
+            it { is_expected.to eq(true) }
+          end
+
+          context 'name is different' do
+            let(:other_name) { :yogi }
+
+            it { is_expected.to eq(true) }
+          end
+
+          context 'data is different' do
+            let(:other_data) { [2, 1, 3, 4, 5] }
+
+            it { is_expected.to eq(false) }
+          end
+
+          context 'data size is different' do
+            let(:other_data) { [1, 2, 3, 4, 5, 6] }
+            let(:other_index) { [:yoda, :anakin, :obi, :padme, :r2d2, :darth_vader] }
+
+            it { is_expected.to eq(false) }
+          end
+
+          context 'vector index is different' do
+            let(:other_index) { [:anakin, :yoda, :darth_vader, :padme, :r2d2] }
+
+            it { is_expected.to eq(false) }
+          end
+        end
+
+        context Daru::MultiIndex do
+          let(:tuples) do
+            [
+              [:a,:one,:bar],
+              [:a,:one,:baz],
+              [:a,:two,:bar],
+              [:a,:two,:baz],
+              [:b,:one,:bar],
+              [:b,:two,:bar],
+              [:b,:two,:baz],
+              [:b,:one,:foo],
+              [:c,:one,:bar],
+              [:c,:one,:baz],
+              [:c,:two,:foo],
+              [:c,:two,:bar]
+            ]
+          end
+          let(:data) { Array.new(12) { |i| i } }
+          let(:index) { Daru::MultiIndex.from_tuples(tuples) }
+
+          context 'vectors are identical' do
+            it { is_expected.to eq(true) }
+          end
+
+          context 'name is different' do
+            let(:other_name) { :yogi }
+
+            it { is_expected.to eq(true) }
+          end
+
+          context 'data is different' do
+            let(:other_data) { Array.new(12) { |i| i * i } }
+
+            it { is_expected.to eq(false) }
+          end
+
+          context 'data size is different' do
+            let(:other_data) { Array.new(10) { |i| i * i } }
+
+            it { is_expected.to eq(false) }
+          end
+
+          context 'vector index is different' do
+            let(:other_tuples) do
+              [
+                [:a,:two,:bar],
+                [:a,:one,:baz],
+                [:a,:two,:bar],
+                [:a,:two,:baz],
+                [:b,:one,:bar],
+                [:b,:two,:bar],
+                [:b,:two,:baz],
+                [:b,:one,:foo],
+                [:c,:one,:bar],
+                [:c,:one,:baz],
+                [:c,:two,:foo],
+                [:c,:two,:bar]
+              ]
+            end
+            let(:other_index) { Daru::MultiIndex.from_tuples(other_tuples) }
+
+            it { is_expected.to eq(false) }
+          end
+        end
+
+        context Daru::CategoricalIndex do
+          let(:index) { Daru::CategoricalIndex.new([:yoda, :r2d2, :obi, :padme, :r2d2]) }
+
+          context 'vectors are identical' do
+            it { is_expected.to eq(true) }
+          end
+
+          context 'name is different' do
+            let(:other_name) { :yogi }
+
+            it { is_expected.to eq(true) }
+          end
+
+          context 'data is different' do
+            let(:other_data) { [2, 1, 3, 4, 5] }
+
+            it { is_expected.to eq(false) }
+          end
+
+          context 'data size is different' do
+            let(:other_data) { [1, 2, 3, 4, 5, 6] }
+            let(:other_index) { [:yoda, :anakin, :obi, :padme, :r2d2, :darth_vader] }
+
+            it { is_expected.to eq(false) }
+          end
+
+          context 'vector index is different' do
+            let(:other_index) { Daru::CategoricalIndex.new([:r2d2, :yoda, :obi, :padme, :r2d2]) }
+
+            it { is_expected.to eq(false) }
+          end
+        end
+      end
+
       context "#set_at" do
         context Daru::Index do
           let (:idx) { Daru::Index.new [1, 0, :c] }
