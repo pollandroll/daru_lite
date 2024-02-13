@@ -169,6 +169,12 @@ module Daru
         DataFrame.new(data)
       end
 
+      # def reorder_rows(new_order = [])
+      #   raise NotImplementedError if index.is_a?(Daru::CategoricalIndex)
+
+      #   reindex(Index.new(new_order))
+      # end
+
       private
 
       def guess_order(source)
@@ -1157,6 +1163,34 @@ module Daru
         order_array.sort == vectors.to_a.sort
 
       initialize(to_h, order: order_array)
+    end
+
+    # Reorders the rows in a dataframe
+    # @param new_order => [Array], the new order you want for your rows
+    #
+    # @exemple
+    #   df = Daru::DataFrame.new({
+    #     a: [1, 2, 3],
+    #     b: [4, 5, 6]
+    #   }, order: [:a, :b])
+    #
+    #   df = #<Daru::DataFrame(3x2)>
+    #           #       b   a
+    #           #   0   1   4
+    #           #   1   2   5
+    #           #   2   3   6
+    #
+    # df.reorder_rows[2,0,1]
+    #
+    #   df = #<Daru::DataFrame(3x2)>
+    #           #       b   a
+    #           #   2   3   6
+    #           #   1   2   5
+    #           #   0   1   4
+    def reorder_rows(new_order = [])
+      raise NotImplementedError if index.is_a?(Daru::CategoricalIndex)
+
+      reindex(Index.new(new_order))
     end
 
     # Returns a vector, based on a string with a calculation based

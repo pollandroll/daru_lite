@@ -412,7 +412,6 @@ describe Daru::DataFrame do
       end
 
       it "aligns MultiIndexes properly" do
-        pending
         mi_a = @order_mi
         mi_b = Daru::MultiIndex.from_tuples([
           [:b,:one,:foo],
@@ -437,7 +436,7 @@ describe Daru::DataFrame do
         expect(df).to eq(Daru::DataFrame.new({
           [:pee, :que] => Daru::Vector.new([1,2,4,3], index: mi_sorted),
           [:pee, :poo] => Daru::Vector.new([12,14,11,13], index: mi_sorted)
-          }, order: order_mi))
+          }, order: @order_mi))
       end
 
       it "adds nils in case of missing values" do
@@ -4257,6 +4256,27 @@ describe Daru::DataFrame do
 
     it 'raise error when vector is missing from dataframe' do
       expect { df[:c] }.to raise_error(IndexError, /Specified vector c does not exist/)
+    end
+  end
+
+  context "#reorder_rows" do
+    subject { df.reorder_rows(new_order) }
+
+    let(:df) do
+      Daru::DataFrame.new({
+        a: [1,2,3],
+        b: [4,5,6]
+      },
+        order: [:a, :b],
+        index: [:one, :two, :three]
+      )
+    end
+    let(:new_order) { [2, 0, 1] }
+
+    it { is_expected.to be_a(Daru::DataFrame) }
+
+    it "reorders the rows based on the given order" do
+      expect(subject.index.to_a).to eq(new_order)
     end
   end
 end if mri?
