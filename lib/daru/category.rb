@@ -59,28 +59,6 @@ module Daru
       self
     end
 
-    def plotting_library=(lib)
-      case lib
-      when :gruff
-        @plotting_library = lib
-        if Daru.send(:"has_#{lib}?")
-          extend Module.const_get(
-            "Daru::Plotting::Category::#{lib.to_s.capitalize}Library"
-          )
-        end
-      else
-        raise ArgumentError, "Plotting library #{lib} not supported. " \
-                             'Supported library is :gruff'
-      end
-    end
-
-    # this method is overwritten: see Daru::Category#plotting_library=
-    def plot(...)
-      init_plotting_library
-
-      plot(...)
-    end
-
     alias rename name=
 
     # Returns an enumerator that enumerates on categorical data
@@ -756,11 +734,6 @@ module Daru
     end
 
     private
-
-    # Will lazily load the plotting library being used
-    def init_plotting_library
-      self.plotting_library = Daru.plotting_library
-    end
 
     def validate_categories(input_categories)
       raise ArgumentError, 'Input categories and speculated categories mismatch' unless
