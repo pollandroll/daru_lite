@@ -4,8 +4,8 @@
   - Make nmatrix and gsl optional dependencies for testing. (@v0dro)
   - Update sqlite, activerecord, nokogiri, packable, rake dependencies. (@v0dro)
   - Remove runtime dependency on backports. (@v0dro)
-  - Add `Daru::Vector#match and Daru::Vector#apply_where` methods (@athityakumar).
-  - Add support for options to the `Daru` module. Adds a separate module `Daru::Configuration` that
+  - Add `DaruLite::Vector#match and DaruLite::Vector#apply_where` methods (@athityakumar).
+  - Add support for options to the `Daru` module. Adds a separate module `DaruLite::Configuration` that
   can hold data for overall configuration of daru's execution. (@kojix2)
 * Minor Enhancements
   - Add new `DataFrame#insert_vector` method. (@cyrillefr)
@@ -36,13 +36,13 @@
   - Allow pasing singular Symbol to CSV converters option (@takkanm)
   - Support calling GroupBy#each_group w/o blocks (@hibariya)
   - Refactor grouping and aggregation (@paisible-wanderer)
-  - Add String Converter to Daru::IO::CSV::CONVERTERS (@takkanm)
+  - Add String Converter to DaruLite::IO::CSV::CONVERTERS (@takkanm)
   - Fix annoying missing libraries warning
   - Remove post-install message (nice yet useless)
 
 * Fixes
   - Fix group_by for DataFrame with single row (@baarkerlounger)
-  - `#rolling_fillna!` bugfixes on `Daru::Vector` and `Daru::DataFrame` (@mhammiche)
+  - `#rolling_fillna!` bugfixes on `DaruLite::Vector` and `DaruLite::DataFrame` (@mhammiche)
   - Fixes `#include?` on multiindex (@rohitner)
 
 # 0.2.0 (31 October 2017)
@@ -122,10 +122,10 @@
 
 # 0.1.5 (30 January 2017)
 * Major Enhancements
-  - Add Daru::Vector#group_by (@lokeshh).
+  - Add DaruLite::Vector#group_by (@lokeshh).
   - Add rspec-guard to run tests automatically (@lokeshh).
-  - Remove Daru::DataFrame implicit Hash method since Dataframes are not implicit hashes and having an implicit converter can introduce unwanted side effects. (@gnilrets)
-  - Add `Daru::DataFrame#union`. (Tim)
+  - Remove DaruLite::DataFrame implicit Hash method since Dataframes are not implicit hashes and having an implicit converter can introduce unwanted side effects. (@gnilrets)
+  - Add `DaruLite::DataFrame#union`. (Tim)
 
 * Minor Enhancements
   - Added a join indicator. (@gnilrets)
@@ -136,17 +136,17 @@
   - Make `Vector#resort_index` private because its only use was for internal usage in `Vector#sort`. (Yuichiro Kaneko)
   - Add `DataFrame#order=` method to reorder vectors in a dataframe. (@lokeshh)
   - Use `Integer` instead of `Fixnum` throughout the gem. (Yuichiro Kaneko)
-  - Improve error message of `Daru::Vector#index=`. (@lokeshh)
-  - Deprecate `freqs` and make `frequencies` return a `Daru::Vector`. (@lokeshh)
+  - Improve error message of `DaruLite::Vector#index=`. (@lokeshh)
+  - Deprecate `freqs` and make `frequencies` return a `DaruLite::Vector`. (@lokeshh)
   - `DataFrame#access_row` with integer index. (Yusuke Sangenya)
   - Add method alias for comparison operator. (Yusuke Sangenya)
   - Update Nokogiri version. (Yusuke Sangenya)
-  - Return `Daru::Vector` for multiple modal values for `Daru::Vector#mode`. (@baarkerlounger)
+  - Return `DaruLite::Vector` for multiple modal values for `DaruLite::Vector#mode`. (@baarkerlounger)
 
 * Fixes
   - Fix many to one joins. The prior version was shifting values in the left dataframe before checking whether values in the right dataframe should be shifted.  They both need to be checked at the same time before shifting either. (@gnilrets)
   - Support formatting empty dataframes. They were returning an error before. (@gnilrets)
-  - method_missing in Daru::DataFrame would not detect the correct vector if it was a String. Fixed that. (@lokeshh)
+  - method_missing in DaruLite::DataFrame would not detect the correct vector if it was a String. Fixed that. (@lokeshh)
   - Fix docs of contrast_code to specify that the default value is false. (@v0dro)
   - Fix occurence of SystemStackError due to faulty argument passing to Array#values_at. (@v0dro)
   - Fix `DataFrame#pivot_table` regression that raised an ArgumentError if the `:index` option was not specified. (@zverok)
@@ -154,7 +154,7 @@
   - Fix bug with false values on dataframe create. DataFrame from an Array of hashes wasn't being created properly when some of the values were `false`. (@gnilrets)
   - Fix `Vector#reorder!` method. (Yusuke Sangenya)
   - Fix `DataFrame#group_by` for numeric indexes. (@zverok)
-  - Make `DataFrame#index=` accept only `Daru::Index`. (Yusuke Sangenya)
+  - Make `DataFrame#index=` accept only `DaruLite::Index`. (Yusuke Sangenya)
   - `DataFrame#vectors=` now changes the name of vectors contained in the internal `@data` variable. (Yusuke Sangenya)
 
 
@@ -168,7 +168,7 @@
   - Added new dependency 'backports' to support #to_h in Ruby 2.0. (@lokeshh)
   - Greatly improve code test coverage. (@zverok)
   - Greatly refactor code and make some methods faster, smaller and more readable. (@zverok)
-  - Add support for categorical data with different coding schemes and several methods for in built categorical data support. Add a new index 'Daru::CategoricalIndex'. (@lokeshh)
+  - Add support for categorical data with different coding schemes and several methods for in built categorical data support. Add a new index 'DaruLite::CategoricalIndex'. (@lokeshh)
   - Removed runtime dependencies on 'spreadsheet' and 'reportbuilder'. They are now loaded if the libraries are already present in the system. (@v0dro)
 
 * Minor enhancements
@@ -176,10 +176,10 @@
   - Remove default DataFrame name. Now DataFrames will no name by default. (@zverok)
   - Better looking #inspect for Vector and DataFrame. (@zverok)
   - Better looking #to_html for Vector and DataFrame. Also better #to_html for MultiIndex. (@zverok)
-  - Remove monkey patching on Array and add those methods to Daru::ArrayHelper. (@zverok)
+  - Remove monkey patching on Array and add those methods to DaruLite::ArrayHelper. (@zverok)
   - Add a rake task for running RSpec for every Ruby version with a single command. (@lokeshh)
   - Add rake tasks for easily setting up and testing test harness. (@lokeshh)
-  - Added `Daru::Vector#to_nmatrix`.
+  - Added `DaruLite::Vector#to_nmatrix`.
   - Remove the 'metadata' feature introduced in v0.1.3. (@gnilrets)
   - Added `DataFrame#to_df` and `Vector#to_df`. (@gnilrets)
 
@@ -187,7 +187,7 @@
   - DataFrame#clone preserves order and name. (@wlevine)
   - Vector#where preserves name. (@v0dro)
   - Fix bug in DataFrame#pivot_table that prevented anything other than Array or Symbol to be specified in the :values option. (@v0dro)
-  - Daru::Index#each returns an Enumerator if block is not specified. (@v0dro)
+  - DaruLite::Index#each returns an Enumerator if block is not specified. (@v0dro)
   - Fixes bug where joins failed when nils were in join keys. (@gnilrets)
   - DataFrame#merge now preserves the vector name type when merging. (@lokeshh)
 
@@ -207,7 +207,7 @@
     - DataFrame CSV writer function will now supress headers when passing headers: false (@gnilrets).
     - Refactor Index and MultiIndex so that a Vector or DataFrame can access the actual index number without having to check the exact type of index every time (@lokeshh).
     - Refactor `Vector#[]=` to not use conditionals (@lokeshh).
-    - Custom `#dup` method for `Daru::DateTimeIndex` (@Deepakkoli93).
+    - Custom `#dup` method for `DaruLite::DateTimeIndex` (@Deepakkoli93).
     - Massive performance boost to Vector and DataFrame sorting by using in-built Array#sort and removing previous hand-made sort (@lokeshh).
     - Handle nils in sorting for Vectors and DataFrame (@lokeshh, @gnilrets).
     - Add #describe function for Vectors (@shahsaurabh0605).
@@ -225,9 +225,9 @@
     - Add `Vector#emsd` for calculating exponential moving standard deviation of Vector (@shahsaurabh0605).
     - Sample and population covariance functions for Vector (@shahsaurabh0605).
     - Improve `DataFrame#dup` performance (@gnilrets).
-    - Add `Daru::DataFrame::Core::GroupBy#reduce` for reducing groups by passing a block (@gnilrets).
+    - Add `DaruLite::DataFrame::Core::GroupBy#reduce` for reducing groups by passing a block (@gnilrets).
     - Add rubocop as development dependency and make changes suggested by it to conform to the Ruby Style Guide (@zverok).
-    - Allow Daru::Index to be initialized by a Range (@lokeshh).
+    - Allow DaruLite::Index to be initialized by a Range (@lokeshh).
 * Fixes
     - Fix conflict with narray that caused namespace clashes with nmatrix in case both narray and nmatrix were installed on the user's system (@lokeshh).
     - Fix bug with dataframe concatenation that caused modifying the arrays that
@@ -247,24 +247,24 @@
 
 * Enhancements
     - New method `DataFrame.from_activerecord` for importing data sets from ActiveRecord. (by @mrkn)
-    - Better importing of data from SQL databases by extracting that functionality into a separate class called `Daru::IO::SqlDataSource` (by @mrkn).
+    - Better importing of data from SQL databases by extracting that functionality into a separate class called `DaruLite::IO::SqlDataSource` (by @mrkn).
     - Faster algorithm for performing inner joins by using the bloomfilter-rb gem. Available only for MRI. (by Peter Tung)
     - Added exception `SizeError` (by Peter Tung).
     - Removed outdated dependencies and build scripts, updated existing dependencies.
-    - Ability to sort a Daru::Vector with nils present (by @gnilrets)
+    - Ability to sort a DaruLite::Vector with nils present (by @gnilrets)
 
 * Fixes
     - Fix column creation for `Dataframe.from_sql` (by @dansbits).
     - group_by can now be performed on DataFrames with nils (@gnilrets).
     - Bug fix for DataFrame Vectors not duplicating when calling `DataFrame#dup` (by @gnilrets).
     - Bug fix when concantenating DataFrames (by @gnilrets)
-    - Handling improper arguments to `Daru::Vector#[]` (by @lokeshh)
+    - Handling improper arguments to `DaruLite::Vector#[]` (by @lokeshh)
     - Resolve narray conflict by using the latest nmatrix require methods (by @lokeshh)
 
 # 0.1.1
 
 * Enhancements
-    - Added a new class Daru::Offsets for providing a uniform API to jump between dates.
+    - Added a new class DaruLite::Offsets for providing a uniform API to jump between dates.
     - Added benchmarking scripts
     - Added a new Arel-like querying syntax for Vector and DataFrame. This will allow faster and more intuitive lookup of data than using loops such as filter.
     - Vector
@@ -291,7 +291,7 @@
         - Added #set_index.
 * Changes
     - Removed the + operator overload from Index and replaced in with union.
-    - Removed the second 'values' argument from Daru::Index because it's redundant.
+    - Removed the second 'values' argument from DaruLite::Index because it's redundant.
     - Changed behaviour of Vector#reindex and DataFrame#reindex and #reindex_vectors to preserve indexing of original data when possible.
 * Fixes
     - Fixed DataFrame#delete_row and Vector#delete_if.
@@ -309,21 +309,21 @@
     - Wrote a proper .travis.yml
     - Added optional GSL dependency gsl-nmatrix
     - Added Marshalling and unMarshalling capabilities to Vector, Index and DataFrame.
-    - Added new method Daru::IO.load for loading data from files by marshalling.
+    - Added new method DaruLite::IO.load for loading data from files by marshalling.
     - Lots of documentation and new notebooks.
     - Added data loading and writing from and to CSV, Excel, plain text and SQL databases.
-    - Daru::DataFrame and Vector have now completely replaced Statsample::Dataset and Vector.
+    - DaruLite::DataFrame and Vector have now completely replaced Statsample::Dataset and Vector.
     - Vector
         - #center
         - #standardize
         - #vector_percentile
-        - Added a new wrapper class Daru::Accessors::GSLWrapper for wrapping around GSL::Vector, which works similarly to NMatrixWrapper or ArrayWrapper.
-        - Added a host of statistical methods to GSLWrapper in Daru::Accessors::GSLStatistics that call the relevant GSL::Vector functions for super-fast C level computations.
+        - Added a new wrapper class DaruLite::Accessors::GSLWrapper for wrapping around GSL::Vector, which works similarly to NMatrixWrapper or ArrayWrapper.
+        - Added a host of statistical methods to GSLWrapper in DaruLite::Accessors::GSLStatistics that call the relevant GSL::Vector functions for super-fast C level computations.
         - More stats functions - #vector_standardized_compute, #vector_centered_compute, #sample_with_replacement, #sample_without_replacement
         - #only_valid for creating a Vector with only non-nil data.
         - #only_missing for creating a Vector of only missing data.
         - #only_numeric to create Vector of only numerical data.
-        - Ported many Statsample::Vector stat methods to Daru::Vector. These are: #percentile, #factors, etc.
+        - Ported many Statsample::Vector stat methods to DaruLite::Vector. These are: #percentile, #factors, etc.
         - Added .new_with_size for creating vectors by specifying a size for the
         vector and a block for generating values.
         - Added Vector#verify, #recode! and #recode.
@@ -338,7 +338,7 @@
         - #dup_only_valid
         - #clone, #clone_only_valid, #clone_structure
         - #[]= does not clone the vector if it has the same index as the DataFrame.
-        - Added a :clone option to initialize that will not clone Daru::Vectors passed into the constructor.
+        - Added a :clone option to initialize that will not clone DaruLite::Vectors passed into the constructor.
         - Added #save.
         - Added #only_numerics.
         - Added better iterators and changed some behaviour of previous ones to make them more ruby-like. New iterators are #map, #map!, #each, #recode and #collect.
@@ -370,7 +370,7 @@
 * Changed vector #is_valid? to #exists?
 * Revamped dtype specifiers for Vector. Now specify :array/:nmatrix for changing underlying data implementation. Specigfy nm\_dtype for specifying the data type of the NMatrix object.
 * #sort for Vector. Quick sort algorithm with preservation of original indexes.
-* Removed #re\_index and #to\_index from Daru::Index.
+* Removed #re\_index and #to\_index from DaruLite::Index.
 * Ability to change the index of Vector and DataFrame with #reindex/#reindex!.
 * Multi-level #sort! and #sort for DataFrames. Preserves indexing.
 * All vector statistics now work with NMatrix as the underlying data type.
@@ -385,9 +385,9 @@
 * Added hierarchial indexing to Vector and DataFrame with MultiIndex.
 * Convert DataFrame to ruby Matrix or NMatrix with #to\_matrix and #to\_nmatrix.
 * Added #group_by to DataFrame for grouping rows according to elements in a given column. Works similar to SQL GROUP BY, only much simpler.
-* Added new class Daru::Core::GroupBy for supporting various grouping methods like #head, #tail, #get_group, #size, #count, #mean, #std, #min, #max.
+* Added new class DaruLite::Core::GroupBy for supporting various grouping methods like #head, #tail, #get_group, #size, #count, #mean, #std, #min, #max.
 * Tranpose indexed/multi-indexed DataFrame with #transpose.
-* Convert Daru::Vector to horizontal or vertical Ruby Matrix with #to_matrix.
+* Convert DaruLite::Vector to horizontal or vertical Ruby Matrix with #to_matrix.
 * Added shortcut to DataFrame to allow access of vectors by using only #[] instead of calling #vector or *[vector_names, :vector]*.
 * Added DSL for Vector and DataFrame plotting with nyaplot. Can now grab the underlying Nyaplot::Plot and Nyaplot::Diagram object for performing different operations. Only need to supply parameters for the initial creation of the diagram.
 * Added #pivot_table to DataFrame for reducing and aggregating data to generate a quick summary.

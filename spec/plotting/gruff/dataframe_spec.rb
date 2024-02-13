@@ -1,9 +1,9 @@
 require 'spec_helper.rb'
 
-describe Daru::DataFrame, 'plotting dataframe using gruff' do
-  before { Daru.plotting_library = :gruff }
+describe DaruLite::DataFrame, 'plotting dataframe using gruff' do
+  before { DaruLite.plotting_library = :gruff }
   let(:df) do
-    Daru::DataFrame.new({
+    DaruLite::DataFrame.new({
       a: [1, 3, 5, 2, 5, 0],
       b: [1, 5, 2, 5, 1, 0],
       c: [1, 6, 7, 2, 6, 0]
@@ -62,10 +62,10 @@ describe Daru::DataFrame, 'plotting dataframe using gruff' do
   end
 end
 
-describe Daru::DataFrame, 'dataframe category plotting with gruff' do
-  before { Daru.plotting_library = :gruff }
+describe DaruLite::DataFrame, 'dataframe category plotting with gruff' do
+  before { DaruLite.plotting_library = :gruff }
   let(:df) do
-    Daru::DataFrame.new({
+    DaruLite::DataFrame.new({
       a: [1, 3, 5, 2, 5, 0],
       b: [1, 5, 2, 5, 1, 0],
       c: [:a, :b, :a, :a, :b, :a]

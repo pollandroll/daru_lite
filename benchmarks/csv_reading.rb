@@ -3,7 +3,7 @@
 
 require 'benchmark'
 require 'csv'
-require 'daru'
+require 'daru_lite'
 
 Benchmark.bm do |x|
   x.report("Ruby CSV") do
@@ -11,7 +11,7 @@ Benchmark.bm do |x|
   end
 
   x.report("DataFrame.from_csv") do
-    Daru::DataFrame.from_csv("TradeoffData.csv")
+    DaruLite::DataFrame.from_csv("TradeoffData.csv")
   end
 end
 

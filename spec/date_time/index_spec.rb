@@ -1,4 +1,4 @@
-include Daru
+include DaruLite
 
 describe DateTimeIndex do
   context ".initialize" do
@@ -26,7 +26,7 @@ describe DateTimeIndex do
 
     it "lets setting of string time format" do
       pending
-      Daru::DateTimeIndex.format = 'some-date-time-format'
+      DaruLite::DateTimeIndex.format = 'some-date-time-format'
     end
   end
 
@@ -188,7 +188,7 @@ describe DateTimeIndex do
           DateTime.new(2014,7,4)], freq: :infer)
       }
       it { is_expected.to eq \
-        "#<Daru::DateTimeIndex(4, frequency=D) 2014-07-01T00:00:00+00:00...2014-07-04T00:00:00+00:00>"
+        "#<DaruLite::DateTimeIndex(4, frequency=D) 2014-07-01T00:00:00+00:00...2014-07-04T00:00:00+00:00>"
       }
     end
 
@@ -199,13 +199,13 @@ describe DateTimeIndex do
           DateTime.new(2014,7,4)])
       }
       it { is_expected.to eq \
-        "#<Daru::DateTimeIndex(4) 2014-07-01T00:00:00+00:00...2014-07-04T00:00:00+00:00>"
+        "#<DaruLite::DateTimeIndex(4) 2014-07-01T00:00:00+00:00...2014-07-04T00:00:00+00:00>"
       }
     end
 
     context 'empty index' do
       let(:index){ DateTimeIndex.new([]) }
-      it { is_expected.to eq "#<Daru::DateTimeIndex(0)>" }
+      it { is_expected.to eq "#<DaruLite::DateTimeIndex(0)>" }
     end
   end
 
@@ -494,7 +494,7 @@ describe DateTimeIndex do
 
   context "#add" do
     before { skip }
-    let(:idx) { Daru::Index.new [:a, :b, :c] }
+    let(:idx) { DaruLite::Index.new [:a, :b, :c] }
 
     context "single index" do
       subject { idx }
@@ -534,7 +534,7 @@ describe DateTimeIndex do
     end
 
     it "shifts all dates by the given offset" do
-      offset = Daru::Offsets::Minute.new
+      offset = DaruLite::Offsets::Minute.new
       index = DateTimeIndex.date_range(
         :start => '2012-3-1', :freq => 'D', :periods => 10)
       expect(index.shift(offset)).to eq(
@@ -552,7 +552,7 @@ describe DateTimeIndex do
     end
 
     it "lags all dates by the given offset" do
-      offset = Daru::Offsets::Month.new
+      offset = DaruLite::Offsets::Month.new
       index = DateTimeIndex.date_range(
         :start => '2012-4-5', :freq => 'MONTH', :periods => 10)
       expect(index.lag(offset)).to eq(

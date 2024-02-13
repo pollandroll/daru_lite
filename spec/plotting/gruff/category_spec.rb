@@ -1,6 +1,6 @@
-describe Daru::Vector, 'plotting category vector with gruff' do
-  before { Daru.plotting_library = :gruff }
-  let(:dv) { Daru::Vector.new [1, 2, 3], type: :category }
+describe DaruLite::Vector, 'plotting category vector with gruff' do
+  before { DaruLite.plotting_library = :gruff }
+  let(:dv) { DaruLite::Vector.new [1, 2, 3], type: :category }
 
   context 'bar' do
     let(:plot) { instance_double 'Gruff::Bar' }

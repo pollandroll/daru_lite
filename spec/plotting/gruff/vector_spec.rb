@@ -1,8 +1,8 @@
 require 'spec_helper.rb'
 
-describe Daru::Vector, 'plotting vector with gruff' do
-  let(:dv) { Daru::Vector.new [1, 2, 3] }
-  before { Daru.plotting_library = :gruff }
+describe DaruLite::Vector, 'plotting vector with gruff' do
+  let(:dv) { DaruLite::Vector.new [1, 2, 3] }
+  before { DaruLite.plotting_library = :gruff }
 
   context 'line' do
     let(:plot) { instance_double 'Gruff::Line' }

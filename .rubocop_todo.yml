@@ -10,41 +10,41 @@
 # Configuration parameters: IgnoreLiteralBranches, IgnoreConstantBranches.
 Lint/DuplicateBranch:
   Exclude:
-    - 'lib/daru/dataframe.rb'
-    - 'lib/daru/vector.rb'
+    - 'lib/daru_lite/dataframe.rb'
+    - 'lib/daru_lite/vector.rb'
 
 # Offense count: 2
 Lint/DuplicateMethods:
   Exclude:
-    - 'lib/daru/vector.rb'
+    - 'lib/daru_lite/vector.rb'
 
 # Offense count: 1
 # Configuration parameters: AllowComments.
 Lint/EmptyClass:
   Exclude:
-    - 'lib/daru/accessors/mdarray_wrapper.rb'
+    - 'lib/daru_lite/accessors/mdarray_wrapper.rb'
 
 # Offense count: 5
 Lint/MissingSuper:
   Exclude:
-    - 'lib/daru/date_time/offsets.rb'
-    - 'lib/daru/index/categorical_index.rb'
-    - 'lib/daru/index/index.rb'
-    - 'lib/daru/index/multi_index.rb'
+    - 'lib/daru_lite/date_time/offsets.rb'
+    - 'lib/daru_lite/index/categorical_index.rb'
+    - 'lib/daru_lite/index/index.rb'
+    - 'lib/daru_lite/index/multi_index.rb'
 
 # Offense count: 1
 # Configuration parameters: AllowKeywordBlockArguments.
 Lint/UnderscorePrefixedVariableName:
   Exclude:
-    - 'lib/daru/dataframe.rb'
+    - 'lib/daru_lite/dataframe.rb'
 
 # Offense count: 6
 # Configuration parameters: CheckForMethodsWithNoSideEffects.
 Lint/Void:
   Exclude:
-    - 'lib/daru/category.rb'
-    - 'lib/daru/dataframe.rb'
-    - 'lib/daru/vector.rb'
+    - 'lib/daru_lite/category.rb'
+    - 'lib/daru_lite/dataframe.rb'
+    - 'lib/daru_lite/vector.rb'
 
 # Offense count: 40
 # Configuration parameters: AllowedMethods, AllowedPatterns, IgnoredMethods, CountRepeatedAttributes.
@@ -81,19 +81,19 @@ Metrics/PerceivedComplexity:
 # AllowedNames: at, by, db, id, in, io, ip, of, on, os, pp, to
 Naming/MethodParameterName:
   Exclude:
-    - 'lib/daru/category.rb'
-    - 'lib/daru/core/group_by.rb'
-    - 'lib/daru/core/merge.rb'
-    - 'lib/daru/core/query.rb'
-    - 'lib/daru/dataframe.rb'
-    - 'lib/daru/date_time/index.rb'
-    - 'lib/daru/date_time/offsets.rb'
-    - 'lib/daru/extensions/which_dsl.rb'
-    - 'lib/daru/io/io.rb'
-    - 'lib/daru/maths/statistics/dataframe.rb'
-    - 'lib/daru/maths/statistics/vector.rb'
-    - 'lib/daru/plotting/gruff/dataframe.rb'
-    - 'lib/daru/vector.rb'
+    - 'lib/daru_lite/category.rb'
+    - 'lib/daru_lite/core/group_by.rb'
+    - 'lib/daru_lite/core/merge.rb'
+    - 'lib/daru_lite/core/query.rb'
+    - 'lib/daru_lite/dataframe.rb'
+    - 'lib/daru_lite/date_time/index.rb'
+    - 'lib/daru_lite/date_time/offsets.rb'
+    - 'lib/daru_lite/extensions/which_dsl.rb'
+    - 'lib/daru_lite/io/io.rb'
+    - 'lib/daru_lite/maths/statistics/dataframe.rb'
+    - 'lib/daru_lite/maths/statistics/vector.rb'
+    - 'lib/daru_lite/plotting/gruff/dataframe.rb'
+    - 'lib/daru_lite/vector.rb'
 
 # Offense count: 5
 # Configuration parameters: NamePrefix, ForbiddenPrefixes, AllowedMethods, MethodDefinitionMacros.
@@ -104,22 +104,22 @@ Naming/MethodParameterName:
 Naming/PredicateName:
   Exclude:
     - 'spec/**/*'
-    - 'lib/daru/dataframe.rb'
-    - 'lib/daru/vector.rb'
+    - 'lib/daru_lite/dataframe.rb'
+    - 'lib/daru_lite/vector.rb'
 
 # Offense count: 5
 Security/MarshalLoad:
   Exclude:
-    - 'lib/daru/dataframe.rb'
-    - 'lib/daru/date_time/index.rb'
-    - 'lib/daru/index/index.rb'
-    - 'lib/daru/io/io.rb'
-    - 'lib/daru/vector.rb'
+    - 'lib/daru_lite/dataframe.rb'
+    - 'lib/daru_lite/date_time/index.rb'
+    - 'lib/daru_lite/index/index.rb'
+    - 'lib/daru_lite/io/io.rb'
+    - 'lib/daru_lite/vector.rb'
 
 # Offense count: 2
 Security/Open:
   Exclude:
-    - 'lib/daru/io/io.rb'
+    - 'lib/daru_lite/io/io.rb'
 
 # Offense count: 2
 Style/ClassVars:
@@ -135,27 +135,27 @@ Style/Documentation:
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Style/MapToHash:
   Exclude:
-    - 'lib/daru/category.rb'
-    - 'lib/daru/core/group_by.rb'
-    - 'lib/daru/dataframe.rb'
+    - 'lib/daru_lite/category.rb'
+    - 'lib/daru_lite/core/group_by.rb'
+    - 'lib/daru_lite/dataframe.rb'
 
 # Offense count: 1
 Style/MultilineBlockChain:
   Exclude:
-    - 'lib/daru/formatters/table.rb'
+    - 'lib/daru_lite/formatters/table.rb'
 
 # Offense count: 9
 # Configuration parameters: AllowedMethods.
 # AllowedMethods: respond_to_missing?
 Style/OptionalBooleanParameter:
   Exclude:
-    - 'lib/daru/dataframe.rb'
-    - 'lib/daru/maths/statistics/vector.rb'
-    - 'lib/daru/vector.rb'
+    - 'lib/daru_lite/dataframe.rb'
+    - 'lib/daru_lite/maths/statistics/vector.rb'
+    - 'lib/daru_lite/vector.rb'
 
 # Offense count: 1
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Style/RedundantSelfAssignment:
   Exclude:
-    - 'lib/daru/dataframe.rb'
+    - 'lib/daru_lite/dataframe.rb'
 
