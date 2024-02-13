@@ -147,8 +147,6 @@ module Daru
     attr_accessor :labels
     # Store vector data in an array
     attr_reader :data
-    # TODO: Make private.
-    attr_reader :nil_positions, :nan_positions
 
     # Create a Vector object.
     #
@@ -1592,11 +1590,7 @@ module Daru
     end
 
     def set_name(name) # rubocop:disable Naming/AccessorMethodName
-      @name =
-        if name.is_a?(Numeric)  then name
-        elsif name.is_a?(Array) then name.join # in case of MultiIndex tuple
-        elsif name              then name # anything but Numeric or nil
-        end
+      @name = name.is_a?(Array) ? name.join : name # join in case of MultiIndex tuple
     end
 
     # Raises IndexError when one of the positions is an invalid position

@@ -18,7 +18,7 @@ module Daru
 
       def open_local_or_remote_file(path)
         uri = URI.parse(path)
-        uri.is_a?(URI::HTTP) || uri.is_a?(URI::HTTPS) ? uri.open : open(uri.path)
+        uri.is_a?(URI::HTTP) || uri.is_a?(URI::HTTPS) ? uri.open : File.open(uri.path)
       end
 
       private
