@@ -3770,6 +3770,21 @@ describe Daru::DataFrame do
       expect(@df[:c]).to eq(@df[:c])
     end
 
+    it "sets categorical index if categorical is true" do
+      data = {
+        a: [1, 2, 3, 4, 5],
+        b: [:a, 1, :a, 1, 'c'],
+        c: %w[a b c d e]
+      }
+      df = Daru::DataFrame.new(data)
+      df.set_index(:b, categorical: true)
+      expected = Daru::DataFrame.new(
+        data.slice(:a, :c),
+        index: Daru::CategoricalIndex.new(data[:b])
+      )
+      expect(df).to eq(expected)
+    end
+
     it "raises error if all elements in the column aren't unique" do
       jholu = Daru::DataFrame.new({
         a: ['a','b','a'],
