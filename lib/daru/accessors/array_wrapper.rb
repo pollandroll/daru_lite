@@ -96,7 +96,8 @@ module Daru
       end
 
       def sum
-        compact.sum
+        compact_data = compact
+        compact_data.sum if compact_data.any?
       end
 
       private
