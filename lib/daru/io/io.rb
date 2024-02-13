@@ -16,6 +16,11 @@ module Daru
         end
       end
 
+      def open_local_or_remote_file(path)
+        uri = URI.parse(path)
+        uri.is_a?(URI::HTTP) || uri.is_a?(URI::HTTPS) ? uri.open : open(uri.path)
+      end
+
       private
 
       INT_PATTERN = /^[-+]?\d+$/.freeze
@@ -103,7 +108,7 @@ module Daru
           converters: :numeric
         }.merge(opts)
 
-        writer = ::CSV.open(path, 'w', options)
+        writer = ::CSV.open(path, 'w', **options)
         writer << dataframe.vectors.to_a unless options[:headers] == false
 
         dataframe.each_row do |row|
@@ -221,7 +226,7 @@ module Daru
       def from_csv_hash_with_headers(path, opts)
         opts[:header_converters] ||= :symbol
         ::CSV
-          .parse(open(path), opts)
+          .parse(Daru::IOHelpers.open_local_or_remote_file(path), **opts)
           .tap { |c| yield c if block_given? }
           .by_col.to_h { |col_name, values| [col_name, values] }
       end
@@ -229,7 +234,7 @@ module Daru
       def from_csv_hash(path, opts)
         csv_as_arrays =
           ::CSV
-          .parse(open(path), **opts)
+          .parse(Daru::IOHelpers.open_local_or_remote_file(path), **opts)
           .tap { |c| yield c if block_given? }
           .to_a
         headers       = ArrayHelper.recode_repeated(csv_as_arrays.shift)

@@ -50,6 +50,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'simplecov'
   spec.add_development_dependency 'gruff'
   spec.add_development_dependency 'webmock'
+  spec.add_development_dependency 'matrix'
+  spec.add_development_dependency 'prime'
 
   spec.add_development_dependency 'nokogiri'
 end

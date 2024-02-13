@@ -3451,7 +3451,7 @@ describe Daru::DataFrame do
     def create_test(*args, &_proc)
       description = args.shift
       fields = args
-      [description, fields, Proc.new]
+      [description, fields, Proc.new {}]
     end
 
     before do
