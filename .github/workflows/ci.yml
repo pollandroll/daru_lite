@@ -14,7 +14,6 @@ jobs:
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Run linters
       run: |
-        bundle exec yard-junk
         bundle exec rubocop
 
   test:
