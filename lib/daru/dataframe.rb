@@ -2414,9 +2414,9 @@ module Daru
 
     def dispatch_to_axis(axis, method, *args, &block)
       if %i[vector column].include?(axis)
-        send("#{method}_vector", *args, &block)
+        send(:"#{method}_vector", *args, &block)
       elsif axis == :row
-        send("#{method}_row", *args, &block)
+        send(:"#{method}_row", *args, &block)
       else
         raise ArgumentError, "Unknown axis #{axis}"
       end
@@ -2424,9 +2424,9 @@ module Daru
 
     def dispatch_to_axis_pl(axis, method, *args, &block)
       if %i[vector column].include?(axis)
-        send("#{method}_vectors", *args, &block)
+        send(:"#{method}_vectors", *args, &block)
       elsif axis == :row
-        send("#{method}_rows", *args, &block)
+        send(:"#{method}_rows", *args, &block)
       else
         raise ArgumentError, "Unknown axis #{axis}"
       end
