@@ -87,7 +87,7 @@ module DaruLite
 
         def v2o_binary(operation, other)
           DaruLite::Vector.new map { |e| e&.send(operation, other) },
-                           name: @name, index: @index
+                               name: @name, index: @index
         end
 
         def v2v_binary(operation, other, opts = {})

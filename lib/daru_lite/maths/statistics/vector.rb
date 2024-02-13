@@ -58,7 +58,10 @@ module DaruLite
         end
 
         def sum_of_squared_deviation
-          (@data.inject(0) { |a, x| (x**2) + a } - (sum**2).quo(size - count_values(*DaruLite::MISSING_VALUES)).to_f).to_f
+          (
+            @data.inject(0) { |a, x| (x**2) + a } -
+            (sum**2).quo(size - count_values(*DaruLite::MISSING_VALUES)).to_f
+          ).to_f
         end
 
         # Retrieve unique values of non-nil data
@@ -73,7 +76,8 @@ module DaruLite
           #
           # @example
           #
-          #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]), index: DaruLite::Index.new([:t, :d, :j])
+          #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]),
+          #                             index: DaruLite::Index.new([:t, :d, :j])
           #   #=>
           #   #   #<DaruLite::Vector(3)>
           #   #       t   Tyrion
@@ -95,7 +99,8 @@ module DaruLite
           #
           # @example
           #
-          #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]), index: DaruLite::Index.new([:t, :d, :j])
+          #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]),
+          #                             index: DaruLite::Index.new([:t, :d, :j])
           #   #=>
           #   #   #<DaruLite::Vector(3)>
           #   #       t   Tyrion
@@ -116,7 +121,8 @@ module DaruLite
           #
           # @example
           #
-          #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]), index: DaruLite::Index.new([:t, :d, :j])
+          #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]),
+          #                             index: DaruLite::Index.new([:t, :d, :j])
           #   #=>
           #   #   #<DaruLite::Vector(3)>
           #   #       t   Tyrion
@@ -138,7 +144,8 @@ module DaruLite
           #
           # @example
           #
-          #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]), index: DaruLite::Index.new([:t, :d, :j])
+          #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]),
+          #                             index: DaruLite::Index.new([:t, :d, :j])
           #   #=>
           #   #   #<DaruLite::Vector(3)>
           #   #       t   Tyrion
@@ -159,7 +166,8 @@ module DaruLite
           #
           # @example
           #
-          #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]), index: DaruLite::Index.new([:t, :d, :j])
+          #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]),
+          #                             index: DaruLite::Index.new([:t, :d, :j])
           #   #=>
           #   #   #<DaruLite::Vector(3)>
           #   #       t   Tyrion
@@ -182,7 +190,8 @@ module DaruLite
           #
           # @example
           #
-          #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]), index: DaruLite::Index.new([:t, :d, :j])
+          #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]),
+          #                             index: DaruLite::Index.new([:t, :d, :j])
           #   #=>
           #   #   #<DaruLite::Vector(3)>
           #   #       t   Tyrion
@@ -203,7 +212,8 @@ module DaruLite
           #
           # @example
           #
-          #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]), index: DaruLite::Index.new([:t, :d, :j])
+          #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]),
+          #                             index: DaruLite::Index.new([:t, :d, :j])
           #   #=>
           #   #   #<DaruLite::Vector(3)>
           #   #       t   Tyrion
@@ -226,7 +236,8 @@ module DaruLite
           #
           # @example
           #
-          #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]), index: DaruLite::Index.new([:t, :d, :j])
+          #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]),
+          #                             index: DaruLite::Index.new([:t, :d, :j])
           #   #=>
           #   #   #<DaruLite::Vector(3)>
           #   #       t   Tyrion
@@ -252,7 +263,8 @@ module DaruLite
         #
         # @example
         #
-        #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]), index: DaruLite::Index.new([:t, :d, :j])
+        #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]),
+        #                             index: DaruLite::Index.new([:t, :d, :j])
         #   #=>
         #   #   #<DaruLite::Vector(3)>
         #   #       t   Tyrion
@@ -277,7 +289,8 @@ module DaruLite
         #
         # @example
         #
-        #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]), index: DaruLite::Index.new([:t, :d, :j])
+        #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]),
+        #                             index: DaruLite::Index.new([:t, :d, :j])
         #   #=>
         #   #   #<DaruLite::Vector(3)>
         #   #       t   Tyrion
@@ -299,7 +312,8 @@ module DaruLite
         #
         # @example
         #
-        #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]), index: DaruLite::Index.new([:t, :d, :j])
+        #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]),
+        #                             index: DaruLite::Index.new([:t, :d, :j])
         #   #=>
         #   #   #<DaruLite::Vector(3)>
         #   #       t   Tyrion
@@ -324,7 +338,8 @@ module DaruLite
         #
         # @example
         #
-        #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]), index: DaruLite::Index.new([:t, :d, :j])
+        #   dv = DaruLite::Vector.new (["Tyrion", "Daenerys", "Jon Starkgaryen"]),
+        #                             index: DaruLite::Index.new([:t, :d, :j])
         #   #=>
         #   #   #<DaruLite::Vector(3)>
         #   #       t   Tyrion
@@ -575,7 +590,7 @@ module DaruLite
             @data.vector_standardized_compute(m, sd)
           else
             DaruLite::Vector.new @data.collect { |x| x.nil? ? nil : (x.to_f - m).quo(sd) },
-                             index: index, name: name, dtype: dtype
+                                 index: index, name: name, dtype: dtype
           end
         end
 
@@ -584,7 +599,7 @@ module DaruLite
             @data.vector_centered_compute(m)
           else
             DaruLite::Vector.new @data.collect { |x| x.nil? ? nil : x.to_f - m },
-                             index: index, name: name, dtype: dtype
+                                 index: index, name: name, dtype: dtype
           end
         end
 

@@ -285,9 +285,9 @@ module DaruLite
 
       def html_table_to_dataframe(table)
         DaruLite::DataFrame.rows table[:data],
-                             index: table[:index],
-                             order: table[:order],
-                             name: table[:name]
+                                 index: table[:index],
+                                 order: table[:order],
+                                 name: table[:name]
       end
     end
   end

@@ -60,10 +60,10 @@ module DaruLite
           new_data, new_index = fetch_new_data_and_index dv, bool_array
 
           resultant_dv = DaruLite::Vector.new new_data,
-                                          index: dv.index.class.new(new_index),
-                                          dtype: dv.dtype,
-                                          type: dv.type,
-                                          name: dv.name
+                                              index: dv.index.class.new(new_index),
+                                              dtype: dv.dtype,
+                                              type: dv.type,
+                                              name: dv.name
 
           # Preserve categories order for category vector
           resultant_dv.categories = dv.categories if dv.category?
@@ -76,10 +76,10 @@ module DaruLite
           all_data         = all_index.map { |idx| new_index.include?(idx) ? yield(dv[idx]) : dv[idx] }
 
           resultant_dv = DaruLite::Vector.new all_data,
-                                          index: dv.index.class.new(all_index),
-                                          dtype: dv.dtype,
-                                          type: dv.type,
-                                          name: dv.name
+                                              index: dv.index.class.new(all_index),
+                                              dtype: dv.dtype,
+                                              type: dv.type,
+                                              name: dv.name
 
           # Preserve categories order for category vector
           resultant_dv.categories = dv.categories if dv.category?

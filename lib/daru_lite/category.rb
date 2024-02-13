@@ -93,11 +93,11 @@ module DaruLite
     #   #   4   c
     def dup
       DaruLite::Vector.new to_a.dup,
-                       name: @name,
-                       index: @index.dup,
-                       type: :category,
-                       categories: categories,
-                       ordered: ordered?
+                           name: @name,
+                           index: @index.dup,
+                           type: :category,
+                           categories: categories,
+                           ordered: ordered?
     end
 
     # Associates a category to the vector.
@@ -179,11 +179,11 @@ module DaruLite
       return category_from_position(positions) if positions.is_a? Integer
 
       DaruLite::Vector.new positions.map { |pos| category_from_position pos },
-                       index: @index.subset(*indexes),
-                       name: @name,
-                       type: :category,
-                       ordered: @ordered,
-                       categories: categories
+                           index: @index.subset(*indexes),
+                           name: @name,
+                           type: :category,
+                           ordered: @ordered,
+                           categories: categories
     end
 
     # Returns vector for positions specified.
@@ -205,11 +205,11 @@ module DaruLite
       return category_from_position(positions) if positions.is_a? Integer
 
       DaruLite::Vector.new positions.map { |pos| category_from_position(pos) },
-                       index: @index.at(*original_positions),
-                       name: @name,
-                       type: :category,
-                       ordered: @ordered,
-                       categories: categories
+                           index: @index.at(*original_positions),
+                           name: @name,
+                           type: :category,
+                           ordered: @ordered,
+                           categories: categories
     end
 
     # Modifies values at specified indexes/positions.
@@ -778,8 +778,8 @@ module DaruLite
       end
 
       DaruLite::DataFrame.new df,
-                          index: @index,
-                          order: create_names(categories)
+                              index: @index,
+                              order: create_names(categories)
     end
 
     def dummy_code(positions)
@@ -797,8 +797,8 @@ module DaruLite
       end
 
       DaruLite::DataFrame.new df,
-                          index: @index,
-                          order: create_names(categories)
+                              index: @index,
+                              order: create_names(categories)
     end
 
     def simple_code(positions)
@@ -816,8 +816,8 @@ module DaruLite
       end
 
       DaruLite::DataFrame.new df,
-                          index: @index,
-                          order: create_names(categories)
+                              index: @index,
+                              order: create_names(categories)
     end
 
     def helmert_code(index)
@@ -842,8 +842,8 @@ module DaruLite
       end
 
       DaruLite::DataFrame.new df,
-                          index: @index,
-                          order: create_names(categories)
+                              index: @index,
+                              order: create_names(categories)
     end
 
     def deviation_code(index)
@@ -859,8 +859,8 @@ module DaruLite
 
     def user_defined_coding(df)
       DaruLite::DataFrame.rows (Array.new(size) { |pos| df.row[at(pos)].to_a }),
-                           index: @index,
-                           order: df.vectors.to_a
+                               index: @index,
+                               order: df.vectors.to_a
     end
 
     def create_names(categories)

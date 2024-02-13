@@ -415,9 +415,9 @@ module DaruLite
         @data[positions].dup
       else
         DaruLite::DataFrame.new positions.map { |pos| @data[pos].dup },
-                            index: @index,
-                            order: @vectors.at(*original_positions),
-                            name: @name
+                                index: @index,
+                                order: @vectors.at(*original_positions),
+                                name: @name
       end
     end
 
@@ -2144,9 +2144,9 @@ module DaruLite
     def self._load(data)
       h = Marshal.load data
       DaruLite::DataFrame.new(h[:data],
-                          index: h[:index],
-                          order: h[:order],
-                          name: h[:name])
+                              index: h[:index],
+                              order: h[:order],
+                              name: h[:name])
     end
 
     # Transpose a DataFrame, tranposing elements and row, column indexing.
@@ -2230,7 +2230,7 @@ module DaruLite
 
       all_vectors = recursive_product(dfs)
       DaruLite::DataFrame.new all_vectors,
-                          order: all_vectors.map(&:name)
+                              order: all_vectors.map(&:name)
     end
 
     # Split the dataframe into many dataframes based on category vector
@@ -2479,8 +2479,7 @@ module DaruLite
       new_vectors = names.map { |name| [name, @data[@vectors.pos(name)]] }.to_h
 
       order = names.is_a?(Array) ? DaruLite::Index.new(names) : names
-      DaruLite::DataFrame.new(new_vectors, order: order,
-                                       index: @index, name: @name)
+      DaruLite::DataFrame.new(new_vectors, order: order, index: @index, name: @name)
     end
 
     def access_row(*indexes)
