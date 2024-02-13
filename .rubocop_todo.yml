@@ -123,7 +123,7 @@ Security/Open:
 # Offense count: 2
 Style/ClassVars:
   Exclude:
-    - 'lib/daru.rb'
+    - 'lib/daru_lite.rb'
 
 # Offense count: 44
 # Configuration parameters: AllowedConstants.

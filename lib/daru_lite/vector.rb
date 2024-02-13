@@ -69,9 +69,9 @@ module DaruLite
       def _load(data) # :nodoc:
         h = Marshal.load(data)
         DaruLite::Vector.new(h[:data],
-                         index: h[:index],
-                         name: h[:name],
-                         dtype: h[:dtype], missing_values: h[:missing_values])
+                             index: h[:index],
+                             name: h[:name],
+                             dtype: h[:dtype], missing_values: h[:missing_values])
       end
 
       def coerce(data, options = {})
@@ -1422,9 +1422,9 @@ module DaruLite
       cats = cut_categories(partitions, close_at)
 
       dv = DaruLite::Vector.new values,
-                            index: @index,
-                            type: :category,
-                            categories: cats
+                                index: @index,
+                                type: :category,
+                                categories: cats
 
       # Rename categories if new labels provided
       if labels
