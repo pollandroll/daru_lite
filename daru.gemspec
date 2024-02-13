@@ -33,7 +33,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'dbi'
   spec.add_development_dependency 'dbd-sqlite3'
   spec.add_development_dependency 'distribution', '~> 0.8'
-  spec.add_development_dependency 'gruff'
   spec.add_development_dependency 'matrix'
   spec.add_development_dependency 'nokogiri'
   spec.add_development_dependency 'prime'

@@ -1,6 +1,5 @@
 require 'daru/maths/arithmetic/vector'
 require 'daru/maths/statistics/vector'
-require 'daru/plotting/gruff'
 require 'daru/accessors/array_wrapper'
 require 'daru/category'
 
@@ -186,35 +185,6 @@ module Daru
         # Initialize non-category type vector
         initialize_vector source, opts
       end
-    end
-
-    # attr_reader for :plotting_library
-    def plotting_library
-      init_plotting_library
-
-      @plotting_library
-    end
-
-    def plotting_library=(lib)
-      case lib
-      when :gruff
-        @plotting_library = lib
-        if Daru.send("has_#{lib}?".to_sym)
-          extend Module.const_get(
-            "Daru::Plotting::Vector::#{lib.to_s.capitalize}Library"
-          )
-        end
-      else
-        raise ArgumentError, "Plotting library #{lib} not supported. " \
-                             'Supported library is :gruff'
-      end
-    end
-
-    # this method is overwritten: see Daru::Vector#plotting_library=
-    def plot(...)
-      init_plotting_library
-
-      plot(...)
     end
 
     # Get one or more elements with specified index or a range.
@@ -1482,11 +1452,6 @@ module Daru
     end
 
     private
-
-    # Will lazily load the plotting library being used for this vector
-    def init_plotting_library
-      self.plotting_library = Daru.plotting_library
-    end
 
     def copy(values)
       # Make sure values is right-justified to the size of the vector
