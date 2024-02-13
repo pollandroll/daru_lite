@@ -1,9 +1,9 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
 
 require 'benchmark'
-require 'daru'
+require 'daru_lite'
 
-df = Daru::DataFrame.new({
+df = DaruLite::DataFrame.new({
   a: 10000.times.map { rand },
   b: 10000.times.map { rand },
   c: 10000.times.map { rand }

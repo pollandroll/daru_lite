@@ -50,7 +50,7 @@ end
 task :default => :spec
 
 task :console do |task|
-  cmd = [ 'irb', "-r '#{lib_folder}/daru.rb'" ]
+  cmd = [ 'irb', "-r '#{lib_folder}/daru_lite.rb'" ]
   run *cmd
 end
 
@@ -59,7 +59,7 @@ task :cop do |task|
 end
 
 task :pry do |task|
-  cmd = [ 'pry', "-r '#{lib_folder}/daru.rb'" ]
+  cmd = [ 'pry', "-r '#{lib_folder}/daru_lite.rb'" ]
   run *cmd
 end
 

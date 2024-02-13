@@ -1,9 +1,9 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
 
 require 'benchmark'
-require 'daru'
+require 'daru_lite'
 
-df = Daru::DataFrame.new({
+df = DaruLite::DataFrame.new({
   a: [1,2,3,4,5,6]*100,
   b: ['a','b','c','d','e','f']*100,
   c: [11,22,33,44,55,66]*100

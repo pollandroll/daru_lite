@@ -1,7 +1,7 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
 
 require 'benchmark'
-require 'daru'
+require 'daru_lite'
 
 # Check scaling
 base_n = 10000
@@ -9,11 +9,11 @@ base_n = 10000
   n = base_n * 2**iscale
 
   df_h = ('a'..'z').map { |v| v.to_sym }.reduce({}) do |h, v|
-    h[v] = Daru::Vector.new(1.upto(n).to_a)
+    h[v] = DaruLite::Vector.new(1.upto(n).to_a)
     h
   end
 
-  df = Daru::DataFrame.new(df_h)
+  df = DaruLite::DataFrame.new(df_h)
 
   Benchmark.bm do |bm|
     bm.report("dupe (n=#{n})") do

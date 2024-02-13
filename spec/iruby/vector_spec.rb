@@ -1,18 +1,18 @@
-describe Daru::Vector, '#to_html' do
+describe DaruLite::Vector, '#to_html' do
   [nil, :category].each do |type|
     let(:doc) { Nokogiri::HTML(vector.to_html) }
     subject(:table) { doc.at('table') }
     let(:header) { doc.at('b') }
 
     context 'simple' do
-      let(:vector) { Daru::Vector.new [1,nil,3],
+      let(:vector) { DaruLite::Vector.new [1,nil,3],
         index: [:a, :b, :c], name: 'test', type: type }
       it { is_expected.not_to be_nil }
 
       describe 'header' do
         subject { header }
         it { is_expected.not_to be_nil }
-        its(:text) { is_expected.to eq " Daru::Vector(3)"\
+        its(:text) { is_expected.to eq " DaruLite::Vector(3)"\
           "#{":category" if type == :category} " }
       end
 
@@ -22,7 +22,7 @@ describe Daru::Vector, '#to_html' do
         its(:text) { is_expected.to eq 'test' }
 
         context 'withought name' do
-          let(:vector) { Daru::Vector.new [1,nil,3], index: [:a, :b, :c], type: type }
+          let(:vector) { DaruLite::Vector.new [1,nil,3], index: [:a, :b, :c], type: type }
 
           it { is_expected.to be_nil }
         end
@@ -42,7 +42,7 @@ describe Daru::Vector, '#to_html' do
     end
 
     context 'large vector' do
-      subject(:vector) { Daru::Vector.new [1,2,3] * 100, name: 'test', type: type }
+      subject(:vector) { DaruLite::Vector.new [1,2,3] * 100, name: 'test', type: type }
       it 'has only 30 rows (+ 1 header rows, + 2 finishing rows)' do
         expect(table.search('tr').size).to eq 33
       end
@@ -62,11 +62,11 @@ describe Daru::Vector, '#to_html' do
 
     context 'multi-index' do
       subject(:vector) {
-        Daru::Vector.new(
+        DaruLite::Vector.new(
           [1,2,3,4,5,6,7],
           name: 'test',
           type: type,
-          index: Daru::MultiIndex.from_tuples([
+          index: DaruLite::MultiIndex.from_tuples([
               %w[foo one],
               %w[foo two],
               %w[foo three],
@@ -81,7 +81,7 @@ describe Daru::Vector, '#to_html' do
       describe 'header' do
         subject { header }
         it { is_expected.not_to be_nil }
-        its(:text) { is_expected.to eq " Daru::Vector(7)"\
+        its(:text) { is_expected.to eq " DaruLite::Vector(7)"\
           "#{":category" if type == :category} " }
       end
 
