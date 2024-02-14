@@ -4259,4 +4259,22 @@ describe Daru::DataFrame do
       expect { df[:c] }.to raise_error(IndexError, /Specified vector c does not exist/)
     end
   end
+
+  context "#rotate_vectors!" do
+    subject { df.rotate_vectors!(-1) }
+
+    let(:df) do
+      Daru::DataFrame.new({
+        a: [1,2,3],
+        b: [4,5,6],
+        total: [5,7,9]
+      })
+    end
+    let(:new_order) { [:total, :a, :b]}
+
+    it "changes the position of the last vector to first one" do
+      subject
+      expect(df.vectors.to_a).to eq(new_order)
+    end
+  end
 end if mri?

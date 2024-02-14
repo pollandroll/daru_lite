@@ -1159,6 +1159,27 @@ module Daru
       initialize(to_h, order: order_array)
     end
 
+    # Rotate the vectors in a dataframe
+    # @param count => Integer, param for the rotate array method
+    # @example
+    #   df = Daru::DataFrame({
+    #     a: [1, 2, 3],
+    #     b: [4, 5, 6],
+    #     total: [5, 7, 9],
+    #   })
+    #   df.rotate_vectors(-1)
+    #   df
+    #   # => #<Daru::DataFrame(3x2)>
+    #   #       total b   a
+    #   #   0   5     4   1
+    #   #   1   7     5   2
+    #   #   2   9     6   3
+    def rotate_vectors!(count = -1)
+      return self unless vectors.many?
+
+      self.order = vectors.to_a.rotate(count)
+    end
+
     # Returns a vector, based on a string with a calculation based
     # on vector.
     #
