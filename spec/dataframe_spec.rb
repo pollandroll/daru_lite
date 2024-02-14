@@ -4265,14 +4265,12 @@ describe Daru::DataFrame do
     let(:df) do
       Daru::DataFrame.new({
         a: [1,2,3],
-        b: [4,5,6]
+        b: [11,22,33]
       },
         order: [:a, :b],
-        index: [:one, :two, :three]
       )
     end
     let(:new_order) { [2, 0, 1] }
-
     it { is_expected.to be_a(Daru::DataFrame) }
 
     it "reorders the rows based on the given order" do

@@ -1175,7 +1175,7 @@ module Daru
     #   }, order: [:a, :b])
     #
     #   df = #<Daru::DataFrame(3x2)>
-    #           #       b   a
+    #           #       a   b
     #           #   0   1   4
     #           #   1   2   5
     #           #   2   3   6
@@ -1183,14 +1183,14 @@ module Daru
     # df.reorder_rows[2,0,1]
     #
     #   df = #<Daru::DataFrame(3x2)>
-    #           #       b   a
+    #           #       a   b
     #           #   2   3   6
-    #           #   1   2   5
     #           #   0   1   4
+    #           #   1   2   5
     def reorder_rows(new_order = [])
       raise NotImplementedError if index.is_a?(Daru::CategoricalIndex)
 
-      reindex(Index.new(new_order))
+      row_at(*new_order)
     end
 
     # Returns a vector, based on a string with a calculation based
