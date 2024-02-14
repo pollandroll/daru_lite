@@ -1,10 +1,10 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
 
 require 'benchmark'
-require 'daru'
+require 'daru_lite'
 
-vector = Daru::Vector.new(10000.times.map.to_a.shuffle)
-df = Daru::DataFrame.new({
+vector = DaruLite::Vector.new(10000.times.map.to_a.shuffle)
+df = DaruLite::DataFrame.new({
   a: vector,
   b: vector,
   c: vector

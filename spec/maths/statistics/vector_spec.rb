@@ -1,10 +1,10 @@
-describe Daru::Vector do
+describe DaruLite::Vector do
   describe 'array' do
     let(:dtype) { :array }
 
     before do
-      @dv = Daru::Vector.new [323, 11, 555, 666, 234, 21, 666, 343, 1, 2], dtype: dtype
-      @dv_with_nils = Daru::Vector.new [323, 11, 555, nil, 666, 234, 21, 666, 343, nil, 1, 2]
+      @dv = DaruLite::Vector.new [323, 11, 555, 666, 234, 21, 666, 343, 1, 2], dtype: dtype
+      @dv_with_nils = DaruLite::Vector.new [323, 11, 555, nil, 666, 234, 21, 666, 343, nil, 1, 2]
     end
 
     context "#mean" do
@@ -13,7 +13,7 @@ describe Daru::Vector do
       end
     end
 
-    let(:dv) { dv = Daru::Vector.new (["Tyrion", "Daenerys", nil, "Jon Starkgaryen"]), index: Daru::Index.new([:t, :d, :n, :j]) }
+    let(:dv) { dv = DaruLite::Vector.new (["Tyrion", "Daenerys", nil, "Jon Starkgaryen"]), index: DaruLite::Index.new([:t, :d, :n, :j]) }
 
     context "#max" do
       it "returns max value" do
@@ -137,7 +137,7 @@ describe Daru::Vector do
 
     context "#sum_of_squares" do
       it "calcs sum of squares, omits nil values" do
-        v = Daru::Vector.new [1,2,3,4,5,6], dtype: dtype
+        v = DaruLite::Vector.new [1,2,3,4,5,6], dtype: dtype
         expect(v.sum_of_squares).to eq(17.5)
       end
     end
@@ -168,16 +168,16 @@ describe Daru::Vector do
 
     context "#covariance_sample" do
       it "calculates sample covariance" do
-        @dv_1 = Daru::Vector.new [323, 11, 555, 666, 234, 21, 666, 343, 1, 2]
-        @dv_2 = Daru::Vector.new [123, 22, 444, 555, 324, 21, 666, 434, 5, 8]
+        @dv_1 = DaruLite::Vector.new [323, 11, 555, 666, 234, 21, 666, 343, 1, 2]
+        @dv_2 = DaruLite::Vector.new [123, 22, 444, 555, 324, 21, 666, 434, 5, 8]
         expect(@dv_1.covariance @dv_2).to be_within(0.00001).of(65603.62222)
       end
     end
 
     context "#covariance_population" do
       it "calculates population covariance" do
-        @dv_1 = Daru::Vector.new [323, 11, 555, 666, 234, 21, 666, 343, 1, 2]
-        @dv_2 = Daru::Vector.new [123, 22, 444, 555, 324, 21, 666, 434, 5, 8]
+        @dv_1 = DaruLite::Vector.new [323, 11, 555, 666, 234, 21, 666, 343, 1, 2]
+        @dv_2 = DaruLite::Vector.new [123, 22, 444, 555, 324, 21, 666, 434, 5, 8]
         expect(@dv_1.covariance_population @dv_2).to be_within(0.01).of(59043.26)
       end
     end
@@ -214,7 +214,7 @@ describe Daru::Vector do
 
     context "#product" do
       it "returns the product" do
-        v = Daru::Vector.new [1, 2, 3, 4, 5], dtype: dtype
+        v = DaruLite::Vector.new [1, 2, 3, 4, 5], dtype: dtype
         expect(v.product).to eq(120)
       end
     end
@@ -227,19 +227,19 @@ describe Daru::Vector do
 
     context "#mode" do
       it "returns the single modal value as a numeric" do
-        mode_test_example = Daru::Vector.new [1,2,3,2,4,4,4,4], dtype: dtype
+        mode_test_example = DaruLite::Vector.new [1,2,3,2,4,4,4,4], dtype: dtype
         expect(mode_test_example.mode).to eq(4)
       end
 
       it "returns multiple modal values as a vector" do
-        mode_test_example = Daru::Vector.new [1,2,2,2,3,2,4,4,4,4], dtype: dtype
-        expect(mode_test_example.mode).to eq(Daru::Vector.new [2,4], dtype: dtype)
+        mode_test_example = DaruLite::Vector.new [1,2,2,2,3,2,4,4,4,4], dtype: dtype
+        expect(mode_test_example.mode).to eq(DaruLite::Vector.new [2,4], dtype: dtype)
       end
     end
 
     context "#describe" do
       it "generates count, mean, std, min and max of vectors in one shot" do
-        expect(@dv.describe.round(2)).to eq(Daru::Vector.new([10.00, 282.20, 274.08, 1.00, 666.00],
+        expect(@dv.describe.round(2)).to eq(DaruLite::Vector.new([10.00, 282.20, 274.08, 1.00, 666.00],
           index: [:count, :mean, :std, :min, :max],
           name:  :statistics
         ))
@@ -268,11 +268,11 @@ describe Daru::Vector do
 
     context "#value_counts" do
       it "counts number of unique values in the Vector" do
-        vector = Daru::Vector.new(
+        vector = DaruLite::Vector.new(
           ["America","America","America","America","America",
             "India","India", "China", "India", "China"])
         expect(vector.value_counts).to eq(
-          Daru::Vector.new([5,3,2], index: ["America", "India", "China"]))
+          DaruLite::Vector.new([5,3,2], index: ["America", "India", "China"]))
       end
     end
 
@@ -299,7 +299,7 @@ describe Daru::Vector do
 
     context "#average_deviation_population" do
       it "calculates average_deviation_population" do
-        a = Daru::Vector.new([1, 2, 3, 4, 5, 6, 7, 8, 9], dtype: dtype)
+        a = DaruLite::Vector.new([1, 2, 3, 4, 5, 6, 7, 8, 9], dtype: dtype)
         expect(a.average_deviation_population).to eq(20.quo(9).to_f)
       end
     end
@@ -343,14 +343,14 @@ describe Daru::Vector do
   # Only Array tests
   context "#percentile" do
     it "tests linear percentile strategy" do
-      values = Daru::Vector.new [102, 104, 105, 107, 108, 109, 110, 112, 115, 116].shuffle
+      values = DaruLite::Vector.new [102, 104, 105, 107, 108, 109, 110, 112, 115, 116].shuffle
       expect(values.percentil(0, :linear)).to eq(102)
       expect(values.percentil(25, :linear)).to eq(104.75)
       expect(values.percentil(50, :linear)).to eq(108.5)
       expect(values.percentil(75, :linear)).to eq(112.75)
       expect(values.percentil(100, :linear)).to eq(116)
 
-      values = Daru::Vector.new [102, 104, 105, 107, 108, 109, 110, 112, 115, 116, 118].shuffle
+      values = DaruLite::Vector.new [102, 104, 105, 107, 108, 109, 110, 112, 115, 116, 118].shuffle
       expect(values.percentil(0, :linear)).to eq(102)
       expect(values.percentil(25, :linear)).to eq(105)
       expect(values.percentil(50, :linear)).to eq(109)
@@ -360,9 +360,9 @@ describe Daru::Vector do
   end
 
   context "#frequencies" do
-    let(:vector) { Daru::Vector.new([5,5,5,5,5,6,6,7,8,9,10,1,2,3,4,nil,-99,-99]) }
+    let(:vector) { DaruLite::Vector.new([5,5,5,5,5,6,6,7,8,9,10,1,2,3,4,nil,-99,-99]) }
     subject { vector.frequencies }
-    it { is_expected.to eq Daru::Vector.new(
+    it { is_expected.to eq DaruLite::Vector.new(
       [5,2,1,1,1,1,1,1,1,1,2],
       index: [5,6,7,8,9,10,1,2,3,4,-99]
     )}
@@ -370,51 +370,51 @@ describe Daru::Vector do
 
   context "#ranked" do
     it "curates by rank" do
-      vector = Daru::Vector.new([nil, 0.8, 1.2, 1.2, 2.3, 18, nil])
-      expect(vector.ranked).to eq(Daru::Vector.new([nil,1,2.5,2.5,4,5,nil]))
+      vector = DaruLite::Vector.new([nil, 0.8, 1.2, 1.2, 2.3, 18, nil])
+      expect(vector.ranked).to eq(DaruLite::Vector.new([nil,1,2.5,2.5,4,5,nil]))
 
-      v = Daru::Vector.new [0.8, 1.2, 1.2, 2.3, 18]
-      expect(v.ranked).to eq(Daru::Vector.new [1, 2.5, 2.5, 4, 5])
+      v = DaruLite::Vector.new [0.8, 1.2, 1.2, 2.3, 18]
+      expect(v.ranked).to eq(DaruLite::Vector.new [1, 2.5, 2.5, 4, 5])
     end
 
     it "tests paired ties" do
-      a = Daru::Vector.new [0, 0, 0, 1, 1, 2, 3, 3, 4, 4, 4]
-      expected = Daru::Vector.new [2, 2, 2, 4.5, 4.5, 6, 7.5, 7.5, 10, 10, 10]
+      a = DaruLite::Vector.new [0, 0, 0, 1, 1, 2, 3, 3, 4, 4, 4]
+      expected = DaruLite::Vector.new [2, 2, 2, 4.5, 4.5, 6, 7.5, 7.5, 10, 10, 10]
       expect(a.ranked).to eq(expected)
     end
   end
 
   context "#dichotomize" do
     it "dichotomizes" do
-      a = Daru::Vector.new [0, 0, 0, 1, 2, 3, nil]
-      exp = Daru::Vector.new [0, 0, 0, 1, 1, 1, nil]
+      a = DaruLite::Vector.new [0, 0, 0, 1, 2, 3, nil]
+      exp = DaruLite::Vector.new [0, 0, 0, 1, 1, 1, nil]
       expect(a.dichotomize).to eq(exp)
 
-      a = Daru::Vector.new [1, 1, 1, 2, 2, 2, 3]
-      exp = Daru::Vector.new [0, 0, 0, 1, 1, 1, 1]
+      a = DaruLite::Vector.new [1, 1, 1, 2, 2, 2, 3]
+      exp = DaruLite::Vector.new [0, 0, 0, 1, 1, 1, 1]
       expect(a.dichotomize).to eq(exp)
 
-      a = Daru::Vector.new [0, 0, 0, 1, 2, 3, nil]
-      exp = Daru::Vector.new [0, 0, 0, 0, 1, 1, nil]
+      a = DaruLite::Vector.new [0, 0, 0, 1, 2, 3, nil]
+      exp = DaruLite::Vector.new [0, 0, 0, 0, 1, 1, nil]
       expect(a.dichotomize(1)).to eq(exp)
 
-      a = Daru::Vector.new %w(a a a b c d)
-      exp = Daru::Vector.new [0, 0, 0, 1, 1, 1]
+      a = DaruLite::Vector.new %w(a a a b c d)
+      exp = DaruLite::Vector.new [0, 0, 0, 1, 1, 1]
       expect(a.dichotomize).to eq(exp)
     end
   end
 
   context "#median_absolute_deviation" do
     it "calculates median_absolute_deviation" do
-      a = Daru::Vector.new [1, 1, 2, 2, 4, 6, 9]
+      a = DaruLite::Vector.new [1, 1, 2, 2, 4, 6, 9]
       expect(a.median_absolute_deviation).to eq(1)
     end
   end
 
   context "#round" do
     it "rounds non-nil values" do
-      vector = Daru::Vector.new([1.44,55.32,nil,4])
-      expect(vector.round(1)).to eq(Daru::Vector.new([1.4,55.3,nil,4]))
+      vector = DaruLite::Vector.new([1.44,55.32,nil,4])
+      expect(vector.round(1)).to eq(DaruLite::Vector.new([1.4,55.3,nil,4]))
     end
   end
 
@@ -422,7 +422,7 @@ describe Daru::Vector do
     it "centers" do
       mean = rand
       samples = 11
-      centered = Daru::Vector.new(samples.times.map { |i| i - ((samples / 2).floor).to_i })
+      centered = DaruLite::Vector.new(samples.times.map { |i| i - ((samples / 2).floor).to_i })
       not_centered = centered.recode { |v| v + mean }
       obs = not_centered.center
       centered.each_with_index do |v, i|
@@ -433,23 +433,23 @@ describe Daru::Vector do
 
   context "#standardize" do
     it "returns a standardized vector" do
-      vector = Daru::Vector.new([11,55,33,25,nil,22])
+      vector = DaruLite::Vector.new([11,55,33,25,nil,22])
       expect(vector.standardize.round(2)).to eq(
-        Daru::Vector.new([-1.11, 1.57, 0.23, -0.26,nil, -0.44])
+        DaruLite::Vector.new([-1.11, 1.57, 0.23, -0.26,nil, -0.44])
         )
     end
 
     it "tests for vector standardized with zero variance" do
-      v1 = Daru::Vector.new 100.times.map { |_i| 1 }
-      exp = Daru::Vector.new 100.times.map { nil }
+      v1 = DaruLite::Vector.new 100.times.map { |_i| 1 }
+      exp = DaruLite::Vector.new 100.times.map { nil }
       expect(v1.standardize).to eq(exp)
     end
   end
 
   context "#vector_percentile" do
     it "replaces each non-nil value with its percentile value" do
-      vector = Daru::Vector.new([1,nil,nil,2,2,3,4,nil,nil,5,5,5,6,10])
-      expect(vector.vector_percentile).to eq(Daru::Vector.new(
+      vector = DaruLite::Vector.new([1,nil,nil,2,2,3,4,nil,nil,5,5,5,6,10])
+      expect(vector.vector_percentile).to eq(DaruLite::Vector.new(
         [10,nil,nil,25,25,40,50,nil,nil,70,70,70,90,100])
       )
     end
@@ -457,7 +457,7 @@ describe Daru::Vector do
 
   context "#sample_with_replacement" do
     it "calculates sample_with_replacement" do
-      vec =  Daru::Vector.new(
+      vec =  DaruLite::Vector.new(
         [5, 5, 5, 5, 5, 6, 6, 7, 8, 9, 10, 1, 2, 3, 4, nil, -99, -99],
         name: :common_all_dtypes)
       srand(1)
@@ -470,26 +470,26 @@ describe Daru::Vector do
 
   context "#sample_without_replacement" do
     it "calculates sample_without_replacement" do
-      vec =  Daru::Vector.new(
+      vec =  DaruLite::Vector.new(
         [5, 5, 5, 5, 5, 6, 6, 7, 8, 9, 10, 1, 2, 3, 4, nil, -99, -99],
         name: :common_all_dtypes)
 
       srand(1)
       expect(vec.sample_without_replacement(17).sort).to eq(
-        vec.reject_values(*Daru::MISSING_VALUES).to_a.sort)
+        vec.reject_values(*DaruLite::MISSING_VALUES).to_a.sort)
       expect {
         vec.sample_without_replacement(20)
       }.to raise_error(ArgumentError)
 
       srand(1)
       expect(vec.sample_without_replacement(17).sort).to eq(
-        vec.reject_values(*Daru::MISSING_VALUES).to_a.sort)
+        vec.reject_values(*DaruLite::MISSING_VALUES).to_a.sort)
     end
   end
 
   context "#jackknife" do
     it "jack knife correctly with named method" do
-      a = Daru::Vector.new [1, 2, 3, 4]
+      a = DaruLite::Vector.new [1, 2, 3, 4]
       df = a.jackknife(:mean)
       expect(df[:mean].mean).to eq (a.mean)
 
@@ -499,9 +499,9 @@ describe Daru::Vector do
     end
 
     it "jack knife correctly with custom method" do
-      a   = Daru::Vector.new [17.23, 18.71, 13.93, 18.81, 15.78, 11.29, 14.91, 13.39, 18.21, 11.57, 14.28, 10.94, 18.83, 15.52, 13.45, 15.25]
+      a   = DaruLite::Vector.new [17.23, 18.71, 13.93, 18.81, 15.78, 11.29, 14.91, 13.39, 18.21, 11.57, 14.28, 10.94, 18.83, 15.52, 13.45, 15.25]
       ds  = a.jackknife(log_s2: ->(v) {  Math.log(v.variance) })
-      exp = Daru::Vector.new [1.605, 2.972, 1.151, 3.097, 0.998, 3.308, 0.942, 1.393, 2.416, 2.951, 1.043, 3.806, 3.122, 0.958, 1.362, 0.937]
+      exp = DaruLite::Vector.new [1.605, 2.972, 1.151, 3.097, 0.998, 3.308, 0.942, 1.393, 2.416, 2.951, 1.043, 3.806, 3.122, 0.958, 1.362, 0.937]
 
       expect_correct_vector_in_delta ds[:log_s2], exp, 0.001
       # expect(ds[:log_s2]).to be_within(0.001).of(exp)
@@ -511,18 +511,18 @@ describe Daru::Vector do
 
     it "jack knife correctly with k > 1" do
       rng = Distribution::Normal.rng(0,1)
-      a   = Daru::Vector.new_with_size(6) { rng.call}
+      a   = DaruLite::Vector.new_with_size(6) { rng.call}
 
       ds = a.jackknife(:mean, 2)
       mean = a.mean
-      exp = Daru::Vector.new [3 * mean - 2 * (a[2] + a[3] + a[4] + a[5]) / 4, 3 * mean - 2 * (a[0] + a[1] + a[4] + a[5]) / 4, 3 * mean - 2 * (a[0] + a[1] + a[2] + a[3]) / 4]
+      exp = DaruLite::Vector.new [3 * mean - 2 * (a[2] + a[3] + a[4] + a[5]) / 4, 3 * mean - 2 * (a[0] + a[1] + a[4] + a[5]) / 4, 3 * mean - 2 * (a[0] + a[1] + a[2] + a[3]) / 4]
       expect_correct_vector_in_delta(exp, ds[:mean], 1e-13)
     end
   end
 
   before do
     # daily closes of iShares XIU on the TSX
-    @shares = Daru::Vector.new([17.28, 17.45, 17.84, 17.74, 17.82, 17.85, 17.36, 17.3, 17.56, 17.49, 17.46, 17.4, 17.03, 17.01,16.86, 16.86, 16.56, 16.36, 16.66, 16.77])
+    @shares = DaruLite::Vector.new([17.28, 17.45, 17.84, 17.74, 17.82, 17.85, 17.36, 17.3, 17.56, 17.49, 17.46, 17.4, 17.03, 17.01,16.86, 16.86, 16.56, 16.36, 16.66, 16.77])
   end
 
   context "#acf" do
@@ -541,15 +541,15 @@ describe Daru::Vector do
 
   context "#percent_change" do
     it "calculates percent change" do
-      vector = Daru::Vector.new([4,6,6,8,10],index: ['a','f','t','i','k'])
+      vector = DaruLite::Vector.new([4,6,6,8,10],index: ['a','f','t','i','k'])
       expect(vector.percent_change).to eq(
-      Daru::Vector.new([nil, 0.5, 0.0, 0.3333333333333333, 0.25], index: ['a','f','t','i','k']))
+      DaruLite::Vector.new([nil, 0.5, 0.0, 0.3333333333333333, 0.25], index: ['a','f','t','i','k']))
     end
 
     it "tests for numerical vectors with nils" do
-      vector2 = Daru::Vector.new([nil,6,nil,8,10],index: ['a','f','t','i','k'])
+      vector2 = DaruLite::Vector.new([nil,6,nil,8,10],index: ['a','f','t','i','k'])
       expect(vector2.percent_change).to eq(
-      Daru::Vector.new([nil, nil, nil, 0.3333333333333333, 0.25], index: ['a','f','t','i','k']))
+      DaruLite::Vector.new([nil, nil, nil, 0.3333333333333333, 0.25], index: ['a','f','t','i','k']))
     end
   end
 
@@ -557,7 +557,7 @@ describe Daru::Vector do
     it "performs the difference of the series" do
       diff = @shares.diff
 
-      expect(diff.class).to eq(Daru::Vector)
+      expect(diff.class).to eq(DaruLite::Vector)
       expect(diff[@shares.size - 1]).to be_within(0.001).of( 0.11)
       expect(diff[@shares.size - 2]).to be_within(0.001).of( 0.30)
       expect(diff[@shares.size - 3]).to be_within(0.001).of(-0.20)
@@ -582,50 +582,50 @@ describe Daru::Vector do
 
     it "calculates rolling median" do
       me10 = @shares.rolling_median.round(2)
-      expect(me10).to eq(Daru::Vector.new([nil,nil,nil,nil,nil,nil,nil,nil,nil,17.525,17.525,17.525,17.475,17.430,17.380,17.330,17.165,17.020,16.94,16.860]).round(2))
+      expect(me10).to eq(DaruLite::Vector.new([nil,nil,nil,nil,nil,nil,nil,nil,nil,17.525,17.525,17.525,17.475,17.430,17.380,17.330,17.165,17.020,16.94,16.860]).round(2))
 
       me5 = @shares.rolling(:median, 5).round(2)
-      expect(me5).to eq(Daru::Vector.new([nil,nil,nil,nil,17.74,17.82,17.82,17.74,17.56,17.49,17.46,17.46,17.46,17.40,17.03,17.01,16.86,16.86,16.66,16.66]))
+      expect(me5).to eq(DaruLite::Vector.new([nil,nil,nil,nil,17.74,17.82,17.82,17.74,17.56,17.49,17.46,17.46,17.46,17.40,17.03,17.01,16.86,16.86,16.66,16.66]))
     end
 
     it "calculates rolling max" do
       max10 = @shares.rolling_max.round(2)
-      expect(max10).to eq(Daru::Vector.new([nil,nil,nil,nil,nil,nil,nil,nil,nil,17.85,17.85,17.85,17.85,17.85,17.85,17.56,17.56,17.56,17.49,17.46]))
+      expect(max10).to eq(DaruLite::Vector.new([nil,nil,nil,nil,nil,nil,nil,nil,nil,17.85,17.85,17.85,17.85,17.85,17.85,17.56,17.56,17.56,17.49,17.46]))
 
       max5 = @shares.rolling(:max, 5).round(2)
-      expect(max5).to eq(Daru::Vector.new([nil,  nil,  nil,  nil,17.84,17.85,17.85,17.85,17.85,17.85,17.56,17.56,17.56,17.49,17.46,17.40,17.03,17.01,16.86,16.86]))
+      expect(max5).to eq(DaruLite::Vector.new([nil,  nil,  nil,  nil,17.84,17.85,17.85,17.85,17.85,17.85,17.56,17.56,17.56,17.49,17.46,17.40,17.03,17.01,16.86,16.86]))
     end
 
     it "calculates rolling min" do
       min10 = @shares.rolling_min.round(2)
-      expect(min10).to eq(Daru::Vector.new([nil,nil,nil,nil,nil,nil,nil,nil,nil,17.28,17.30,17.30,17.03,17.01,16.86,16.86,16.56,16.36,16.36,16.36]))
+      expect(min10).to eq(DaruLite::Vector.new([nil,nil,nil,nil,nil,nil,nil,nil,nil,17.28,17.30,17.30,17.03,17.01,16.86,16.86,16.56,16.36,16.36,16.36]))
 
       min5 = @shares.rolling(:min, 5).round(2)
-      expect(min5).to eq(Daru::Vector.new([nil,nil,nil,nil,17.28,17.45,17.36,17.30,17.30,17.30,17.30,17.30,17.03,17.01,16.86,16.86,16.56,16.36,16.36,16.36]))
+      expect(min5).to eq(DaruLite::Vector.new([nil,nil,nil,nil,17.28,17.45,17.36,17.30,17.30,17.30,17.30,17.30,17.03,17.01,16.86,16.86,16.56,16.36,16.36,16.36]))
     end
 
     it "calculates rolling sum" do
       sum10 = @shares.rolling_sum.round(2)
-      expect(sum10).to eq(Daru::Vector.new([nil,nil,nil,nil,nil,nil,nil,nil,nil,175.69,175.87,175.82,175.01,174.28,173.32,172.33,171.53,170.59,169.69,168.97]))
+      expect(sum10).to eq(DaruLite::Vector.new([nil,nil,nil,nil,nil,nil,nil,nil,nil,175.69,175.87,175.82,175.01,174.28,173.32,172.33,171.53,170.59,169.69,168.97]))
 
       sum5 = @shares.rolling(:sum, 5).round(2)
-      expect(sum5).to eq(Daru::Vector.new([nil,nil,nil,nil,88.13,88.70,88.61,88.07,87.89,87.56,87.17,87.21,86.94,86.39,85.76,85.16,84.32,83.65,83.30,83.21]))
+      expect(sum5).to eq(DaruLite::Vector.new([nil,nil,nil,nil,88.13,88.70,88.61,88.07,87.89,87.56,87.17,87.21,86.94,86.39,85.76,85.16,84.32,83.65,83.30,83.21]))
     end
 
     it "calculates rolling std" do
       std10 = @shares.rolling_std.round(2)
-      expect(std10).to eq(Daru::Vector.new([nil,nil,nil,nil,nil,nil,nil,nil,nil,0.227227,0.208116,0.212331,0.253485,0.280666,0.295477,0.267127,0.335826,0.412834,0.388886,0.345995]).round(2))
+      expect(std10).to eq(DaruLite::Vector.new([nil,nil,nil,nil,nil,nil,nil,nil,nil,0.227227,0.208116,0.212331,0.253485,0.280666,0.295477,0.267127,0.335826,0.412834,0.388886,0.345995]).round(2))
 
       std5 = @shares.rolling(:std, 5).round(2)
-      expect(std5).to eq(Daru::Vector.new([nil,nil,nil,nil,0.248556,0.167780,0.206930,0.263211,0.253811,0.215105,0.103827,0.098082,0.208255,0.237844,0.263002,0.220839,0.187963,0.263629,0.212132,0.193959]).round(2))
+      expect(std5).to eq(DaruLite::Vector.new([nil,nil,nil,nil,0.248556,0.167780,0.206930,0.263211,0.253811,0.215105,0.103827,0.098082,0.208255,0.237844,0.263002,0.220839,0.187963,0.263629,0.212132,0.193959]).round(2))
     end
 
     it "calculates rolling variance" do
       var10 = @shares.rolling_variance.round(2)
-      expect(var10).to eq(Daru::Vector.new([nil,nil,nil,nil,nil,nil,nil,nil,nil,0.051632,0.043312,0.045084,0.064254,0.078773,0.087307,0.071357,0.112779,0.170432,0.151232,0.119712]).round(2))
+      expect(var10).to eq(DaruLite::Vector.new([nil,nil,nil,nil,nil,nil,nil,nil,nil,0.051632,0.043312,0.045084,0.064254,0.078773,0.087307,0.071357,0.112779,0.170432,0.151232,0.119712]).round(2))
 
       var5 = @shares.rolling(:variance, 5).round(2)
-      expect(var5).to eq(Daru::Vector.new([nil,nil,nil,nil,0.06178,0.02815,0.04282,0.06928,0.06442,0.04627,0.01078,0.00962,0.04337,0.05657,0.06917,0.04877,0.03533,0.06950,0.04500,0.03762]).round(2))
+      expect(var5).to eq(DaruLite::Vector.new([nil,nil,nil,nil,0.06178,0.02815,0.04282,0.06928,0.06442,0.04627,0.01078,0.00962,0.04337,0.05657,0.06917,0.04877,0.03533,0.06950,0.04500,0.03762]).round(2))
     end
 
     it "calculates rolling non-nil count" do
@@ -709,7 +709,7 @@ describe Daru::Vector do
   end
 
   RSpec.shared_examples 'correct macd' do |*args|
-    let(:source) { Daru::DataFrame.from_csv('spec/fixtures/macd_data.csv') }
+    let(:source) { DaruLite::DataFrame.from_csv('spec/fixtures/macd_data.csv') }
 
     # skip initial records during compare as ema is sensitive to
     # period used.
@@ -742,15 +742,15 @@ describe Daru::Vector do
 
   context "#cumsum" do
     it "calculates cumulative sum" do
-      vector = Daru::Vector.new([1,2,3,4,5,6,7,8,9,10])
+      vector = DaruLite::Vector.new([1,2,3,4,5,6,7,8,9,10])
       expect(vector.cumsum).to eq(
-        Daru::Vector.new([1,3,6,10,15,21,28,36,45,55]))
+        DaruLite::Vector.new([1,3,6,10,15,21,28,36,45,55]))
     end
 
     it "works with missing values" do
-      vector = Daru::Vector.new([1,2,nil,3,nil,4,5])
+      vector = DaruLite::Vector.new([1,2,nil,3,nil,4,5])
       expect(vector.cumsum).to eq(
-        Daru::Vector.new([1,3,nil,6,nil,10,15]))
+        DaruLite::Vector.new([1,3,nil,6,nil,10,15]))
     end
   end
 end

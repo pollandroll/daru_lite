@@ -1,42 +1,42 @@
-describe Daru::Vector, "categorical" do
+describe DaruLite::Vector, "categorical" do
   context "initialize" do
     context "default parameters" do
-      let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category }
+      let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category }
       subject { dv }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:size) { is_expected.to eq 5 }
       its(:type) { is_expected.to eq :category }
       its(:ordered?) { is_expected.to eq false }
       its(:to_a) { is_expected.to eq [:a, 1, :a, 1, :c] }
       its(:base_category) { is_expected.to eq :a }
       its(:coding_scheme) { is_expected.to eq :dummy }
-      its(:index) { is_expected.to be_a Daru::Index }
+      its(:index) { is_expected.to be_a DaruLite::Index }
       its(:'index.to_a') { is_expected.to eq [0, 1, 2, 3, 4] }
     end
 
     context "with index" do
       context "as array" do
         let(:dv) do
-          Daru::Vector.new [:a, 1, :a, 1, :c],
+          DaruLite::Vector.new [:a, 1, :a, 1, :c],
             type: :category,
             index: ['a', 'b', 'c', 'd', 'e']
         end
         subject { dv }
 
-        its(:index) { is_expected.to be_a Daru::Index }
+        its(:index) { is_expected.to be_a DaruLite::Index }
         its(:'index.to_a') { is_expected.to eq ['a', 'b', 'c', 'd', 'e'] }
       end
 
       context "as range" do
         let(:dv) do
-          Daru::Vector.new [:a, 1, :a, 1, :c],
+          DaruLite::Vector.new [:a, 1, :a, 1, :c],
             type: :category,
             index: 'a'..'e'
         end
         subject { dv }
 
-        its(:index) { is_expected.to be_a Daru::Index }
+        its(:index) { is_expected.to be_a DaruLite::Index }
         its(:'index.to_a') { is_expected.to eq ['a', 'b', 'c', 'd', 'e'] }
       end
 
@@ -50,20 +50,20 @@ describe Daru::Vector, "categorical" do
             [:thr, :pin, :foo]
           ]
         end
-        let(:idx) { Daru::MultiIndex.from_tuples tuples }
+        let(:idx) { DaruLite::MultiIndex.from_tuples tuples }
         let(:dv) do
-          Daru::Vector.new [:a, 1, :a, 1, :c],
+          DaruLite::Vector.new [:a, 1, :a, 1, :c],
             type: :category,
             index: idx
         end
         subject { dv }
 
-        its(:index) { is_expected.to be_a Daru::MultiIndex }
+        its(:index) { is_expected.to be_a DaruLite::MultiIndex }
         its(:'index.to_a') { is_expected.to eq tuples }
       end
 
       context "invalid index" do
-        it { expect { Daru::Vector.new [1, 1, 2],
+        it { expect { DaruLite::Vector.new [1, 1, 2],
           type: :category,
           index: [1, 2]
         }.to raise_error ArgumentError }
@@ -71,18 +71,18 @@ describe Daru::Vector, "categorical" do
     end
 
     context '#category?' do
-      let(:non_cat) { Daru::Vector.new [1, 2, 3] }
-      let(:cat) { Daru::Vector.new [1, 2, 3], type: :category }
+      let(:non_cat) { DaruLite::Vector.new [1, 2, 3] }
+      let(:cat) { DaruLite::Vector.new [1, 2, 3], type: :category }
       it { expect(non_cat.category?).to eq false }
       it { expect(cat.category?).to eq true }
     end
 
     context "with categories" do
       context "extra categories" do
-        subject { Daru::Vector.new [:a, 1, :a, 1, :c],
+        subject { DaruLite::Vector.new [:a, 1, :a, 1, :c],
           type: :category, categories: [:a, :b, :c, 1] }
 
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:type) { is_expected.to eq :category }
         its(:size) { is_expected.to eq 5 }
         its(:order) { is_expected.to eq [:a, :b, :c, 1] }
@@ -91,7 +91,7 @@ describe Daru::Vector, "categorical" do
 
       context "incomplete" do
         it do
-          expect { Daru::Vector.new [:a, 1, :a, 1, :c],
+          expect { DaruLite::Vector.new [:a, 1, :a, 1, :c],
             type: :category, categories: [:b, :c, 1] }.
             to raise_error ArgumentError
         end
@@ -100,53 +100,53 @@ describe Daru::Vector, "categorical" do
   end
 
   context "#rename" do
-    let(:dv) { Daru::Vector.new [1, 2, 1], type: :category }
+    let(:dv) { DaruLite::Vector.new [1, 2, 1], type: :category }
     subject { dv.rename 'hello' }
 
-    it { is_expected.to be_a Daru::Vector }
+    it { is_expected.to be_a DaruLite::Vector }
     its(:name) { is_expected.to eq 'hello' }
   end
 
   context '#index=' do
-    context Daru::Index do
-      let(:idx) { Daru::Index.new [1, 2, 3] }
-      let(:dv) { Daru::Vector.new ['a', 'b', 'c'], type: :category }
+    context DaruLite::Index do
+      let(:idx) { DaruLite::Index.new [1, 2, 3] }
+      let(:dv) { DaruLite::Vector.new ['a', 'b', 'c'], type: :category }
       before { dv.index = idx }
       subject { dv }
 
-      it { is_expected.to be_a Daru::Vector }
-      its(:index) { is_expected.to be_a Daru::Index }
+      it { is_expected.to be_a DaruLite::Vector }
+      its(:index) { is_expected.to be_a DaruLite::Index }
       its(:'index.to_a') { is_expected.to eq [1, 2, 3] }
     end
 
     context Range do
-      let(:dv) { Daru::Vector.new ['a', 'b', 'c'], type: :category }
+      let(:dv) { DaruLite::Vector.new ['a', 'b', 'c'], type: :category }
       before { dv.index = 1..3 }
       subject { dv }
 
-      it { is_expected.to be_a Daru::Vector }
-      its(:index) { is_expected.to be_a Daru::Index }
+      it { is_expected.to be_a DaruLite::Vector }
+      its(:index) { is_expected.to be_a DaruLite::Index }
       its(:'index.to_a') { is_expected.to eq [1, 2, 3] }
     end
 
-    context Daru::MultiIndex do
-      let(:idx) { Daru::MultiIndex.from_tuples [[:a, :one], [:a, :two], [:b, :one]] }
-      let(:dv) { Daru::Vector.new ['a', 'b', 'c'], type: :category }
+    context DaruLite::MultiIndex do
+      let(:idx) { DaruLite::MultiIndex.from_tuples [[:a, :one], [:a, :two], [:b, :one]] }
+      let(:dv) { DaruLite::Vector.new ['a', 'b', 'c'], type: :category }
       before { dv.index = idx }
       subject { dv }
 
-      it { is_expected.to be_a Daru::Vector }
-      its(:index) { is_expected.to be_a Daru::MultiIndex }
+      it { is_expected.to be_a DaruLite::Vector }
+      its(:index) { is_expected.to be_a DaruLite::MultiIndex }
       its(:'index.to_a') { is_expected.to eq [[:a, :one], [:a, :two], [:b, :one]] }
     end
   end
 
   context "#cut" do
     context "close at right end" do
-      let(:dv) { Daru::Vector.new [1, 2, 5, 14] }
+      let(:dv) { DaruLite::Vector.new [1, 2, 5, 14] }
       subject { dv.cut (0..20).step(5) }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:type) { is_expected.to eq :category }
       its(:size) { is_expected.to eq 4 }
       its(:categories) { is_expected.to eq ['0-4', '5-9', '10-14', '15-19'] }
@@ -154,10 +154,10 @@ describe Daru::Vector, "categorical" do
     end
 
     context "close at left end" do
-      let(:dv) { Daru::Vector.new [1, 2, 5, 14] }
+      let(:dv) { DaruLite::Vector.new [1, 2, 5, 14] }
       subject { dv.cut (0..20).step(5), close_at: :left }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:type) { is_expected.to eq :category }
       its(:size) { is_expected.to eq 4 }
       its(:categories) { is_expected.to eq ['1-5', '6-10', '11-15', '16-20'] }
@@ -165,10 +165,10 @@ describe Daru::Vector, "categorical" do
     end
 
     context "labels" do
-      let(:dv) { Daru::Vector.new [1, 2, 5, 14] }
+      let(:dv) { DaruLite::Vector.new [1, 2, 5, 14] }
       subject { dv.cut (0..20).step(5), close_at: :left, labels: [:a, :b, :c, :d] }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:type) { is_expected.to eq :category }
       its(:size) { is_expected.to eq 4 }
       its(:categories) { is_expected.to eq [:a, :b, :c, :d] }
@@ -177,7 +177,7 @@ describe Daru::Vector, "categorical" do
   end
 
   context "#each" do
-    let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c] }
+    let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c] }
     subject { dv.each }
 
     it { is_expected.to be_a Enumerator }
@@ -185,7 +185,7 @@ describe Daru::Vector, "categorical" do
   end
 
   context "#to_a" do
-    let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c] }
+    let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c] }
     subject { dv.to_a }
 
     it { is_expected.to be_a Array }
@@ -194,7 +194,7 @@ describe Daru::Vector, "categorical" do
   end
 
   context "#dup" do
-    let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category }
+    let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category }
     before do
       dv.categories = [:a, :b, :c, 1]
       dv.name = 'daru'
@@ -210,7 +210,7 @@ describe Daru::Vector, "categorical" do
 
   context "#add_category" do
     context "single category" do
-      let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category }
+      let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category }
       subject { dv }
       before { dv.add_category :b }
 
@@ -219,7 +219,7 @@ describe Daru::Vector, "categorical" do
     end
 
     context "multiple categories" do
-      let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category }
+      let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category }
       subject { dv }
       before { dv.add_category :b, :d }
 
@@ -230,7 +230,7 @@ describe Daru::Vector, "categorical" do
 
   context '#remove_unused_categories' do
     context 'base category not removed' do
-      let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category }
+      let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category }
       before do
         dv.categories = [:a, :b, :c, 1]
         dv.base_category = 1
@@ -244,7 +244,7 @@ describe Daru::Vector, "categorical" do
     end
 
     context 'base category removed' do
-      let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category }
+      let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category }
       before do
         dv.categories = [:a, :b, :c, 1]
         dv.base_category = :b
@@ -261,13 +261,13 @@ describe Daru::Vector, "categorical" do
   context "count" do
     context "existant category" do
       context "more than 0" do
-        subject(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category }
+        subject(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category }
 
         it { expect(dv.count :a).to eq 2 }
       end
 
       context "equal to 0" do
-        subject(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category }
+        subject(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category }
         before { dv.add_category :b }
 
         it { expect(dv.count :b).to eq 0 }
@@ -275,14 +275,14 @@ describe Daru::Vector, "categorical" do
     end
 
     context "non existant category" do
-      subject(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category }
+      subject(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category }
 
       it { expect { dv.count :k }.to raise_error ArgumentError }
     end
   end
 
   context "#frequencies" do
-    let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c],
+    let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c],
       type: :category,
       name: :hello,
       categories: [:a, :b, :c, :d, 1] }
@@ -311,10 +311,10 @@ describe Daru::Vector, "categorical" do
   end
 
   context "#to_category" do
-    let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], index: 1..5 }
+    let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], index: 1..5 }
     subject { dv.to_category ordered: true, categories: [:a, :b, :c, 1] }
 
-    it { is_expected.to be_a Daru::Vector }
+    it { is_expected.to be_a DaruLite::Vector }
     its(:size) { is_expected.to eq 5 }
     its(:type) { is_expected.to eq :category }
     its(:'index.to_a') { is_expected.to eq [1, 2, 3, 4, 5] }
@@ -324,7 +324,7 @@ describe Daru::Vector, "categorical" do
   end
 
   context "#categories" do
-    let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category }
+    let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category }
     subject { dv.categories }
 
     it { is_expected.to be_a Array }
@@ -334,12 +334,12 @@ describe Daru::Vector, "categorical" do
 
   context "#categories=" do
     context "extra categories" do
-      let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c],
+      let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c],
         type: :category }
       before { dv.categories = [:c, :b, :a, 1] }
       subject { dv }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:type) { is_expected.to eq :category }
       its(:categories) { is_expected.to eq [:c, :b, :a, 1] }
       its(:to_a) { is_expected.to eq [:a, 1, :a, 1, :c] }
@@ -347,7 +347,7 @@ describe Daru::Vector, "categorical" do
     end
 
     context "incomplete" do
-      subject { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category }
+      subject { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category }
 
       it do
         expect { subject.categories = [:b, :c, 1] }.
@@ -357,7 +357,7 @@ describe Daru::Vector, "categorical" do
   end
 
   context "#base_category" do
-    let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category }
+    let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category }
     subject { dv }
     before { dv.base_category = 1 }
 
@@ -366,7 +366,7 @@ describe Daru::Vector, "categorical" do
 
   context "#coding_scheme" do
     context "valid coding scheme" do
-      let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category }
+      let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category }
       subject { dv }
       before { dv.coding_scheme = :deviation }
 
@@ -374,7 +374,7 @@ describe Daru::Vector, "categorical" do
     end
 
     context "invalid coding scheme" do
-      let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category }
+      let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category }
 
       it { expect { dv.coding_scheme = :foo }.to raise_error ArgumentError }
     end
@@ -382,44 +382,44 @@ describe Daru::Vector, "categorical" do
 
   context "#rename_categories" do
     context 'rename base category' do
-      let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category,
+      let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category,
         categories: [:a, :x, :y, :c, :b, 1]}
       subject { dv.rename_categories :a => 1, 1 => 2 }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:to_a) { is_expected.to eq [1, 2, 1, 2, :c] }
       its(:categories) { is_expected.to eq [:x, :y, :c, :b, 1, 2] }
       its(:base_category) { is_expected.to eq 1 }
     end
 
     context 'rename non-base category' do
-      let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category,
+      let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category,
         categories: [:a, :b, :c, 1] }
       subject { dv.rename_categories 1 => 2 }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:to_a) { is_expected.to eq [:a, 2, :a, 2, :c] }
       its(:categories) { is_expected.to eq [:a, :b, :c, 2] }
       its(:base_category) { is_expected.to eq :a }
     end
 
     context 'merge' do
-      let(:dv) { Daru::Vector.new [:a, :b, :c, :b, :e], type: :category }
+      let(:dv) { DaruLite::Vector.new [:a, :b, :c, :b, :e], type: :category }
       before { dv.categories = [:a, :b, :c, :d, :e, :f] }
       subject { dv.rename_categories :d => :a, :c => 1, :e => 1 }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:categories) { is_expected.to eq [:a, :b, :f, 1] }
       its(:to_a) { is_expected.to eq [:a, :b, 1, :b, 1] }
     end
   end
 
   context '#to_non_category' do
-    let(:dv) { Daru::Vector.new [1, 2, 3], type: :category,
+    let(:dv) { DaruLite::Vector.new [1, 2, 3], type: :category,
       index: [:a, :b, :c], name: :hello }
     subject { dv.to_non_category }
 
-    it { is_expected.to be_a Daru::Vector }
+    it { is_expected.to be_a DaruLite::Vector }
     its(:type) { is_expected.not_to eq :category }
     its(:to_a) { is_expected.to eq [1, 2, 3] }
     its(:'index.to_a') { is_expected.to eq [:a, :b, :c] }
@@ -427,23 +427,23 @@ describe Daru::Vector, "categorical" do
   end
 
   context '#to_category' do
-    let(:dv) { Daru::Vector.new [1, 2, 3], type: :category }
+    let(:dv) { DaruLite::Vector.new [1, 2, 3], type: :category }
     it { expect(dv.to_category).to eq dv }
   end
 
   context '#reindex!' do
-    context Daru::Index do
-      let(:dv) { Daru::Vector.new [3, 2, 1, 3, 2, 1],
+    context DaruLite::Index do
+      let(:dv) { DaruLite::Vector.new [3, 2, 1, 3, 2, 1],
         index: 'a'..'f', type: :category, categories: [1, 2, 3, 4] }
       before { dv.reindex! ['e', 'f', 'a', 'b', 'c', 'd'] }
       subject { dv }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:categories) { is_expected.to eq [1, 2, 3, 4] }
       its(:to_a) { is_expected.to eq [2, 1, 3, 2, 1, 3] }
     end
 
-    context Daru::MultiIndex do
+    context DaruLite::MultiIndex do
       let(:tuples) do
         [
           [:a,:one,:baz],
@@ -454,13 +454,13 @@ describe Daru::Vector, "categorical" do
           [:b,:two,:baz]
         ]
       end
-      let(:idx) { Daru::MultiIndex.from_tuples tuples }
-      let(:dv) { Daru::Vector.new [3, 2, 1, 3, 2, 1],
+      let(:idx) { DaruLite::MultiIndex.from_tuples tuples }
+      let(:dv) { DaruLite::Vector.new [3, 2, 1, 3, 2, 1],
         index: idx, type: :category, categories: [1, 2, 3, 4] }
       before { dv.reindex! [4, 5, 0, 1, 2, 3].map { |i| tuples[i] } }
       subject { dv }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:categories) { is_expected.to eq [1, 2, 3, 4] }
       its(:to_a) { is_expected.to eq [2, 1, 3, 2, 1, 3] }
       its(:'index.to_a') { is_expected.to eq [4, 5, 0, 1, 2, 3]
@@ -468,7 +468,7 @@ describe Daru::Vector, "categorical" do
     end
 
     context 'invalid index' do
-      let(:dv) { Daru::Vector.new [1, 2, 3], type: :category }
+      let(:dv) { DaruLite::Vector.new [1, 2, 3], type: :category }
 
       it { expect { dv.reindex! [1, 1, 1] }.to raise_error ArgumentError }
     end
@@ -476,17 +476,17 @@ describe Daru::Vector, "categorical" do
 
   context '#reorder!' do
     context 'valid order' do
-      let(:dv) { Daru::Vector.new [3, 2, 1, 3, 2, 1], index: 'a'..'f', type: :category }
+      let(:dv) { DaruLite::Vector.new [3, 2, 1, 3, 2, 1], index: 'a'..'f', type: :category }
       before { dv.reorder! [5, 4, 3, 2, 1, 0] }
       subject { dv }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:categories) { is_expected.to eq [1, 2, 3] }
       its(:to_a) { is_expected.to eq [1, 2, 3, 1, 2, 3] }
     end
 
     context 'invalid order' do
-      let(:dv) { Daru::Vector.new [1, 2, 3], type: :category }
+      let(:dv) { DaruLite::Vector.new [1, 2, 3], type: :category }
 
       it { expect { dv.reorder! [1, 1, 1] }.to raise_error ArgumentError }
     end
@@ -495,13 +495,13 @@ describe Daru::Vector, "categorical" do
   context "#min" do
     context "ordered" do
       context "default ordering" do
-        let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category, ordered: true }
+        let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category, ordered: true }
 
         it { expect(dv.min).to eq :a }
       end
 
       context "reorder" do
-        let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category, ordered: true }
+        let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category, ordered: true }
         before { dv.categories = [1, :a, :c] }
 
         it { expect(dv.min).to eq 1 }
@@ -509,7 +509,7 @@ describe Daru::Vector, "categorical" do
     end
 
     context "unordered" do
-      let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category }
+      let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category }
 
       it { expect { dv.min }.to raise_error ArgumentError }
     end
@@ -518,13 +518,13 @@ describe Daru::Vector, "categorical" do
   context "#max" do
     context "ordered" do
       context "default ordering" do
-        let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category, ordered: true }
+        let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category, ordered: true }
 
         it { expect(dv.max).to eq :c }
       end
 
       context "reorder" do
-        let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category, ordered: true }
+        let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category, ordered: true }
         before { dv.categories = [1, :c, :a] }
 
         it { expect(dv.max).to eq :a }
@@ -532,17 +532,17 @@ describe Daru::Vector, "categorical" do
     end
 
     context "unordered" do
-      let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c, :a], type: :category }
+      let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c, :a], type: :category }
 
       it { expect { dv.max }.to raise_error ArgumentError }
     end
   end
 
   context "summary" do
-    let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c, :a], type: :category }
+    let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c, :a], type: :category }
     subject { dv.describe }
 
-    it { is_expected.to be_a Daru::Vector }
+    it { is_expected.to be_a DaruLite::Vector }
     its(:categories) { is_expected.to eq 3 }
     its(:max_freq) { is_expected.to eq 3 }
     its(:max_category) { is_expected.to eq :a }
@@ -551,11 +551,11 @@ describe Daru::Vector, "categorical" do
   end
 
   context "#sort!" do
-    let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category, ordered: true }
+    let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category, ordered: true }
     subject { dv }
     before { dv.categories = [:c, :a, 1]; dv.sort! }
 
-    it { is_expected.to be_a Daru::Vector }
+    it { is_expected.to be_a DaruLite::Vector }
     its(:size) { is_expected.to eq 5 }
     its(:to_a) { is_expected.to eq [:c, :a, :a, 1, 1] }
     its(:'index.to_a') { is_expected.to eq [4, 0, 2, 1, 3] }
@@ -563,22 +563,22 @@ describe Daru::Vector, "categorical" do
 
   context "#sort" do
     context 'return sorted vector' do
-      let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category, ordered: true }
+      let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category, ordered: true }
       subject { dv.sort }
       before { dv.categories = [:c, :a, 1] }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:size) { is_expected.to eq 5 }
       its(:to_a) { is_expected.to eq [:c, :a, :a, 1, 1] }
       its(:'index.to_a') { is_expected.to eq [4, 0, 2, 1, 3] }
     end
 
     context 'original vector unaffected' do
-      let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category, ordered: true }
+      let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category, ordered: true }
       subject { dv }
       before { dv.categories = [:c, :a, 1]; dv.sort }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:size) { is_expected.to eq 5 }
       its(:to_a) { is_expected.to eq [:a, 1, :a, 1, :c] }
       its(:'index.to_a') { is_expected.to eq [0, 1, 2, 3, 4] }
@@ -586,9 +586,9 @@ describe Daru::Vector, "categorical" do
   end
 
   context "#[]" do
-    context Daru::Index do
+    context DaruLite::Index do
       before :each do
-        @dv = Daru::Vector.new [1,2,3,4,5], name: :yoga,
+        @dv = DaruLite::Vector.new [1,2,3,4,5], name: :yoga,
           index: [:yoda, :anakin, :obi, :padme, :r2d2], type: :category
       end
 
@@ -601,27 +601,27 @@ describe Daru::Vector, "categorical" do
       end
 
       it "returns a vector with given indices for multiple indices" do
-        expect(@dv[:yoda, :anakin]).to eq(Daru::Vector.new([1,2], name: :yoda,
+        expect(@dv[:yoda, :anakin]).to eq(DaruLite::Vector.new([1,2], name: :yoda,
           index: [:yoda, :anakin], type: :category))
       end
 
       it "returns a vector with given indices for multiple numeric indices" do
-        expect(@dv[0,1]).to eq(Daru::Vector.new([1,2], name: :yoda,
+        expect(@dv[0,1]).to eq(DaruLite::Vector.new([1,2], name: :yoda,
           index: [:yoda, :anakin], type: :category))
       end
 
       it "returns a vector when specified symbol Range" do
-        expect(@dv[:yoda..:anakin]).to eq(Daru::Vector.new([1,2],
+        expect(@dv[:yoda..:anakin]).to eq(DaruLite::Vector.new([1,2],
           index: [:yoda, :anakin], name: :yoga, type: :category))
       end
 
       it "returns a vector when specified numeric Range" do
-        expect(@dv[3..4]).to eq(Daru::Vector.new([4,5], name: :yoga,
+        expect(@dv[3..4]).to eq(DaruLite::Vector.new([4,5], name: :yoga,
           index: [:padme, :r2d2], type: :category))
       end
 
       it "returns correct results for index of multiple index" do
-        v = Daru::Vector.new([1,2,3,4], index: ['a','c',1,:a], type: :category)
+        v = DaruLite::Vector.new([1,2,3,4], index: ['a','c',1,:a], type: :category)
         expect(v['a']).to eq(1)
         expect(v[:a]).to eq(4)
         expect(v[1]).to eq(3)
@@ -635,19 +635,19 @@ describe Daru::Vector, "categorical" do
 
       context "preserves old categories" do
         let(:dv) do
-          Daru::Vector.new [:a, :a, :b, :c, :b],
+          DaruLite::Vector.new [:a, :a, :b, :c, :b],
             type: :category,
             categories: [:c, :b, :a, :e]
         end
         subject { dv[0, 1, 4] }
 
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:categories) { is_expected.to eq [:c, :b, :a, :e] }
         its(:to_a) { is_expected.to eq [:a, :a, :b] }
       end
     end
 
-    context Daru::MultiIndex do
+    context DaruLite::MultiIndex do
       before do
         @tuples = [
           [:a,:one,:bar],
@@ -664,8 +664,8 @@ describe Daru::Vector, "categorical" do
           [:c,:two,:bar],
           [:d,:one,:foo]
         ]
-        @multi_index = Daru::MultiIndex.from_tuples(@tuples)
-        @vector = Daru::Vector.new(
+        @multi_index = DaruLite::MultiIndex.from_tuples(@tuples)
+        @vector = DaruLite::Vector.new(
           Array.new(13) { |i| i }, index: @multi_index,
           name: :mi_vector, type: :category)
       end
@@ -679,31 +679,31 @@ describe Daru::Vector, "categorical" do
       end
 
       it "returns sub vector when passed first layer of tuple" do
-        mi = Daru::MultiIndex.from_tuples([
+        mi = DaruLite::MultiIndex.from_tuples([
           [:one,:bar],
           [:one,:baz],
           [:two,:bar],
           [:two,:baz]])
-        expect(@vector[:a]).to eq(Daru::Vector.new([0,1,2,3], index: mi,
+        expect(@vector[:a]).to eq(DaruLite::Vector.new([0,1,2,3], index: mi,
           name: :sub_vector, type: :category))
       end
 
       it "returns sub vector when passed first and second layer of tuple" do
-        mi = Daru::MultiIndex.from_tuples([
+        mi = DaruLite::MultiIndex.from_tuples([
           [:foo],
           [:bar]])
-        expect(@vector[:c,:two]).to eq(Daru::Vector.new([10,11], index: mi,
+        expect(@vector[:c,:two]).to eq(DaruLite::Vector.new([10,11], index: mi,
           name: :sub_sub_vector, type: :category))
       end
 
       it "returns sub vector not a single element when passed the partial tuple" do
-        mi = Daru::MultiIndex.from_tuples([[:foo]])
-        expect(@vector[:d, :one]).to eq(Daru::Vector.new([12], index: mi,
+        mi = DaruLite::MultiIndex.from_tuples([[:foo]])
+        expect(@vector[:d, :one]).to eq(DaruLite::Vector.new([12], index: mi,
           name: :sub_sub_vector, type: :category))
       end
 
       it "returns a vector with corresponding MultiIndex when specified numeric Range" do
-        mi = Daru::MultiIndex.from_tuples([
+        mi = DaruLite::MultiIndex.from_tuples([
           [:a,:two,:baz],
           [:b,:one,:bar],
           [:b,:two,:bar],
@@ -712,7 +712,7 @@ describe Daru::Vector, "categorical" do
           [:c,:one,:bar],
           [:c,:one,:baz]
         ])
-        expect(@vector[3..9]).to eq(Daru::Vector.new([3,4,5,6,7,8,9], index: mi,
+        expect(@vector[3..9]).to eq(DaruLite::Vector.new([3,4,5,6,7,8,9], index: mi,
           name: :slice, type: :category))
       end
 
@@ -723,21 +723,21 @@ describe Daru::Vector, "categorical" do
       end
     end
 
-    context Daru::CategoricalIndex do
+    context DaruLite::CategoricalIndex do
       context "non-numerical index" do
-        let (:idx) { Daru::CategoricalIndex.new [:a, :b, :a, :a, :c] }
-        let (:dv)  { Daru::Vector.new 'a'..'e', index: idx, type: :category }
+        let (:idx) { DaruLite::CategoricalIndex.new [:a, :b, :a, :a, :c] }
+        let (:dv)  { DaruLite::Vector.new 'a'..'e', index: idx, type: :category }
 
         context "single category" do
           context "multiple instances" do
             subject { dv[:a] }
 
-            it { is_expected.to be_a Daru::Vector }
+            it { is_expected.to be_a DaruLite::Vector }
             its(:type) { is_expected.to eq :category }
             its(:size) { is_expected.to eq 3 }
             its(:to_a) { is_expected.to eq  ['a', 'c', 'd'] }
             its(:index) { is_expected.to eq(
-              Daru::CategoricalIndex.new([:a, :a, :a])) }
+              DaruLite::CategoricalIndex.new([:a, :a, :a])) }
           end
 
           context "single instance" do
@@ -750,23 +750,23 @@ describe Daru::Vector, "categorical" do
         context "multiple categories" do
           subject { dv[:a, :c] }
 
-          it { is_expected.to be_a Daru::Vector }
+          it { is_expected.to be_a DaruLite::Vector }
           its(:type) { is_expected.to eq :category }
           its(:size) { is_expected.to eq 4 }
           its(:to_a) { is_expected.to eq  ['a', 'c', 'd', 'e'] }
           its(:index) { is_expected.to eq(
-            Daru::CategoricalIndex.new([:a, :a, :a, :c])) }
+            DaruLite::CategoricalIndex.new([:a, :a, :a, :c])) }
         end
 
         context "multiple positional indexes" do
           subject { dv[0, 1, 2] }
 
-          it { is_expected.to be_a Daru::Vector }
+          it { is_expected.to be_a DaruLite::Vector }
           its(:type) { is_expected.to eq :category }
           its(:size) { is_expected.to eq 3 }
           its(:to_a) { is_expected.to eq ['a', 'b', 'c'] }
           its(:index) { is_expected.to eq(
-            Daru::CategoricalIndex.new([:a, :b, :a])) }
+            DaruLite::CategoricalIndex.new([:a, :b, :a])) }
         end
 
         context "single positional index" do
@@ -785,19 +785,19 @@ describe Daru::Vector, "categorical" do
       end
 
       context "numerical index" do
-        let (:idx) { Daru::CategoricalIndex.new [1, 1, 2, 2, 3] }
-        let (:dv)  { Daru::Vector.new 'a'..'e', index: idx, type: :category }
+        let (:idx) { DaruLite::CategoricalIndex.new [1, 1, 2, 2, 3] }
+        let (:dv)  { DaruLite::Vector.new 'a'..'e', index: idx, type: :category }
 
         context "single category" do
           context "multiple instances" do
             subject { dv[1] }
 
-            it { is_expected.to be_a Daru::Vector }
+            it { is_expected.to be_a DaruLite::Vector }
             its(:type) { is_expected.to eq :category }
             its(:size) { is_expected.to eq 2 }
             its(:to_a) { is_expected.to eq  ['a', 'b'] }
             its(:index) { is_expected.to eq(
-              Daru::CategoricalIndex.new([1, 1])) }
+              DaruLite::CategoricalIndex.new([1, 1])) }
           end
 
           context "single instance" do
@@ -811,9 +811,9 @@ describe Daru::Vector, "categorical" do
   end
 
   context "#[]=" do
-    context Daru::Index do
+    context DaruLite::Index do
       before :each do
-        @dv = Daru::Vector.new [1,2,3,4,5], name: :yoga,
+        @dv = DaruLite::Vector.new [1,2,3,4,5], name: :yoga,
           index: [:yoda, :anakin, :obi, :padme, :r2d2], type: :category
         @dv.add_category 666
       end
@@ -829,7 +829,7 @@ describe Daru::Vector, "categorical" do
       end
 
       it "assigns correctly for a mixed index Vector" do
-        v = Daru::Vector.new [1,2,3,4], index: ['a',:a,0,66], type: :category
+        v = DaruLite::Vector.new [1,2,3,4], index: ['a',:a,0,66], type: :category
         v.add_category 666
         v['a'] = 666
         expect(v['a']).to eq(666)
@@ -840,12 +840,12 @@ describe Daru::Vector, "categorical" do
         v[3] = 666
         expect(v[3]).to eq(666)
 
-        expect(v).to eq(Daru::Vector.new([666,2,666,666],
+        expect(v).to eq(DaruLite::Vector.new([666,2,666,666],
           index: ['a',:a,0,66], type: :category))
       end
     end
 
-    context Daru::MultiIndex do
+    context DaruLite::MultiIndex do
       before :each do
         @tuples = [
           [:a,:one,:bar],
@@ -861,34 +861,34 @@ describe Daru::Vector, "categorical" do
           [:c,:two,:foo],
           [:c,:two,:bar]
         ]
-        @multi_index = Daru::MultiIndex.from_tuples(@tuples)
-        @vector = Daru::Vector.new Array.new(12) { |i| i }, index: @multi_index,
+        @multi_index = DaruLite::MultiIndex.from_tuples(@tuples)
+        @vector = DaruLite::Vector.new Array.new(12) { |i| i }, index: @multi_index,
           type: :category, name: :mi_vector
         @vector.add_category 69
       end
 
       it "assigns all lower layer indices when specified a first layer index" do
         @vector[:b] = 69
-        expect(@vector).to eq(Daru::Vector.new([0,1,2,3,69,69,69,69,8,9,10,11],
+        expect(@vector).to eq(DaruLite::Vector.new([0,1,2,3,69,69,69,69,8,9,10,11],
           index: @multi_index, name: :top_layer_assignment, type: :category
           ))
       end
 
       it "assigns all lower indices when specified first and second layer index" do
         @vector[:b, :one] = 69
-        expect(@vector).to eq(Daru::Vector.new([0,1,2,3,69,5,6,69,8,9,10,11],
+        expect(@vector).to eq(DaruLite::Vector.new([0,1,2,3,69,5,6,69,8,9,10,11],
           index: @multi_index, name: :second_layer_assignment, type: :category))
       end
 
       it "assigns just the precise value when specified complete tuple" do
         @vector[:b, :one, :foo] = 69
-        expect(@vector).to eq(Daru::Vector.new([0,1,2,3,4,5,6,69,8,9,10,11],
+        expect(@vector).to eq(DaruLite::Vector.new([0,1,2,3,4,5,6,69,8,9,10,11],
           index: @multi_index, name: :precise_assignment, type: :category))
       end
 
       it "assigns correctly when numeric index" do
         @vector[7] = 69
-        expect(@vector).to eq(Daru::Vector.new([0,1,2,3,4,5,6,69,8,9,10,11],
+        expect(@vector).to eq(DaruLite::Vector.new([0,1,2,3,4,5,6,69,8,9,10,11],
           index: @multi_index, name: :precise_assignment, type: :category))
       end
 
@@ -899,10 +899,10 @@ describe Daru::Vector, "categorical" do
       end
     end
 
-    context Daru::CategoricalIndex do
+    context DaruLite::CategoricalIndex do
       context "non-numerical index" do
-        let (:idx) { Daru::CategoricalIndex.new [:a, :b, :a, :a, :c] }
-        let (:dv)  { Daru::Vector.new 'a'..'e', index: idx, type: :category }
+        let (:idx) { DaruLite::CategoricalIndex.new [:a, :b, :a, :a, :c] }
+        let (:dv)  { DaruLite::Vector.new 'a'..'e', index: idx, type: :category }
         before { dv.add_category 'x' }
 
         context "single category" do
@@ -962,8 +962,8 @@ describe Daru::Vector, "categorical" do
       end
 
       context "numerical index" do
-        let (:idx) { Daru::CategoricalIndex.new [1, 1, 2, 2, 3] }
-        let (:dv)  { Daru::Vector.new 'a'..'e', index: idx, type: :category }
+        let (:idx) { DaruLite::CategoricalIndex.new [1, 1, 2, 2, 3] }
+        let (:dv)  { DaruLite::Vector.new 'a'..'e', index: idx, type: :category }
         before { dv.add_category 'x' }
 
         context "single category" do
@@ -988,9 +988,9 @@ describe Daru::Vector, "categorical" do
   end
 
   context "#at" do
-    context Daru::Index do
-      let (:idx) { Daru::Index.new [1, 0, :c] }
-      let (:dv) { Daru::Vector.new ['a', 'b', 'c'], index: idx, type: :category }
+    context DaruLite::Index do
+      let (:idx) { DaruLite::Index.new [1, 0, :c] }
+      let (:dv) { DaruLite::Vector.new ['a', 'b', 'c'], index: idx, type: :category }
 
       context "single position" do
         it { expect(dv.at 1).to eq 'b' }
@@ -999,7 +999,7 @@ describe Daru::Vector, "categorical" do
       context "multiple positions" do
         subject { dv.at 0, 2 }
 
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:type) { is_expected.to eq :category }
         its(:size) { is_expected.to eq 2 }
         its(:to_a) { is_expected.to eq ['a', 'c'] }
@@ -1017,7 +1017,7 @@ describe Daru::Vector, "categorical" do
       context "range" do
         subject { dv.at 0..1 }
 
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:type) { is_expected.to eq :category }
         its(:size) { is_expected.to eq 2 }
         its(:to_a) { is_expected.to eq ['a', 'b'] }
@@ -1027,7 +1027,7 @@ describe Daru::Vector, "categorical" do
       context "range with negative end" do
         subject { dv.at 0..-2 }
 
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:type) { is_expected.to eq :category }
         its(:size) { is_expected.to eq 2 }
         its(:to_a) { is_expected.to eq ['a', 'b'] }
@@ -1037,7 +1037,7 @@ describe Daru::Vector, "categorical" do
       context "range with single element" do
         subject { dv.at 0..0 }
 
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:type) { is_expected.to eq :category }
         its(:size) { is_expected.to eq 1 }
         its(:to_a) { is_expected.to eq ['a'] }
@@ -1046,28 +1046,28 @@ describe Daru::Vector, "categorical" do
 
       context "preserves old categories" do
         let(:dv) do
-          Daru::Vector.new [:a, :a, :b, :c, :b],
+          DaruLite::Vector.new [:a, :a, :b, :c, :b],
             type: :category,
             categories: [:c, :b, :a, :e]
         end
         subject { dv.at 0, 1, 4 }
 
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:categories) { is_expected.to eq [:c, :b, :a, :e] }
         its(:to_a) { is_expected.to eq [:a, :a, :b] }
       end
     end
 
-    context Daru::MultiIndex do
+    context DaruLite::MultiIndex do
       let (:idx) do
-        Daru::MultiIndex.from_tuples [
+        DaruLite::MultiIndex.from_tuples [
           [:a,:one,:bar],
           [:a,:one,:baz],
           [:b,:two,:bar],
           [:a,:two,:baz],
         ]
       end
-      let (:dv) { Daru::Vector.new 1..4, index: idx, type: :category }
+      let (:dv) { DaruLite::Vector.new 1..4, index: idx, type: :category }
 
       context "single position" do
         it { expect(dv.at 1).to eq 2 }
@@ -1076,7 +1076,7 @@ describe Daru::Vector, "categorical" do
       context "multiple positions" do
         subject { dv.at 2, 3 }
 
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:type) { is_expected.to eq :category }
         its(:size) { is_expected.to eq 2 }
         its(:to_a) { is_expected.to eq [3, 4] }
@@ -1095,7 +1095,7 @@ describe Daru::Vector, "categorical" do
       context "range" do
         subject { dv.at 2..3 }
 
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:type) { is_expected.to eq :category }
         its(:size) { is_expected.to eq 2 }
         its(:to_a) { is_expected.to eq [3, 4] }
@@ -1106,7 +1106,7 @@ describe Daru::Vector, "categorical" do
       context "range with negative end" do
         subject { dv.at 2..-1 }
 
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:type) { is_expected.to eq :category }
         its(:size) { is_expected.to eq 2 }
         its(:to_a) { is_expected.to eq [3, 4] }
@@ -1117,7 +1117,7 @@ describe Daru::Vector, "categorical" do
       context "range with single element" do
         subject { dv.at 2..2 }
 
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:type) { is_expected.to eq :category }
         its(:size) { is_expected.to eq 1 }
         its(:to_a) { is_expected.to eq [3] }
@@ -1125,19 +1125,19 @@ describe Daru::Vector, "categorical" do
       end
     end
 
-    context Daru::CategoricalIndex do
-      let (:idx) { Daru::CategoricalIndex.new [:a, 1, 1, :a, :c] }
-      let (:dv)  { Daru::Vector.new 'a'..'e', index: idx, type: :category }
+    context DaruLite::CategoricalIndex do
+      let (:idx) { DaruLite::CategoricalIndex.new [:a, 1, 1, :a, :c] }
+      let (:dv)  { DaruLite::Vector.new 'a'..'e', index: idx, type: :category }
 
       context "multiple positional indexes" do
         subject { dv.at 0, 1, 2 }
 
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:type) { is_expected.to eq :category }
         its(:size) { is_expected.to eq 3 }
         its(:to_a) { is_expected.to eq ['a', 'b', 'c'] }
         its(:index) { is_expected.to eq(
-          Daru::CategoricalIndex.new([:a, 1, 1])) }
+          DaruLite::CategoricalIndex.new([:a, 1, 1])) }
       end
 
       context "single positional index" do
@@ -1157,42 +1157,42 @@ describe Daru::Vector, "categorical" do
       context "range" do
         subject { dv.at 0..2 }
 
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:type) { is_expected.to eq :category }
         its(:size) { is_expected.to eq 3 }
         its(:to_a) { is_expected.to eq ['a', 'b', 'c'] }
         its(:index) { is_expected.to eq(
-          Daru::CategoricalIndex.new([:a, 1, 1])) }
+          DaruLite::CategoricalIndex.new([:a, 1, 1])) }
       end
 
       context "range with negative end" do
         subject { dv.at 0..-3 }
 
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:type) { is_expected.to eq :category }
         its(:size) { is_expected.to eq 3 }
         its(:to_a) { is_expected.to eq ['a', 'b', 'c'] }
         its(:index) { is_expected.to eq(
-          Daru::CategoricalIndex.new([:a, 1, 1])) }
+          DaruLite::CategoricalIndex.new([:a, 1, 1])) }
       end
 
       context "range with single element" do
         subject { dv.at 0..0 }
 
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:type) { is_expected.to eq :category }
         its(:size) { is_expected.to eq 1 }
         its(:to_a) { is_expected.to eq ['a'] }
         its(:index) { is_expected.to eq(
-          Daru::CategoricalIndex.new([:a])) }
+          DaruLite::CategoricalIndex.new([:a])) }
       end
     end
   end
 
   context "#set_at" do
-    context Daru::Index do
-      let (:idx) { Daru::Index.new [1, 0, :c] }
-      let (:dv) { Daru::Vector.new ['a', 'b', 'c'], index: idx, type: :category }
+    context DaruLite::Index do
+      let (:idx) { DaruLite::Index.new [1, 0, :c] }
+      let (:dv) { DaruLite::Vector.new ['a', 'b', 'c'], index: idx, type: :category }
       before { dv.add_category 'x' }
 
       context "single position" do
@@ -1218,16 +1218,16 @@ describe Daru::Vector, "categorical" do
       end
     end
 
-    context Daru::MultiIndex do
+    context DaruLite::MultiIndex do
       let(:idx) do
-        Daru::MultiIndex.from_tuples [
+        DaruLite::MultiIndex.from_tuples [
           [:a,:one,:bar],
           [:a,:one,:baz],
           [:b,:two,:bar],
           [:a,:two,:baz],
         ]
       end
-      let(:dv) { Daru::Vector.new 1..4, index: idx, type: :category }
+      let(:dv) { DaruLite::Vector.new 1..4, index: idx, type: :category }
       before { dv.add_category 'x' }
 
       context "single position" do
@@ -1253,9 +1253,9 @@ describe Daru::Vector, "categorical" do
       end
     end
 
-    context Daru::CategoricalIndex do
-      let (:idx) { Daru::CategoricalIndex.new [:a, 1, 1, :a, :c] }
-      let (:dv)  { Daru::Vector.new 'a'..'e', index: idx, type: :category }
+    context DaruLite::CategoricalIndex do
+      let (:idx) { DaruLite::CategoricalIndex.new [:a, 1, 1, :a, :c] }
+      let (:dv)  { DaruLite::Vector.new 'a'..'e', index: idx, type: :category }
       before { dv.add_category 'x' }
 
       context "multiple positional indexes" do
@@ -1285,21 +1285,21 @@ describe Daru::Vector, "categorical" do
   context "#contrast_code" do
     context "dummy coding" do
       context "default base category" do
-        let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category, name: :abc }
+        let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category, name: :abc }
         subject { dv.contrast_code }
 
-        it { is_expected.to be_a Daru::DataFrame }
+        it { is_expected.to be_a DaruLite::DataFrame }
         its(:shape) { is_expected.to eq [5, 2] }
         its(:'abc_1.to_a') { is_expected.to eq [0, 1, 0, 1, 0] }
         its(:'abc_c.to_a') { is_expected.to eq [0, 0, 0, 0, 1] }
       end
 
       context "manual base category" do
-        let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category, name: :abc }
+        let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category, name: :abc }
         before { dv.base_category = :c }
         subject { dv.contrast_code }
 
-        it { is_expected.to be_a Daru::DataFrame }
+        it { is_expected.to be_a DaruLite::DataFrame }
         its(:shape) { is_expected.to eq [5, 2] }
         its(:'abc_a.to_a') { is_expected.to eq [1, 0, 1, 0, 0] }
         its(:'abc_1.to_a') { is_expected.to eq [0, 1, 0, 1, 0] }
@@ -1308,25 +1308,25 @@ describe Daru::Vector, "categorical" do
 
     context "simple coding" do
       context "default base category" do
-        let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category, name: :abc }
+        let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category, name: :abc }
         subject { dv.contrast_code }
         before { dv.coding_scheme = :simple }
 
-        it { is_expected.to be_a Daru::DataFrame }
+        it { is_expected.to be_a DaruLite::DataFrame }
         its(:shape) { is_expected.to eq [5, 2] }
         its(:'abc_1.to_a') { is_expected.to eq [-1/3.0, 2/3.0, -1/3.0, 2/3.0, -1/3.0] }
         its(:'abc_c.to_a') { is_expected.to eq [-1/3.0, -1/3.0, -1/3.0, -1/3.0, 2/3.0] }
       end
 
       context "manual base category" do
-        let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category, name: :abc }
+        let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category, name: :abc }
         subject { dv.contrast_code }
         before do
           dv.coding_scheme = :simple
           dv.base_category = :c
         end
 
-        it { is_expected.to be_a Daru::DataFrame }
+        it { is_expected.to be_a DaruLite::DataFrame }
         its(:shape) { is_expected.to eq [5, 2] }
         its(:'abc_a.to_a') { is_expected.to eq [2/3.0, -1/3.0, 2/3.0, -1/3.0, -1/3.0] }
         its(:'abc_1.to_a') { is_expected.to eq [-1/3.0, 2/3.0, -1/3.0, 2/3.0, -1/3.0] }
@@ -1334,22 +1334,22 @@ describe Daru::Vector, "categorical" do
     end
 
     context "helmert coding" do
-      let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category, name: :abc }
+      let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category, name: :abc }
       subject { dv.contrast_code }
       before { dv.coding_scheme = :helmert }
 
-      it { is_expected.to be_a Daru::DataFrame }
+      it { is_expected.to be_a DaruLite::DataFrame }
       its(:shape) { is_expected.to eq [5, 2] }
       its(:'abc_a.to_a') { is_expected.to eq [2/3.0, -1/3.0, 2/3.0, -1/3.0, -1/3.0] }
       its(:'abc_1.to_a') { is_expected.to eq [0, 1/2.0, 0, 1/2.0, -1/2.0] }
     end
 
     context "deviation coding" do
-      let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category, name: :abc }
+      let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category, name: :abc }
       subject { dv.contrast_code }
       before { dv.coding_scheme = :deviation }
 
-      it { is_expected.to be_a Daru::DataFrame }
+      it { is_expected.to be_a DaruLite::DataFrame }
       its(:shape) { is_expected.to eq [5, 2] }
       its(:'abc_a.to_a') { is_expected.to eq [1, 0, 1, 0, -1] }
       its(:'abc_1.to_a') { is_expected.to eq [0, 1, 0, 1, -1] }
@@ -1357,17 +1357,17 @@ describe Daru::Vector, "categorical" do
 
     context "user-defined coding" do
       let(:df) do
-        Daru::DataFrame.new({
+        DaruLite::DataFrame.new({
           rank_level1: [1, -2, -3],
           rank_level2: [-4, 2, -1],
           rank_level3: [-3, -1, 5]
         }, index: ['I', 'II', 'III'])
       end
-      let(:dv) { Daru::Vector.new ['III', 'II', 'I', 'II', 'II'],
+      let(:dv) { DaruLite::Vector.new ['III', 'II', 'I', 'II', 'II'],
         name: :rank, type: :category }
       subject { dv.contrast_code user_defined: df }
 
-      it { is_expected.to be_a Daru::DataFrame }
+      it { is_expected.to be_a DaruLite::DataFrame }
       its(:shape) { is_expected.to eq [5, 3] }
       its(:'rank_level1.to_a') { is_expected.to eq [-3, -2, 1, -2, -2] }
       its(:'rank_level2.to_a') { is_expected.to eq [-1, 2, -4, 2, 2] }
@@ -1376,30 +1376,30 @@ describe Daru::Vector, "categorical" do
 
     context 'naming' do
       context "string" do
-        let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category, name: 'abc' }
+        let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category, name: 'abc' }
         subject { dv.contrast_code }
 
-        it { is_expected.to be_a Daru::DataFrame }
+        it { is_expected.to be_a DaruLite::DataFrame }
         its(:'vectors.to_a') { is_expected.to eq ['abc_1', 'abc_c'] }
       end
 
       context "symbol" do
-        let(:dv) { Daru::Vector.new [:a, 1, :a, 1, :c], type: :category, name: :abc }
+        let(:dv) { DaruLite::Vector.new [:a, 1, :a, 1, :c], type: :category, name: :abc }
         subject { dv.contrast_code }
 
-        it { is_expected.to be_a Daru::DataFrame }
+        it { is_expected.to be_a DaruLite::DataFrame }
         its(:'vectors.to_a') { is_expected.to eq [:abc_1, :abc_c] }
       end
     end
   end
 
   context '#reject_values'do
-    let(:dv) { Daru::Vector.new [1, nil, 3, :a, Float::NAN, nil, Float::NAN, 1],
+    let(:dv) { DaruLite::Vector.new [1, nil, 3, :a, Float::NAN, nil, Float::NAN, 1],
       index: 11..18, type: :category }
     context 'reject only nils' do
       subject { dv.reject_values nil }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:type) { is_expected.to eq :category }
       its(:to_a) { is_expected.to eq [1, 3, :a, Float::NAN, Float::NAN, 1] }
       its(:'index.to_a') { is_expected.to eq [11, 13, 14, 15, 17, 18] }
@@ -1408,7 +1408,7 @@ describe Daru::Vector, "categorical" do
     context 'reject only float::NAN' do
       subject { dv.reject_values Float::NAN }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:type) { is_expected.to eq :category }
       its(:to_a) { is_expected.to eq [1, nil, 3, :a, nil, 1] }
       its(:'index.to_a') { is_expected.to eq [11, 12, 13, 14, 16, 18] }
@@ -1417,7 +1417,7 @@ describe Daru::Vector, "categorical" do
     context 'reject both nil and float::NAN' do
       subject { dv.reject_values nil, Float::NAN }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:type) { is_expected.to eq :category }
       its(:to_a) { is_expected.to eq [1, 3, :a, 1] }
       its(:'index.to_a') { is_expected.to eq [11, 13, 14, 18] }
@@ -1426,7 +1426,7 @@ describe Daru::Vector, "categorical" do
     context 'reject any other value' do
       subject { dv.reject_values 1, 3, 20 }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:type) { is_expected.to eq :category }
       its(:to_a) { is_expected.to eq [nil, :a, Float::NAN, nil, Float::NAN] }
       its(:'index.to_a') { is_expected.to eq [12, 14, 15, 16, 17] }
@@ -1435,7 +1435,7 @@ describe Daru::Vector, "categorical" do
     context 'when resultant vector has only one value' do
       subject { dv.reject_values 1, :a, nil, Float::NAN }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:to_a) { is_expected.to eq [3] }
       its(:'index.to_a') { is_expected.to eq [13] }
     end
@@ -1443,7 +1443,7 @@ describe Daru::Vector, "categorical" do
     context 'when resultant vector has no value' do
       subject { dv.reject_values 1, 3, :a, nil, Float::NAN, 5 }
 
-      it { is_expected.to be_a Daru::Vector }
+      it { is_expected.to be_a DaruLite::Vector }
       its(:to_a) { is_expected.to eq [] }
       its(:'index.to_a') { is_expected.to eq [] }
     end
@@ -1452,13 +1452,13 @@ describe Daru::Vector, "categorical" do
   context '#include_values?' do
     context 'only nils' do
       context 'true' do
-        let(:dv) { Daru::Vector.new [1, 2, 3, :a, 'Unknown', nil],
+        let(:dv) { DaruLite::Vector.new [1, 2, 3, :a, 'Unknown', nil],
           type: :category }
         it { expect(dv.include_values? nil).to eq true }
       end
 
       context 'false' do
-        let(:dv) { Daru::Vector.new [1, 2, 3, :a, 'Unknown'],
+        let(:dv) { DaruLite::Vector.new [1, 2, 3, :a, 'Unknown'],
           type: :category }
         it { expect(dv.include_values? nil).to eq false }
       end
@@ -1466,13 +1466,13 @@ describe Daru::Vector, "categorical" do
 
     context 'only Float::NAN' do
       context 'true' do
-        let(:dv) { Daru::Vector.new [1, nil, 2, 3, Float::NAN],
+        let(:dv) { DaruLite::Vector.new [1, nil, 2, 3, Float::NAN],
           type: :category}
         it { expect(dv.include_values? Float::NAN).to eq true }
       end
 
       context 'false' do
-        let(:dv) { Daru::Vector.new [1, nil, 2, 3],
+        let(:dv) { DaruLite::Vector.new [1, nil, 2, 3],
           type: :category }
         it { expect(dv.include_values? Float::NAN).to eq false }
       end
@@ -1480,19 +1480,19 @@ describe Daru::Vector, "categorical" do
 
     context 'both nil and Float::NAN' do
       context 'true with only nil' do
-        let(:dv) { Daru::Vector.new [1, Float::NAN, 2, 3],
+        let(:dv) { DaruLite::Vector.new [1, Float::NAN, 2, 3],
           type: :category}
         it { expect(dv.include_values? nil, Float::NAN).to eq true }
       end
 
       context 'true with only Float::NAN' do
-        let(:dv) { Daru::Vector.new [1, nil, 2, 3],
+        let(:dv) { DaruLite::Vector.new [1, nil, 2, 3],
           type: :category}
         it { expect(dv.include_values? nil, Float::NAN).to eq true }
       end
 
       context 'false' do
-        let(:dv) { Daru::Vector.new [1, 2, 3],
+        let(:dv) { DaruLite::Vector.new [1, 2, 3],
           type: :category}
         it { expect(dv.include_values? nil, Float::NAN).to eq false }
       end
@@ -1500,13 +1500,13 @@ describe Daru::Vector, "categorical" do
 
     context 'any other value' do
       context 'true' do
-        let(:dv) { Daru::Vector.new [1, 2, 3, 4, nil],
+        let(:dv) { DaruLite::Vector.new [1, 2, 3, 4, nil],
           type: :category }
         it { expect(dv.include_values? 1, 2, 3, 5).to eq true }
       end
 
       context 'false' do
-        let(:dv) { Daru::Vector.new [1, 2, 3, 4, nil],
+        let(:dv) { DaruLite::Vector.new [1, 2, 3, 4, nil],
           type: :category }
         it { expect(dv.include_values? 5, 6).to eq false }
       end
@@ -1514,7 +1514,7 @@ describe Daru::Vector, "categorical" do
   end
 
   context '#count_values' do
-    let(:dv) { Daru::Vector.new [1, 2, 3, 1, 2, nil, nil], type: :category }
+    let(:dv) { DaruLite::Vector.new [1, 2, 3, 1, 2, nil, nil], type: :category }
     it { expect(dv.count_values 1, 2).to eq 4 }
     it { expect(dv.count_values nil).to eq 2 }
     it { expect(dv.count_values 3, Float::NAN).to eq 1 }
@@ -1522,8 +1522,8 @@ describe Daru::Vector, "categorical" do
   end
 
   context '#indexes' do
-    context Daru::Index do
-      let(:dv) { Daru::Vector.new [1, 2, 1, 2, 3, nil, nil, Float::NAN],
+    context DaruLite::Index do
+      let(:dv) { DaruLite::Vector.new [1, 2, 1, 2, 3, nil, nil, Float::NAN],
         index: 11..18, type: :category }
 
       subject { dv.indexes 1, 2, nil, Float::NAN }
@@ -1531,9 +1531,9 @@ describe Daru::Vector, "categorical" do
       it { is_expected.to eq [11, 12, 13, 14, 16, 17, 18] }
     end
 
-    context Daru::MultiIndex do
+    context DaruLite::MultiIndex do
       let(:mi) do
-        Daru::MultiIndex.from_tuples([
+        DaruLite::MultiIndex.from_tuples([
           ['M', 2000],
           ['M', 2001],
           ['M', 2002],
@@ -1544,7 +1544,7 @@ describe Daru::Vector, "categorical" do
           ['F', 2003]
         ])
       end
-      let(:dv) { Daru::Vector.new [1, 2, 1, 2, 3, nil, nil, Float::NAN],
+      let(:dv) { DaruLite::Vector.new [1, 2, 1, 2, 3, nil, nil, Float::NAN],
         index: mi, type: :category }
 
       subject { dv.indexes 1, 2, Float::NAN }
@@ -1562,7 +1562,7 @@ describe Daru::Vector, "categorical" do
 
   context '#replace_values' do
     subject do
-      Daru::Vector.new(
+      DaruLite::Vector.new(
         [1, 2, 1, 4, nil, Float::NAN, nil, Float::NAN],
         index: 11..18, type: :category
       )
@@ -1590,10 +1590,10 @@ describe Daru::Vector, "categorical" do
   end
 end
 
-describe Daru::DataFrame, "categorical" do
+describe DaruLite::DataFrame, "categorical" do
   context "#to_category" do
     let(:df) do
-      Daru::DataFrame.new({
+      DaruLite::DataFrame.new({
         a: [1, 2, 3, 4, 5],
         b: ['first', 'second', 'first', 'second', 'third'],
         c: ['a', 'b', 'a', 'b', nil]
@@ -1602,7 +1602,7 @@ describe Daru::DataFrame, "categorical" do
     before { df.to_category :b, :c }
     subject { df }
 
-    it { is_expected.to be_a Daru::DataFrame }
+    it { is_expected.to be_a DaruLite::DataFrame }
     its(:'b.type') { is_expected.to eq :category }
     its(:'c.type') { is_expected.to eq :category }
     its(:'a.count') { is_expected.to eq 5 }
@@ -1614,7 +1614,7 @@ describe Daru::DataFrame, "categorical" do
   context "#interact_code" do
     context "two vectors" do
       let(:df) do
-        Daru::DataFrame.new({
+        DaruLite::DataFrame.new({
           a: [1, 2, 3, 4, 5],
           b: ['first', 'second', 'first', 'second', 'third'],
           c: ['a', 'b', 'a', 'b', 'c']
@@ -1629,7 +1629,7 @@ describe Daru::DataFrame, "categorical" do
       context "both full" do
         subject { df.interact_code [:b, :c], [true, true] }
 
-        it { is_expected.to be_a Daru::DataFrame }
+        it { is_expected.to be_a DaruLite::DataFrame }
         its(:shape) { is_expected.to eq [5, 9] }
         it { expect(subject['b_first:c_a'].to_a).to eq [1, 0, 1, 0, 0] }
         it { expect(subject['b_first:c_b'].to_a).to eq [0, 0, 0, 0, 0] }
@@ -1645,7 +1645,7 @@ describe Daru::DataFrame, "categorical" do
       context "one full" do
         subject { df.interact_code [:b, :c], [true, false] }
 
-        it { is_expected.to be_a Daru::DataFrame }
+        it { is_expected.to be_a DaruLite::DataFrame }
         its(:shape) { is_expected.to eq [5, 6] }
         it { expect(subject['b_first:c_b'].to_a).to eq [0, 0, 0, 0, 0] }
         it { expect(subject['b_first:c_c'].to_a).to eq [0, 0, 0, 0, 0] }
@@ -1658,7 +1658,7 @@ describe Daru::DataFrame, "categorical" do
       context "none full" do
         subject { df.interact_code [:b, :c], [false, false] }
 
-        it { is_expected.to be_a Daru::DataFrame }
+        it { is_expected.to be_a DaruLite::DataFrame }
         its(:shape) { is_expected.to eq [5, 4] }
         it { expect(subject['b_second:c_b'].to_a).to eq [0, 1, 0, 1, 0] }
         it { expect(subject['b_second:c_c'].to_a).to eq [0, 0, 0, 0, 0] }
@@ -1669,7 +1669,7 @@ describe Daru::DataFrame, "categorical" do
 
     context "more than two vectors" do
       let(:df) do
-        Daru::DataFrame.new({
+        DaruLite::DataFrame.new({
           a: [1, 1, 2],
           b: [2, 2, 3],
           c: [3, 3, 4]
@@ -1678,7 +1678,7 @@ describe Daru::DataFrame, "categorical" do
       before { df.to_category :a, :b, :c }
       subject { df.interact_code [:a, :b, :c], [false, false, true] }
 
-      it { is_expected.to be_a Daru::DataFrame }
+      it { is_expected.to be_a DaruLite::DataFrame }
       its(:shape) { is_expected.to eq [3, 2] }
       it { expect(subject['a_2:b_3:c_3'].to_a).to eq [0, 0, 0] }
       it { expect(subject['a_2:b_3:c_4'].to_a).to eq [0, 0, 1] }
@@ -1687,7 +1687,7 @@ describe Daru::DataFrame, "categorical" do
 
   context "#sort!" do
     let(:df) do
-      Daru::DataFrame.new({
+      DaruLite::DataFrame.new({
         a: [1, 2, 1, 4, 5],
         b: ['II', 'I', 'III', 'II', 'I'],
       })
@@ -1705,26 +1705,26 @@ describe Daru::DataFrame, "categorical" do
 
   context "#split_by_category" do
     let(:df) do
-      Daru::DataFrame.new({
+      DaruLite::DataFrame.new({
         a: [1, 2, 3, 4, 5, 6, 7],
         b: [3, 2, 2, 35, 3, 2, 5],
         cat: [:I, :II, :I, :III, :I, :III, :II]
       })
     end
     let(:df1) do
-      Daru::DataFrame.new({
+      DaruLite::DataFrame.new({
         a: [1, 3, 5],
         b: [3, 2, 3]
       }, name: :I, index: [0, 2, 4])
     end
     let(:df2) do
-      Daru::DataFrame.new({
+      DaruLite::DataFrame.new({
         a: [2, 7],
         b: [2, 5]
       }, name: :II, index: [1, 6])
     end
     let(:df3) do
-      Daru::DataFrame.new({
+      DaruLite::DataFrame.new({
         a: [4, 6],
         b: [35, 2]
       }, name: :III, index: [3, 5])

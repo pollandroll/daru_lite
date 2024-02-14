@@ -1,48 +1,48 @@
 require 'spec_helper.rb'
 
-describe Daru::Index do
+describe DaruLite::Index do
   context ".new" do
     it "creates an Index object if Index-like data is supplied" do
-      i = Daru::Index.new [:one, 'one', 1, 2, :two]
-      expect(i.class).to eq(Daru::Index)
+      i = DaruLite::Index.new [:one, 'one', 1, 2, :two]
+      expect(i.class).to eq(DaruLite::Index)
       expect(i.to_a) .to eq([:one, 'one', 1, 2, :two])
     end
 
     it "creates a MultiIndex if tuples are supplied" do
-      i = Daru::Index.new([
+      i = DaruLite::Index.new([
         [:b,:one,:bar],
         [:b,:two,:bar],
         [:b,:two,:baz],
         [:b,:one,:foo]
       ])
 
-      expect(i.class).to eq(Daru::MultiIndex)
+      expect(i.class).to eq(DaruLite::MultiIndex)
       expect(i.levels).to eq([[:b], [:one, :two], [:bar, :baz, :foo]])
       expect(i.labels).to eq([[0,0,0,0],[0,1,1,0],[0,0,1,2]])
     end
 
     it "creates DateTimeIndex if date-like objects specified" do
-      i = Daru::Index.new([
+      i = DaruLite::Index.new([
         DateTime.new(2012,2,4), DateTime.new(2012,2,5), DateTime.new(2012,2,6)])
-      expect(i.class).to eq(Daru::DateTimeIndex)
+      expect(i.class).to eq(DaruLite::DateTimeIndex)
       expect(i.to_a).to eq([DateTime.new(2012,2,4), DateTime.new(2012,2,5), DateTime.new(2012,2,6)])
       expect(i.frequency).to eq('D')
     end
 
     context "create an Index with name" do
       context 'if no name is set' do
-        subject { Daru::Index.new [:a, :b, :c]  }
+        subject { DaruLite::Index.new [:a, :b, :c]  }
         its(:name) { is_expected.to be_nil }
       end
 
       context 'correctly return the index name' do
-        subject { Daru::Index.new [:a, :b, :c], name: 'index_name'  }
+        subject { DaruLite::Index.new [:a, :b, :c], name: 'index_name'  }
         its(:name) { is_expected.to eq 'index_name' }
       end
 
       context "set new index name" do
         subject {
-          Daru::Index.new([:a, :b, :c], name: 'index_name') }
+          DaruLite::Index.new([:a, :b, :c], name: 'index_name') }
         before { subject.name = 'new_name'}
         its(:name) { is_expected.to eq 'new_name' }
       end
@@ -51,30 +51,30 @@ describe Daru::Index do
 
   context "#initialize" do
     it "creates an Index from Array" do
-      idx = Daru::Index.new ['speaker', 'mic', 'guitar', 'amp']
+      idx = DaruLite::Index.new ['speaker', 'mic', 'guitar', 'amp']
 
       expect(idx.to_a).to eq(['speaker', 'mic', 'guitar', 'amp'])
     end
 
     it "creates an Index from Range" do
-      idx = Daru::Index.new 1..5
+      idx = DaruLite::Index.new 1..5
 
-      expect(idx).to eq(Daru::Index.new [1, 2, 3, 4, 5])
+      expect(idx).to eq(DaruLite::Index.new [1, 2, 3, 4, 5])
     end
 
     it "raises ArgumentError on invalid input type" do
-      expect { Daru::Index.new 'foo' }.to raise_error ArgumentError
+      expect { DaruLite::Index.new 'foo' }.to raise_error ArgumentError
     end
 
     it "accepts all sorts of objects for Indexing" do
-      idx = Daru::Index.new [:a, 'a', :hello, '23', 23]
+      idx = DaruLite::Index.new [:a, 'a', :hello, '23', 23]
 
       expect(idx.to_a).to eq([:a, 'a', :hello, '23', 23])
     end
   end
 
   context '#key' do
-    subject(:idx) { Daru::Index.new ['speaker', 'mic', 'guitar', 'amp'] }
+    subject(:idx) { DaruLite::Index.new ['speaker', 'mic', 'guitar', 'amp'] }
 
     it 'returns key by position' do
       expect(idx.key(2)).to eq 'guitar'
@@ -94,30 +94,30 @@ describe Daru::Index do
     let(:desc) { index.sort(ascending: false) }
 
     context 'string index' do
-      let(:index) { Daru::Index.new ['mic', 'amp', 'guitar', 'speaker'] }
-      specify { expect(asc).to eq Daru::Index.new ['amp', 'guitar', 'mic',
+      let(:index) { DaruLite::Index.new ['mic', 'amp', 'guitar', 'speaker'] }
+      specify { expect(asc).to eq DaruLite::Index.new ['amp', 'guitar', 'mic',
        'speaker'] }
-      specify { expect(desc).to eq Daru::Index.new ['speaker', 'mic', 'guitar',
+      specify { expect(desc).to eq DaruLite::Index.new ['speaker', 'mic', 'guitar',
        'amp'] }
     end
 
     context 'number index' do
-      let(:index) { Daru::Index.new [100, 99, 101, 1, 2]  }
-      specify { expect(asc).to eq Daru::Index.new [1, 2, 99, 100, 101] }
-      specify { expect(desc).to eq Daru::Index.new [101, 100, 99, 2, 1] }
+      let(:index) { DaruLite::Index.new [100, 99, 101, 1, 2]  }
+      specify { expect(asc).to eq DaruLite::Index.new [1, 2, 99, 100, 101] }
+      specify { expect(desc).to eq DaruLite::Index.new [101, 100, 99, 2, 1] }
     end
   end
 
   context "#size" do
     it "correctly returns the size of the index" do
-      idx = Daru::Index.new ['speaker', 'mic', 'guitar', 'amp']
+      idx = DaruLite::Index.new ['speaker', 'mic', 'guitar', 'amp']
 
       expect(idx.size).to eq(4)
     end
   end
 
   context "#valid?" do
-    let(:idx) { Daru::Index.new [:a, :b, :c] }
+    let(:idx) { DaruLite::Index.new [:a, :b, :c] }
 
     context "single index" do
       it { expect(idx.valid? 2).to eq true }
@@ -132,25 +132,25 @@ describe Daru::Index do
 
   context '#inspect' do
     context 'small index' do
-      subject { Daru::Index.new ['one', 'two', 'three']  }
-      its(:inspect) { is_expected.to eq "#<Daru::Index(3): {one, two, three}>" }
+      subject { DaruLite::Index.new ['one', 'two', 'three']  }
+      its(:inspect) { is_expected.to eq "#<DaruLite::Index(3): {one, two, three}>" }
     end
 
     context 'large index' do
-      subject { Daru::Index.new ('a'..'z').to_a  }
-      its(:inspect) { is_expected.to eq "#<Daru::Index(26): {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t ... z}>" }
+      subject { DaruLite::Index.new ('a'..'z').to_a  }
+      its(:inspect) { is_expected.to eq "#<DaruLite::Index(26): {a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t ... z}>" }
     end
 
     context 'index with name' do
-      subject { Daru::Index.new ['one', 'two', 'three'], name: 'number'  }
-      its(:inspect) { is_expected.to eq "#<Daru::Index(3): number {one, two, three}>" }
+      subject { DaruLite::Index.new ['one', 'two', 'three'], name: 'number'  }
+      its(:inspect) { is_expected.to eq "#<DaruLite::Index(3): number {one, two, three}>" }
     end
   end
 
   context "#&" do
     before :each do
-      @left = Daru::Index.new [:miles, :geddy, :eric]
-      @right = Daru::Index.new [:geddy, :richie, :miles]
+      @left = DaruLite::Index.new [:miles, :geddy, :eric]
+      @right = DaruLite::Index.new [:geddy, :richie, :miles]
     end
 
     it "intersects 2 indexes and returns an Index" do
@@ -164,8 +164,8 @@ describe Daru::Index do
 
   context "#|" do
     before :each do
-      @left = Daru::Index.new [:miles, :geddy, :eric]
-      @right = Daru::Index.new [:bob, :jimi, :richie]
+      @left = DaruLite::Index.new [:miles, :geddy, :eric]
+      @right = DaruLite::Index.new [:bob, :jimi, :richie]
     end
 
     it "unions 2 indexes and returns an Index" do
@@ -180,8 +180,8 @@ describe Daru::Index do
 
   context "#[]" do
     before do
-      @id = Daru::Index.new [:one, :two, :three, :four, :five, :six, :seven]
-      @mixed_id = Daru::Index.new ['a','b','c',:d,:a,8,3,5]
+      @id = DaruLite::Index.new [:one, :two, :three, :four, :five, :six, :seven]
+      @mixed_id = DaruLite::Index.new ['a','b','c',:d,:a,8,3,5]
     end
 
     it "works with ranges" do
@@ -324,11 +324,11 @@ describe Daru::Index do
     end
   end
 
-  # This context validate Daru::Index is like an enumerable.
+  # This context validate DaruLite::Index is like an enumerable.
   # #map and #select are samples and we do not need tests all
   # enumerable methods.
   context "Enumerable" do
-    let(:idx) { Daru::Index.new ['speaker', 'mic', 'guitar', 'amp'] }
+    let(:idx) { DaruLite::Index.new ['speaker', 'mic', 'guitar', 'amp'] }
 
     context "#map" do
       it { expect(idx.map(&:upcase)).to eq(['SPEAKER', 'MIC', 'GUITAR', 'AMP']) }
@@ -340,7 +340,7 @@ describe Daru::Index do
   end
 
   context "#is_values" do
-    let(:klass) { Daru::Vector }
+    let(:klass) { DaruLite::Vector }
     let(:idx) { described_class.new [:one, 'one', 1, 2, 'two', nil, [1, 2]] }
 
     context "no arguments" do
@@ -357,7 +357,7 @@ describe Daru::Index do
       context "symbol and number as argument" do
         subject { idx.is_values 2, :one }
         let(:answer) { [true, false, false, true, false, false, false] }
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:size) { is_expected.to eq 7 }
         it { is_expected.to eq klass.new(answer) }
       end
@@ -365,7 +365,7 @@ describe Daru::Index do
       context "string and number as argument" do
         subject { idx.is_values('one', 1)}
         let(:answer) { [false, true, true, false, false, false, false] }
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:size) { is_expected.to eq 7 }
         it { is_expected.to eq klass.new(answer) }
       end
@@ -373,7 +373,7 @@ describe Daru::Index do
       context "nil is present in arguments" do
         subject { idx.is_values('two', nil)}
         let(:answer) { [false, false, false, false, true, true, false] }
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:size) { is_expected.to eq 7 }
         it { is_expected.to eq klass.new(answer) }
       end
@@ -381,7 +381,7 @@ describe Daru::Index do
       context "subarray is present in arguments" do
         subject { idx.is_values([1, 2])}
         let(:answer) { [false, false, false, false, false, false, true] }
-        it { is_expected.to be_a Daru::Vector }
+        it { is_expected.to be_a DaruLite::Vector }
         its(:size) { is_expected.to eq 7 }
         it { is_expected.to eq klass.new(answer) }
       end
@@ -391,12 +391,12 @@ describe Daru::Index do
 
   context '#to_df' do
     let(:idx) do
-      Daru::Index.new(['speaker', 'mic', 'guitar', 'amp'],
+      DaruLite::Index.new(['speaker', 'mic', 'guitar', 'amp'],
                       name: 'instruments')
     end
     subject { idx.to_df }
 
-    it { is_expected.to eq Daru::DataFrame.new(
+    it { is_expected.to eq DaruLite::DataFrame.new(
            'instruments' => ['speaker', 'mic', 'guitar', 'amp']
          )
     }
@@ -404,7 +404,7 @@ describe Daru::Index do
 
   context "#dup" do
     let(:idx) do
-      Daru::Index.new(['speaker', 'mic', 'guitar', 'amp'],
+      DaruLite::Index.new(['speaker', 'mic', 'guitar', 'amp'],
                       name: 'instruments')
     end
     subject { idx.dup }

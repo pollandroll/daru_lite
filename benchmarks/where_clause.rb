@@ -1,13 +1,13 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
 
 require 'benchmark'
-require 'daru'
+require 'daru_lite'
 
-df = Daru::DataFrame.new({
+df = DaruLite::DataFrame.new({
   a: 100000.times.map { |i| i },
   b: 100000.times.map { |i| i },
   c: 100000.times.map { |i| i }
-}, index: Daru::Index.new(100000.times.map.to_a.shuffle))
+}, index: DaruLite::Index.new(100000.times.map.to_a.shuffle))
 
 puts "Benchmarking DataFrame#where\n"
 Benchmark.bm do |x|
@@ -21,7 +21,7 @@ Benchmark.bm do |x|
 end
 
 puts "Benchmarking Vector#where\n"
-v = Daru::Vector.new(
+v = DaruLite::Vector.new(
   100000.times.map { |i| i }, index: 100000.times.map.to_a.shuffle)
 
 Benchmark.bm do |x|

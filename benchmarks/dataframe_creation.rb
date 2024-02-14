@@ -1,11 +1,11 @@
 $:.unshift File.expand_path("../../lib", __FILE__)
 
 require 'benchmark'
-require 'daru'
+require 'daru_lite'
 
 Benchmark.bm do |x|
   x.report("Create with Arrays and clone") do
-    df = Daru::DataFrame.new({
+    df = DaruLite::DataFrame.new({
       a: 100000.times.map { rand },
       b: 100000.times.map { rand },
       c: 100000.times.map { rand }
@@ -13,18 +13,18 @@ Benchmark.bm do |x|
   end
 
   x.report("Create with Vectors and clone") do
-    df = Daru::DataFrame.new({
-      a: Daru::Vector.new(100000.times.map { rand }),
-      b: Daru::Vector.new(100000.times.map { rand }),
-      c: Daru::Vector.new(100000.times.map { rand })
+    df = DaruLite::DataFrame.new({
+      a: DaruLite::Vector.new(100000.times.map { rand }),
+      b: DaruLite::Vector.new(100000.times.map { rand }),
+      c: DaruLite::Vector.new(100000.times.map { rand })
     })
   end
 
   x.report("Create with Vector and dont clone") do
-    df = Daru::DataFrame.new({
-      a: Daru::Vector.new(100000.times.map { rand }),
-      b: Daru::Vector.new(100000.times.map { rand }),
-      c: Daru::Vector.new(100000.times.map { rand })
+    df = DaruLite::DataFrame.new({
+      a: DaruLite::Vector.new(100000.times.map { rand }),
+      b: DaruLite::Vector.new(100000.times.map { rand }),
+      c: DaruLite::Vector.new(100000.times.map { rand })
     }, clone: false)
   end
 

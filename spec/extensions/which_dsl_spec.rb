@@ -1,8 +1,8 @@
-require 'daru/extensions/which_dsl'
+require 'daru_lite/extensions/which_dsl'
 
 describe "which DSL" do
   before do
-    @df = Daru::DataFrame.new({
+    @df = DaruLite::DataFrame.new({
       number: [1,2,3,4,5,6,Float::NAN],
       sym: [:one, :two, :three, :four, :five, :six, :seven],
       names: ['sameer', 'john', 'james', 'omisha', 'priyanka', 'shravan',nil]
@@ -10,21 +10,21 @@ describe "which DSL" do
   end
 
   it "accepts simple single eq statement" do
-    answer = Daru::DataFrame.new({
+    answer = DaruLite::DataFrame.new({
       number: [4],
       sym: [:four],
       names: ['omisha']
-      }, index: Daru::Index.new([3])
+      }, index: DaruLite::Index.new([3])
     )
     expect( @df.which{ `number` == 4 } ).to eq(answer)
   end
 
   it "accepts somewhat complex comparison operator chaining" do
-    answer = Daru::DataFrame.new({
+    answer = DaruLite::DataFrame.new({
       number: [3,4],
       sym: [:three, :four],
       names: ['james', 'omisha']
-    }, index: Daru::Index.new([2,3]))
+    }, index: DaruLite::Index.new([2,3]))
     expect(
       @df.which{ (`names` == 'james') | (`sym` == :four) }
       ).to eq(answer)

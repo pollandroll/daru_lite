@@ -1,10 +1,10 @@
-include Daru
+include DaruLite
 
-describe Daru::DateTimeIndexHelper do
+describe DaruLite::DateTimeIndexHelper do
 
 
   describe '.infer_offset' do
-    subject(:offset) { Daru::DateTimeIndexHelper.infer_offset(data) }
+    subject(:offset) { DaruLite::DateTimeIndexHelper.infer_offset(data) }
 
     context 'when the dataset does not have a regular offset' do
       let(:data) do
@@ -30,7 +30,7 @@ describe Daru::DateTimeIndexHelper do
       end
 
       it 'returns the matched offset' do
-        expect(offset).to be_an_instance_of(Daru::Offsets::Minute)
+        expect(offset).to be_an_instance_of(DaruLite::Offsets::Minute)
       end
     end
 
@@ -43,10 +43,10 @@ describe Daru::DateTimeIndexHelper do
         ]
       end
 
-      let(:expected_offset) { Daru::Offsets::Second.new(3) }
+      let(:expected_offset) { DaruLite::Offsets::Second.new(3) }
 
       it 'returns a Second offset' do
-        expect(offset).to be_an_instance_of(Daru::Offsets::Second)
+        expect(offset).to be_an_instance_of(DaruLite::Offsets::Second)
       end
 
       it 'has the correct multiplier' do

@@ -1,4 +1,4 @@
-describe Daru::DataFrame, '#to_html' do
+describe DaruLite::DataFrame, '#to_html' do
   let(:doc) { Nokogiri::HTML(df.to_html) }
   subject(:table) { doc.at('table') }
   let(:header) { doc.at('b')}
@@ -7,18 +7,18 @@ describe Daru::DataFrame, '#to_html' do
   let(:splitted_row) { row.inner_html.scan(/<t[dh].+?<\/t[dh]>/) }
 
   context 'simple' do
-    let(:df) { Daru::DataFrame.new({a: [1,2,3], b: [3,4,5], c: [6,7,8]}, name: name)}
+    let(:df) { DaruLite::DataFrame.new({a: [1,2,3], b: [3,4,5], c: [6,7,8]}, name: name)}
 
     describe 'header' do
       subject { header }
 
       it { is_expected.not_to be_nil }
-      its(:text) { is_expected.to eq " Daru::DataFrame: test (3x3) " }
+      its(:text) { is_expected.to eq " DaruLite::DataFrame: test (3x3) " }
 
       context 'without name' do
         let(:name) { nil }
 
-        its(:text) { is_expected.to eq " Daru::DataFrame(3x3) " }
+        its(:text) { is_expected.to eq " DaruLite::DataFrame(3x3) " }
       end
     end
 
@@ -29,7 +29,7 @@ describe Daru::DataFrame, '#to_html' do
     end
 
     context 'with multi-index columns' do
-      before { df.vectors = Daru::MultiIndex.from_tuples [[:a, :foo], [:a, :baz], [:b, :foo]] }
+      before { df.vectors = DaruLite::MultiIndex.from_tuples [[:a, :foo], [:a, :baz], [:b, :foo]] }
 
       subject { splitted_row }
       describe 'first row' do
@@ -70,12 +70,12 @@ describe Daru::DataFrame, '#to_html' do
   end
 
   context 'large dataframe' do
-    let(:df) { Daru::DataFrame.new({a: [1,2,3]*100, b: [3,4,5]*100, c: [6,7,8]*100}, name: 'test') }
+    let(:df) { DaruLite::DataFrame.new({a: [1,2,3]*100, b: [3,4,5]*100, c: [6,7,8]*100}, name: 'test') }
 
     describe 'header' do
       subject { header }
 
-      its(:text) { is_expected.to eq " Daru::DataFrame: test (300x3) " }
+      its(:text) { is_expected.to eq " DaruLite::DataFrame: test (300x3) " }
     end
 
     it 'has only 30 rows (+ 1 header rows, + 2 finishing rows)' do
@@ -97,11 +97,11 @@ describe Daru::DataFrame, '#to_html' do
 
   context 'with multi-index' do
     let(:df) {
-      Daru::DataFrame.new(
+      DaruLite::DataFrame.new(
         {
           a:   [1,2,3,4,5,6,7],
           b: %w[a b c d e f g]
-        }, index: Daru::MultiIndex.from_tuples([
+        }, index: DaruLite::MultiIndex.from_tuples([
               %w[foo one],
               %w[foo two],
               %w[foo three],
@@ -118,7 +118,7 @@ describe Daru::DataFrame, '#to_html' do
       subject { header }
 
       it { is_expected.not_to be_nil }
-      its(:text) { is_expected.to eq " Daru::DataFrame: test (7x2) " }
+      its(:text) { is_expected.to eq " DaruLite::DataFrame: test (7x2) " }
     end
 
     describe 'column headers' do
@@ -133,7 +133,7 @@ describe Daru::DataFrame, '#to_html' do
     end
 
     context 'with multi-index columns' do
-      before { df.vectors = Daru::MultiIndex.from_tuples [[:a, :foo], [:a, :baz]] }
+      before { df.vectors = DaruLite::MultiIndex.from_tuples [[:a, :foo], [:a, :baz]] }
 
       subject { splitted_row }
       describe 'first row' do

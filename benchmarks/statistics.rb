@@ -1,12 +1,12 @@
-require 'daru'
+require 'daru_lite'
 require 'benchmark'
 
-vector = Daru::Vector.new(
+vector = DaruLite::Vector.new(
   (10**6).times.map.to_a.shuffle,
   missing_values: 100.times.map.to_a.shuffle
   )
 
-vector = Daru::Vector.new(
+vector = DaruLite::Vector.new(
   10000.times.map.to_a.shuffle,
   missing_values: 100.times.map.to_a.shuffle,
   )
