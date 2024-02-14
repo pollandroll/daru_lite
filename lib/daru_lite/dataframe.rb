@@ -1157,8 +1157,10 @@ module DaruLite
       initialize(to_h, order: order_array)
     end
 
-    # Rotate the vectors in a dataframe
-    # @param count => Integer, param for the rotate array method
+    # Return the dataframe with rotate vectors positions, the vector at position count is now
+    # the first vector of the dataframe.
+    # If only one vector in the dataframe, the dataframe is return without any change.
+    # @param count => Integer, the vector at position count will be the first vector of the dataframe.
     # @example
     #   df = DaruLite::DataFrame({
     #     a: [1, 2, 3],
@@ -1172,10 +1174,11 @@ module DaruLite
     #   #   0   5     4   1
     #   #   1   7     5   2
     #   #   2   9     6   3
-    def rotate_vectors!(count = -1)
+    def rotate_vectors(count = -1)
       return self unless vectors.many?
 
       self.order = vectors.to_a.rotate(count)
+      self
     end
 
     # Returns a vector, based on a string with a calculation based
