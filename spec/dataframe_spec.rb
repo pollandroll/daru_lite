@@ -4279,7 +4279,7 @@ describe DaruLite::DataFrame do
     subject { df.rotate_vectors!(-1) }
 
     let(:df) do
-      Daru::DataFrame.new({
+      DaruLite::DataFrame.new({
         a: [1,2,3],
         b: [4,5,6],
         total: [5,7,9]

@@ -1160,14 +1160,14 @@ module DaruLite
     # Rotate the vectors in a dataframe
     # @param count => Integer, param for the rotate array method
     # @example
-    #   df = Daru::DataFrame({
+    #   df = DaruLite::DataFrame({
     #     a: [1, 2, 3],
     #     b: [4, 5, 6],
     #     total: [5, 7, 9],
     #   })
     #   df.rotate_vectors(-1)
     #   df
-    #   # => #<Daru::DataFrame(3x2)>
+    #   # => #<DaruLite::DataFrame(3x3)>
     #   #       total b   a
     #   #   0   5     4   1
     #   #   1   7     5   2
