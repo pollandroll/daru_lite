@@ -1162,7 +1162,7 @@ module Daru
     # Reorders the rows in a dataframe
     # @param new_order => [Array], the new order you want for your rows
     #
-    # @exemple
+    # @example
     #   df = Daru::DataFrame.new({
     #     a: [1, 2, 3],
     #     b: [4, 5, 6]
