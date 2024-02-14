@@ -1,7 +1,7 @@
-describe Daru::Formatters::Table do
+describe DaruLite::Formatters::Table do
   let(:options) { {} }
   subject {
-    Daru::Formatters::Table
+    DaruLite::Formatters::Table
       .format(data, options.merge(headers: headers, row_headers: row_headers))
   }
 

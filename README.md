@@ -10,7 +10,7 @@
 daru (Data Analysis in RUby) is a library for storage, analysis, manipulation and visualization of data in Ruby.
 
 daru makes it easy and intuitive to process data predominantly through 2 data structures:
-`Daru::DataFrame` and `Daru::Vector`. Written in pure Ruby works with all ruby implementations.
+`DaruLite::DataFrame` and `DaruLite::Vector`. Written in pure Ruby works with all ruby implementations.
 Tested with MRI 2.5.1 and 2.7.1.
 
 ## daru plugin gems
@@ -28,7 +28,7 @@ Articles/Blogs, that summarize powerful features of daru-view:
 
 - **[daru-io](https://github.com/SciRuby/daru-io)**
 
-This gem extends support for many Import and Export methods of `Daru::DataFrame`. This gem is intended to help Rubyists who are into Data Analysis or Web Development, by serving as a general purpose conversion library that takes input in one format (say, JSON) and converts it another format (say, Avro) while also making it incredibly easy to getting started on analyzing data with daru. One can read more in [SciRuby/blog/daru-io](http://sciruby.com/blog/2017/08/29/gsoc-2017-support-to-import-export-of-more-formats/).
+This gem extends support for many Import and Export methods of `DaruLite::DataFrame`. This gem is intended to help Rubyists who are into Data Analysis or Web Development, by serving as a general purpose conversion library that takes input in one format (say, JSON) and converts it another format (say, Avro) while also making it incredibly easy to getting started on analyzing data with daru. One can read more in [SciRuby/blog/daru-io](http://sciruby.com/blog/2017/08/29/gsoc-2017-support-to-import-export-of-more-formats/).
 
 
 ## Features
@@ -49,7 +49,7 @@ This gem extends support for many Import and Export methods of `Daru::DataFrame`
 ## Installation
 
 ```console
-$ gem install daru
+$ gem install daru_lite
 ```
 
 ## Notebooks
@@ -58,14 +58,14 @@ $ gem install daru
 
 * [Overview of most daru functions](http://nbviewer.ipython.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Daru%20Demo.ipynb)
 * [Basic Creation of Vectors and DataFrame](http://nbviewer.ipython.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Creation%20of%20Vector%20and%20DataFrame.ipynb)
-* [Detailed Usage of Daru::Vector](http://nbviewer.ipython.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Usage%20of%20Vector.ipynb)
-* [Detailed Usage of Daru::DataFrame](http://nbviewer.ipython.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Usage%20of%20DataFrame.ipynb)
+* [Detailed Usage of DaruLite::Vector](http://nbviewer.ipython.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Usage%20of%20Vector.ipynb)
+* [Detailed Usage of DaruLite::DataFrame](http://nbviewer.ipython.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Usage%20of%20DataFrame.ipynb)
 * [Searching and combining data in daru](http://nbviewer.ipython.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Searching%20and%20Combining%20Data.ipynb)
 * [Grouping, Splitting and Pivoting Data](http://nbviewer.ipython.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Grouping%2C%20Splitting%20and%20Pivoting.ipynb)
 * [Usage of Categorical Data](http://nbviewer.jupyter.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Categorical%20Data/Categorical%20Data.ipynb)
 
 #### Visualization
-* [Visualizing Data With Daru::DataFrame](http://nbviewer.ipython.org/github/SciRuby/sciruby-notebooks/blob/master/Visualization/Visualizing%20data%20with%20daru%20DataFrame.ipynb)
+* [Visualizing Data With DaruLite::DataFrame](http://nbviewer.ipython.org/github/SciRuby/sciruby-notebooks/blob/master/Visualization/Visualizing%20data%20with%20daru%20DataFrame.ipynb)
 * [Plotting using GnuplotRB](http://nbviewer.jupyter.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Plotting/Gnuplotrb.ipynb)
 * [Vector plotting with Gruff](http://nbviewer.jupyter.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Plotting/Gruff%20Vector.ipynb)
 * [DataFrame plotting with Gruff](http://nbviewer.jupyter.org/github/SciRuby/sciruby-notebooks/blob/master/Data%20Analysis/Plotting/Gruff%20DataFrame.ipynb)
@@ -112,7 +112,7 @@ daru exposes two major data structures: `DataFrame` and `Vector`. The Vector is 
 Basic DataFrame intitialization.
 
 ``` ruby
-data_frame = Daru::DataFrame.new(
+data_frame = DaruLite::DataFrame.new(
   {
     'Beer' => ['Kingfisher', 'Snow', 'Bud Light', 'Tiger Beer', 'Budweiser'],
     'Gallons sold' => [500, 400, 450, 200, 250]
@@ -126,7 +126,7 @@ data_frame
 
 Load data from CSV files.
 ``` ruby
-df = Daru::DataFrame.from_csv('TradeoffData.csv')
+df = DaruLite::DataFrame.from_csv('TradeoffData.csv')
 ```
 ![init1](images/init1.png)
 

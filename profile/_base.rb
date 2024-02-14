@@ -3,7 +3,7 @@ $:.unshift File.expand_path("../../lib", __FILE__)
 require 'ruby-prof'
 require 'fileutils'
 
-require 'daru'
+require 'daru_lite'
 
 def __profile__(name = nil)
   # infers name to be "sorting" when called from "profile/sorting.rb:10:in `<main>'"

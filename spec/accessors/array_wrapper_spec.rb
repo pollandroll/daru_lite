@@ -1,3 +1,3 @@
-describe Daru::Accessors::ArrayWrapper do
+describe DaruLite::Accessors::ArrayWrapper do
   # TODO:
 end

@@ -1,6 +1,6 @@
-describe Daru::MultiIndex, '#to_html' do
+describe DaruLite::MultiIndex, '#to_html' do
   let(:index) {
-    Daru::MultiIndex.from_tuples [
+    DaruLite::MultiIndex.from_tuples [
       [:a,:one,:bar],
       [:a,:one,:baz],
       [:a,:two,:bar],
@@ -21,7 +21,7 @@ describe Daru::MultiIndex, '#to_html' do
   describe 'first row' do
     subject { table.at('tr:first-child > th') }
     its(['colspan']) { is_expected.to eq '3' }
-    its(:text) { is_expected.to eq 'Daru::MultiIndex(12x3)' }
+    its(:text) { is_expected.to eq 'DaruLite::MultiIndex(12x3)' }
   end
 
   describe 'next row' do

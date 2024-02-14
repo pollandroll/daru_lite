@@ -1,7 +1,7 @@
-describe Daru::IRuby::Helpers do
+describe DaruLite::IRuby::Helpers do
   context 'MultiIndex' do
     let(:index) {
-      Daru::MultiIndex.from_tuples [
+      DaruLite::MultiIndex.from_tuples [
         [:a,:one,:bar],
         [:a,:one,:baz],
         [:a,:two,:bar],

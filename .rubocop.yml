@@ -4,7 +4,7 @@ AllCops:
   Include:
     - 'lib/**/*'
   Exclude:
-    - 'daru.gemspec'
+    - 'daru_lite.gemspec'
     - 'Rakefile'
     - 'Gemfile'
     - 'Guardfile'

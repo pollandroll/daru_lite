@@ -1,4 +1,4 @@
-describe Daru::ArrayHelper do
+describe DaruLite::ArrayHelper do
   context '#recode_repeated' do
     let(:source) { [1,'a',1,'a','b',:c,2] }
     subject { described_class.recode_repeated(source) }

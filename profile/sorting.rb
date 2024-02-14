@@ -1,7 +1,7 @@
 require_relative '_base'
 
-vector = Daru::Vector.new(10_000.times.map.to_a.shuffle)
-df = Daru::DataFrame.new({
+vector = DaruLite::Vector.new(10_000.times.map.to_a.shuffle)
+df = DaruLite::DataFrame.new({
   a: vector,
   b: vector,
   c: vector

@@ -2,7 +2,7 @@ require 'sqlite3'
 require 'dbi'
 require 'active_record'
 
-module Daru::RSpec
+module DaruLite::RSpec
   class Account < ActiveRecord::Base
     self.table_name = 'accounts'
   end
@@ -10,7 +10,7 @@ end
 
 shared_context 'with accounts table in sqlite3 database' do
   let(:db_name) do
-    'daru_test'
+    'daru_lite_test'
   end
 
   before do
