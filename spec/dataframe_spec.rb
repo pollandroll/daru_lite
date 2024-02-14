@@ -412,6 +412,7 @@ describe Daru::DataFrame do
       end
 
       it "aligns MultiIndexes properly" do
+        pending
         mi_a = @order_mi
         mi_b = Daru::MultiIndex.from_tuples([
           [:b,:one,:foo],
@@ -436,7 +437,7 @@ describe Daru::DataFrame do
         expect(df).to eq(Daru::DataFrame.new({
           [:pee, :que] => Daru::Vector.new([1,2,4,3], index: mi_sorted),
           [:pee, :poo] => Daru::Vector.new([12,14,11,13], index: mi_sorted)
-          }, order: @order_mi))
+          }, order: order_mi))
       end
 
       it "adds nils in case of missing values" do

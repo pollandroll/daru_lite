@@ -169,12 +169,6 @@ module Daru
         DataFrame.new(data)
       end
 
-      # def reorder_rows(new_order = [])
-      #   raise NotImplementedError if index.is_a?(Daru::CategoricalIndex)
-
-      #   reindex(Index.new(new_order))
-      # end
-
       private
 
       def guess_order(source)
