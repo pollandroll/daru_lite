@@ -4279,7 +4279,7 @@ describe DaruLite::DataFrame do
     subject { df.reorder_rows(new_order) }
 
     let(:df) do
-      Daru::DataFrame.new({
+      DaruLite::DataFrame.new({
         a: [1,2,3],
         b: [11,22,33]
       },
@@ -4287,7 +4287,7 @@ describe DaruLite::DataFrame do
       )
     end
     let(:new_order) { [2, 0, 1] }
-    it { is_expected.to be_a(Daru::DataFrame) }
+    it { is_expected.to be_a(DaruLite::DataFrame) }
 
     it "reorders the rows based on the given order" do
       expect(subject.index.to_a).to eq(new_order)

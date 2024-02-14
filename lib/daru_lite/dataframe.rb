@@ -1161,12 +1161,12 @@ module DaruLite
     # @param new_order => [Array], the new order you want for your rows
     #
     # @example
-    #   df = Daru::DataFrame.new({
+    #   df = DaruLite::DataFrame.new({
     #     a: [1, 2, 3],
     #     b: [4, 5, 6]
     #   }, order: [:a, :b])
     #
-    #   df = #<Daru::DataFrame(3x2)>
+    #   df = #<DaruLite::DataFrame(3x2)>
     #           #       a   b
     #           #   0   1   4
     #           #   1   2   5
@@ -1174,13 +1174,13 @@ module DaruLite
     #
     # df.reorder_rows[2,0,1]
     #
-    #   df = #<Daru::DataFrame(3x2)>
+    #   df = #<DaruLite::DataFrame(3x2)>
     #           #       a   b
     #           #   2   3   6
     #           #   0   1   4
     #           #   1   2   5
     def reorder_rows(new_order = [])
-      raise NotImplementedError if index.is_a?(Daru::CategoricalIndex)
+      raise NotImplementedError if index.is_a?(DaruLite::CategoricalIndex)
 
       row_at(*new_order)
     end
