@@ -4280,17 +4280,45 @@ describe DaruLite::DataFrame do
 
     let(:df) do
       DaruLite::DataFrame.new({
-        a: [1,2,3],
-        b: [11,22,33]
-      },
+          a: [1,2,3],
+          b: [11,22,33]
+        },
         order: [:a, :b],
       )
     end
+
     let(:new_order) { [2, 0, 1] }
     it { is_expected.to be_a(DaruLite::DataFrame) }
 
     it "reorders the rows based on the given order" do
       expect(subject.index.to_a).to eq(new_order)
+    end
+  end
+
+  context "#rotate_vectors" do
+    subject { df.rotate_vectors(-1) }
+
+    context "several vectors in the dataframe" do
+      let(:df) do
+        DaruLite::DataFrame.new({
+          a: [1,2,3],
+          b: [4,5,6],
+          total: [5,7,9]
+        })
+      end
+      let(:new_order) { [:total, :a, :b] }
+
+      it "return the dataframe with the position of the last vector change to first" do
+        expect(subject.vectors.to_a).to eq(new_order)
+      end
+    end
+
+    context "only one vector in the dataframe" do
+      let(:df) { DaruLite::DataFrame.new({ a: [1,2,3] }) }
+
+      it "return the dataframe without any change" do
+        expect(subject).to eq(df)
+      end
     end
   end
 end if mri?
