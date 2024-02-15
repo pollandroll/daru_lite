@@ -1157,33 +1157,35 @@ module DaruLite
       initialize(to_h, order: order_array)
     end
 
-    # Reorders the rows in a dataframe
+    # Returns the dataframe with reordered rows according to the index order given
     # @param new_order => [Array], the new order you want for your rows
-    #
     # @example
     #   df = DaruLite::DataFrame.new({
-    #     a: [1, 2, 3],
-    #     b: [4, 5, 6]
-    #   }, order: [:a, :b])
+    #         a: [1, 2, 3],
+    #         b: [4, 5, 6]
+    #         },
+    #         order: [:a, :b]
+    #       )
     #
     #   df = #<DaruLite::DataFrame(3x2)>
-    #           #       a   b
-    #           #   0   1   4
-    #           #   1   2   5
-    #           #   2   3   6
+    #   #       a   b
+    #   #   0   1   4
+    #   #   1   2   5
+    #   #   2   3   6
     #
-    # df.reorder_rows[2,0,1]
-    #
-    #   df = #<DaruLite::DataFrame(3x2)>
-    #           #       a   b
-    #           #   2   3   6
-    #           #   0   1   4
-    #           #   1   2   5
+    #   df.reorder_rows[2,0,1]
+    #   df
+    #   # =>  #<DaruLite::DataFrame(3x2)>
+    #   #       a   b
+    #   #   2   3   6
+    #   #   0   1   4
+    #   #   1   2   5
     def reorder_rows(new_order = [])
       raise NotImplementedError if index.is_a?(DaruLite::CategoricalIndex)
 
       row_at(*new_order)
     end
+
     # Return the dataframe with rotate vectors positions, the vector at position count is now
     # the first vector of the dataframe.
     # If only one vector in the dataframe, the dataframe is return without any change.
