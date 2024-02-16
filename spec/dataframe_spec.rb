@@ -2817,12 +2817,18 @@ describe DaruLite::DataFrame do
       })
     end
     let(:top_level_label) { :percentages }
-
-    it 'converts vectors to a Multi::Index' do
-      expected_index = DaruLite::MultiIndex.from_tuples([
+    let(:expected_index) do
+      DaruLite::MultiIndex.from_tuples([
         [:percentages, :a], [:percentages, :b],[:percentages, :c],
       ])
+    end
+
+    it 'returns expected Multi::Index' do
       expect(subject).to eq(expected_index)
+    end
+
+    it 'updates dataframe vectors to the expected Multi::Index' do
+      expect { subject }.to change { df.vectors }.to(expected_index)
     end
   end
 
