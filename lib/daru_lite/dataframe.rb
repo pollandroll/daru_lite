@@ -1693,6 +1693,13 @@ module DaruLite
       self
     end
 
+    # Converts the vectors to a DaruLite::MultiIndex.
+    # The argument passed is used as the MultiIndex's top level
+    def add_level_to_vectors(top_level_label)
+      tuples = vectors.map { |label| [top_level_label, *label] }
+      self.vectors = DaruLite::MultiIndex.from_tuples(tuples)
+    end
+
     # Return the indexes of all the numeric vectors. Will include vectors with nils
     # alongwith numbers.
     def numeric_vectors
