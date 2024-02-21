@@ -2717,6 +2717,23 @@ describe DaruLite::DataFrame do
     context 'wrong vectors' do
       it { expect { df.order = [:a, :b, 'b'] }.to raise_error }
     end
+
+    context 'different vector types' do
+      subject { df.order = new_order }
+
+      let(:df) do
+        DaruLite::DataFrame.new({
+          'a' => [1,2,3],
+          b: [4,5,6],
+          3 => [5,7,9]
+        }, order: ['a', :b, 3])
+      end
+      let(:new_order) { [3, 'a', :b] }
+
+      it "sets correct order" do
+        expect { subject }.to change { df.vectors.to_a }.to(new_order)
+      end
+    end
   end
 
   context "#vectors=" do
@@ -4305,17 +4322,34 @@ describe DaruLite::DataFrame do
     subject { df.rotate_vectors(-1) }
 
     context "several vectors in the dataframe" do
-      let(:df) do
-        DaruLite::DataFrame.new({
-          a: [1,2,3],
-          b: [4,5,6],
-          total: [5,7,9]
-        })
-      end
-      let(:new_order) { [:total, :a, :b] }
+      context 'all vector names are the same type' do
+        let(:df) do
+          DaruLite::DataFrame.new({
+            a: [1,2,3],
+            b: [4,5,6],
+            total: [5,7,9]
+          })
+        end
+        let(:new_order) { [:total, :a, :b] }
 
-      it "return the dataframe with the position of the last vector change to first" do
-        expect(subject.vectors.to_a).to eq(new_order)
+        it "return the dataframe with the position of the last vector change to first" do
+          expect(subject.vectors.to_a).to eq(new_order)
+        end
+      end
+
+      context 'vector names are of different types' do
+        let(:df) do
+          DaruLite::DataFrame.new({
+            'a' => [1,2,3],
+            b: [4,5,6],
+            3 => [5,7,9]
+          })
+        end
+        let(:new_order) { [3, 'a', :b] }
+
+        it "return the dataframe with the position of the last vector change to first" do
+          expect(subject.vectors.to_a).to eq(new_order)
+        end
       end
     end
 
