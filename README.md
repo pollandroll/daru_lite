@@ -4,6 +4,8 @@ Simple, straightforward DataFrames for Ruby
 
 [![Build Status](https://github.com/pollandroll/daru_lite/actions/workflows/build.yml/badge.svg)](https://github.com/pollandroll/daru_lite/actions)
 [![Gem Version](https://img.shields.io/gem/v/daru_lite.svg)](https://rubygems.org/gems/daru_lite)
+[![Maintainability](https://api.codeclimate.com/v1/badges/f87d4ed10b5731e50184/maintainability)](https://codeclimate.com/github/pollandroll/daru_lite/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/f87d4ed10b5731e50184/test_coverage)](https://codeclimate.com/github/pollandroll/daru_lite/test_coverage)
 
 ## Introduction
 
