@@ -47,6 +47,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop-rspec', '~> 2.25'
   spec.add_development_dependency 'ruby-prof', '~> 1.7.0'
   spec.add_development_dependency 'simplecov', '~> 0.22.0'
+  spec.add_development_dependency 'simplecov_json_formatter', '~> 0.1.4'
   spec.add_development_dependency 'spreadsheet', '~> 1.3.0'
   spec.add_development_dependency 'sqlite3', '~> 1.7.2'
   # issue : https://github.com/SciRuby/daru/issues/493 occured
