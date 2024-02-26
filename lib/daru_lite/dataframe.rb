@@ -1151,15 +1151,7 @@ module DaruLite
     #   #   1   5   2
     #   #   2   6   3
     def order=(order_array)
-      begin
-        current_order = vectors.to_a
-        match_when_sorted = order_array.sort == current_order.sort
-      rescue ArgumentError => e
-        raise e unless [order_array, current_order].any? { |array| array.map(&:class).uniq.size > 1 }
-
-        match_when_sorted = order_array.map(&:to_s).sort == current_order.map(&:to_s).sort
-      end
-      raise ArgumentError, 'Invalid order' unless match_when_sorted
+      raise ArgumentError, 'Invalid order' unless vectors.to_a.tally == order_array.tally
 
       initialize(to_h, order: order_array)
     end
