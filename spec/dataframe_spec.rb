@@ -2736,6 +2736,26 @@ describe DaruLite::DataFrame do
     end
   end
 
+  context "#reorder_rows" do
+    subject { df.reorder_rows(new_order) }
+
+    let(:df) do
+      DaruLite::DataFrame.new({
+          a: [1,2,3],
+          b: [11,22,33]
+        },
+        order: [:a, :b]
+      )
+    end
+
+    let(:new_order) { [2, 0, 1] }
+    it { is_expected.to be_a(DaruLite::DataFrame) }
+
+    it "reorders the rows based on the given order" do
+      expect(subject.index.to_a).to eq(new_order)
+    end
+  end
+
   context "#vectors=" do
     before :each do
       @df = DaruLite::DataFrame.new({
