@@ -4021,6 +4021,18 @@ describe DaruLite::DataFrame do
        }.unindent}
     end
 
+    context 'with integers as vectors names' do
+      let(:df) { DaruLite::DataFrame.new({ 1 => [1,2,3], b: [3,4,5], c: [6,7,8] }, name: 'test')}
+
+      it { is_expected.to eq %Q{
+        |#<DaruLite::DataFrame: test (3x3)>
+        |       1   b   c
+        |   0   1   3   6
+        |   1   2   4   7
+        |   2   3   5   8
+       }.unindent}
+    end
+
     context 'very long' do
       let(:df) { DaruLite::DataFrame.new({a: [1,1,1]*20, b: [1,1,1]*20, c: [1,1,1]*20}, name: 'test')}
       it { is_expected.to eq %Q{
