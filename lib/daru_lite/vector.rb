@@ -1506,9 +1506,9 @@ module DaruLite
     end
 
     def guard_type_check(value)
-      @possibly_changed_type = true \
-        if (object? && (value.nil? || value.is_a?(Numeric))) ||
-           (numeric? && !value.is_a?(Numeric) && !value.nil?)
+      if (object? && (value.nil? || value.is_a?(Numeric))) || (numeric? && !value.is_a?(Numeric) && !value.nil?)
+        @possibly_changed_type = true
+      end
     end
 
     def split_value(key, v)
