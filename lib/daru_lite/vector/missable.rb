@@ -4,7 +4,7 @@ module DaruLite
       extend Gem::Deprecate
 
       # Reports whether missing data is present in the Vector.
-      def has_missing_data?
+      def has_missing_data? # rubocop:disable Naming/PredicateName
         !indexes(*DaruLite::MISSING_VALUES).empty?
       end
       alias flawed? has_missing_data?
@@ -86,7 +86,7 @@ module DaruLite
       # Otherwise, a duplicate will be returned irrespective of
       # presence of missing data.
 
-      def only_valid(as_a = :vector, _duplicate = true)
+      def only_valid(as_a = :vector, _duplicate = true) # rubocop:disable Style/OptionalBooleanParameter
         # FIXME: Now duplicate is just ignored.
         #   There are no spec that fail on this case, so I'll leave it
         #   this way for now - zverok, 2016-05-07

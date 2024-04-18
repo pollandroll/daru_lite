@@ -842,7 +842,7 @@ module DaruLite
         def emsd(n = 10, wilder = false)
           result = []
           emv_return = emv(n, wilder)
-          emv_return.each do |d|
+          emv_return.each do |d| # rubocop:disable Style/MapIntoArray
             result << (d.nil? ? nil : Math.sqrt(d))
           end
           DaruLite::Vector.new(result, index: @index, name: @name)

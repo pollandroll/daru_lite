@@ -15,7 +15,7 @@ module DaruLite
       end
 
       # Returns *true* if an index exists
-      def has_index?(index)
+      def has_index?(index) # rubocop:disable Naming/PredicateName
         @index.include? index
       end
 
@@ -60,7 +60,6 @@ module DaruLite
         raise ArgumentError, 'Can only assign type Index and its subclasses.' unless idx.is_a?(DaruLite::Index)
 
         @index = idx
-        self
       end
 
       # Return indexes of values specified

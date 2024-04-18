@@ -41,6 +41,10 @@ shared_examples_for 'an indexable Vector' do |dtype|
 
       let(:new_index) { DaruLite::DateTimeIndex.date_range(start: '2012', periods: 5) }
 
+      it 'returns the new index' do
+        expect(subject).to eq(new_index)
+      end
+
       it "simply reassigns index" do
         expect(vector.index.class).to eq(DaruLite::DateTimeIndex)
         expect(vector['2012-1-1']).to eq(1)
