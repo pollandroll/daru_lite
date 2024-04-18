@@ -2,12 +2,38 @@ require 'daru_lite/maths/arithmetic/vector'
 require 'daru_lite/maths/statistics/vector'
 require 'daru_lite/accessors/array_wrapper'
 require 'daru_lite/category'
+require 'daru_lite/vector/aggregatable'
+require 'daru_lite/vector/calculatable'
+require 'daru_lite/vector/convertible'
+require 'daru_lite/vector/duplicatable'
+require 'daru_lite/vector/fetchable'
+require 'daru_lite/vector/filterable'
+require 'daru_lite/vector/indexable'
+require 'daru_lite/vector/iterable'
+require 'daru_lite/vector/joinable'
+require 'daru_lite/vector/missable'
+require 'daru_lite/vector/setable'
+require 'daru_lite/vector/sortable'
+require 'daru_lite/vector/queryable'
 
 module DaruLite
   class Vector # rubocop:disable Metrics/ClassLength
     include Enumerable
     include DaruLite::Maths::Arithmetic::Vector
     include DaruLite::Maths::Statistics::Vector
+    include DaruLite::Vector::Aggregatable
+    include DaruLite::Vector::Calculatable
+    include DaruLite::Vector::Convertible
+    include DaruLite::Vector::Duplicatable
+    include DaruLite::Vector::Fetchable
+    include DaruLite::Vector::Filterable
+    include DaruLite::Vector::Indexable
+    include DaruLite::Vector::Iterable
+    include DaruLite::Vector::Joinable
+    include DaruLite::Vector::Missable
+    include DaruLite::Vector::Setable
+    include DaruLite::Vector::Sortable
+    include DaruLite::Vector::Queryable
     extend Gem::Deprecate
 
     class << self
@@ -90,46 +116,6 @@ module DaruLite
       @data.size
     end
 
-    def each(&block)
-      return to_enum(:each) unless block
-
-      @data.each(&block)
-      self
-    end
-
-    def each_index(&block)
-      return to_enum(:each_index) unless block
-
-      @index.each(&block)
-      self
-    end
-
-    def each_with_index(&block)
-      return to_enum(:each_with_index) unless block
-
-      @data.to_a.zip(@index.to_a).each(&block)
-
-      self
-    end
-
-    def map!(&block)
-      return to_enum(:map!) unless block
-
-      @data.map!(&block)
-      self
-    end
-
-    def apply_method(method, keys: nil, by_position: true)
-      vect = keys ? get_sub_vector(keys, by_position: by_position) : self
-
-      case method
-      when Symbol then vect.send(method)
-      when Proc   then method.call(vect)
-      else raise
-      end
-    end
-    alias apply_method_on_sub_vector apply_method
-
     # The name of the DaruLite::Vector. String.
     attr_reader :name
     # The row index. Can be either DaruLite::Index or DaruLite::MultiIndex.
@@ -183,98 +169,6 @@ module DaruLite
         # Initialize non-category type vector
         initialize_vector source, opts
       end
-    end
-
-    # Get one or more elements with specified index or a range.
-    #
-    # == Usage
-    #   # For vectors employing single layer Index
-    #
-    #   v[:one, :two] # => DaruLite::Vector with indexes :one and :two
-    #   v[:one]       # => Single element
-    #   v[:one..:three] # => DaruLite::Vector with indexes :one, :two and :three
-    #
-    #   # For vectors employing hierarchial multi index
-    #
-    def [](*input_indexes)
-      # Get array of positions indexes
-      positions = @index.pos(*input_indexes)
-
-      # If one object is asked return it
-      return @data[positions] if positions.is_a? Numeric
-
-      # Form a new Vector using positional indexes
-      DaruLite::Vector.new(
-        positions.map { |loc| @data[loc] },
-        name: @name,
-        index: @index.subset(*input_indexes), dtype: @dtype
-      )
-    end
-
-    # Returns vector of values given positional values
-    # @param positions [Array<object>] positional values
-    # @return [object] vector
-    # @example
-    #   dv = DaruLite::Vector.new 'a'..'e'
-    #   dv.at 0, 1, 2
-    #   # => #<DaruLite::Vector(3)>
-    #   #   0   a
-    #   #   1   b
-    #   #   2   c
-    def at(*positions)
-      # to be used to form index
-      original_positions = positions
-      positions = coerce_positions(*positions)
-      validate_positions(*positions)
-
-      if positions.is_a? Integer
-        @data[positions]
-      else
-        values = positions.map { |pos| @data[pos] }
-        DaruLite::Vector.new values, index: @index.at(*original_positions), dtype: dtype
-      end
-    end
-
-    # Change value at given positions
-    # @param positions [Array<object>] positional values
-    # @param [object] val value to assign
-    # @example
-    #   dv = DaruLite::Vector.new 'a'..'e'
-    #   dv.set_at [0, 1], 'x'
-    #   dv
-    #   # => #<DaruLite::Vector(5)>
-    #   #   0   x
-    #   #   1   x
-    #   #   2   c
-    #   #   3   d
-    #   #   4   e
-    def set_at(positions, val)
-      validate_positions(*positions)
-      positions.map { |pos| @data[pos] = val }
-      update_position_cache
-    end
-
-    # Just like in Hashes, you can specify the index label of the DaruLite::Vector
-    # and assign an element an that place in the DaruLite::Vector.
-    #
-    # == Usage
-    #
-    #   v = DaruLite::Vector.new([1,2,3], index: [:a, :b, :c])
-    #   v[:a] = 999
-    #   #=>
-    #   ##<DaruLite::Vector:90257920 @name = nil @size = 3 >
-    #   #    nil
-    #   #  a 999
-    #   #  b   2
-    #   #  c   3
-    def []=(*indexes, val)
-      cast(dtype: :array) if val.nil? && dtype != :array
-
-      guard_type_check(val)
-
-      modify_vector(indexes, val)
-
-      update_position_cache
     end
 
     # Two vectors are equal if they have the exact same index values corresponding
@@ -367,111 +261,12 @@ module DaruLite
       )
     end
 
-    # Return a new vector based on the contents of a boolean array. Use with the
-    # comparator methods to obtain meaningful results. See this notebook for
-    # a good overview of using #where.
-    #
-    # @param bool_array [DaruLite::Core::Query::BoolArray, Array<TrueClass, FalseClass>] The
-    #   collection containing the true of false values. Each element in the Vector
-    #   corresponding to a `true` in the bool_arry will be returned alongwith it's
-    #   index.
-    # @example Usage of #where.
-    #   vector = DaruLite::Vector.new([2,4,5,51,5,16,2,5,3,2,1,5,2,5,2,1,56,234,6,21])
-    #
-    #   # Simple logic statement passed to #where.
-    #   vector.where(vector.eq(5).or(vector.eq(1)))
-    #   # =>
-    #   ##<DaruLite::Vector:77626210 @name = nil @size = 7 >
-    #   #    nil
-    #   #  2   5
-    #   #  4   5
-    #   #  7   5
-    #   # 10   1
-    #   # 11   5
-    #   # 13   5
-    #   # 15   1
-    #
-    #   # A somewhat more complex logic statement
-    #   vector.where((vector.eq(5) | vector.lteq(1)) & vector.in([4,5,1]))
-    #   #=>
-    #   ##<DaruLite::Vector:81072310 @name = nil @size = 7 >
-    #   #    nil
-    #   #  2   5
-    #   #  4   5
-    #   #  7   5
-    #   # 10   1
-    #   # 11   5
-    #   # 13   5
-    #   # 15   1
-    def where(bool_array)
-      DaruLite::Core::Query.vector_where self, bool_array
-    end
-
-    # Return a new vector based on the contents of a boolean array and &block.
-    #
-    # @param bool_array [DaruLite::Core::Query::BoolArray, Array<TrueClass, FalseClass>, &block] The
-    #   collection containing the true of false values. Each element in the Vector
-    #   corresponding to a `true` in the bool_array will be returned along with it's
-    #   index. The &block may contain manipulative functions for the Vector elements.
-    #
-    # @return [DaruLite::Vector]
-    #
-    # @example Usage of #apply_where.
-    #   dv = DaruLite::Vector.new ['3 days', '5 weeks', '2 weeks']
-    #   dv = dv.apply_where(dv.match /weeks/) { |x| "#{x.split.first.to_i * 7} days" }
-    #   # =>
-    #   ##<DaruLite::Vector(3)>
-    #   #  0   3 days
-    #   #  1   35 days
-    #   #  2   14 days
-    def apply_where(bool_array, &block)
-      DaruLite::Core::Query.vector_apply_where self, bool_array, &block
-    end
-
-    def head(q = 10)
-      self[0..(q - 1)]
-    end
-
-    def tail(q = 10)
-      start = [size - q, 0].max
-      self[start..(size - 1)]
-    end
-
-    def last(q = 1)
-      # The Enumerable mixin dose not provide the last method.
-      tail(q)
-    end
-
-    def empty?
-      @index.empty?
-    end
-
     def numeric?
       type == :numeric
     end
 
     def object?
       type == :object
-    end
-
-    # Reports whether missing data is present in the Vector.
-    def has_missing_data?
-      !indexes(*DaruLite::MISSING_VALUES).empty?
-    end
-    alias flawed? has_missing_data?
-    deprecate :has_missing_data?, :include_values?, 2016, 10
-    deprecate :flawed?, :include_values?, 2016, 10
-
-    # Check if any one of mentioned values occur in the vector
-    # @param values  [Array] values to check for
-    # @return [true, false] returns true if any one of specified values
-    #   occur in the vector
-    # @example
-    #   dv = DaruLite::Vector.new [1, 2, 3, 4, nil]
-    #   dv.include_values? nil, Float::NAN
-    #   # => true
-    def include_values?(*values)
-      values.any? { |v| include_with_nan? @data, v }
     end
 
     # @note Do not use it to check for Float::NAN as
@@ -493,18 +288,6 @@ module DaruLite
     def is_values(*values)
       DaruLite::Vector.new values.map { |v| eq(v) }.inject(:|)
     end
-
-    # Append an element to the vector by specifying the element and index
-    def concat(element, index)
-      raise IndexError, 'Expected new unique index' if @index.include? index
-
-      @index |= [index]
-      @data[@index[index]] = element
-
-      update_position_cache
-    end
-    alias push concat
-    alias << concat
 
     # Cast a vector to a new data type.
     #
@@ -560,148 +343,6 @@ module DaruLite
       type == :category
     end
 
-    # Get index of element
-    def index_of(element)
-      case dtype
-      when :array then @index.key(@data.index { |x| x.eql? element })
-      else @index.key @data.index(element)
-      end
-    end
-
-    # Keep only unique elements of the vector alongwith their indexes.
-    def uniq
-      uniq_vector = @data.uniq
-      new_index   = uniq_vector.map { |element| index_of(element) }
-
-      DaruLite::Vector.new uniq_vector, name: @name, index: new_index, dtype: @dtype
-    end
-
-    def any?(&block)
-      @data.data.any?(&block)
-    end
-
-    def all?(&block)
-      @data.data.all?(&block)
-    end
-
-    # Sorts a vector according to its values. If a block is specified, the contents
-    # will be evaluated and data will be swapped whenever the block evaluates
-    # to *true*. Defaults to ascending order sorting. Any missing values will be
-    # put at the end of the vector. Preserves indexing. Default sort algorithm is
-    # quick sort.
-    #
-    # == Options
-    #
-    # * +:ascending+ - if false, will sort in descending order. Defaults to true.
-    #
-    # * +:type+ - Specify the sorting algorithm. Only supports quick_sort for now.
-    # == Usage
-    #
-    #   v = DaruLite::Vector.new ["My first guitar", "jazz", "guitar"]
-    #   # Say you want to sort these strings by length.
-    #   v.sort(ascending: false) { |a,b| a.length <=> b.length }
-    def sort(opts = {}, &block)
-      opts = { ascending: true }.merge(opts)
-
-      vector_index = resort_index(@data.each_with_index, opts, &block)
-      vector, index = vector_index.transpose
-
-      index = @index.reorder index
-
-      DaruLite::Vector.new(vector, index: index, name: @name, dtype: @dtype)
-    end
-
-    # Sorts the vector according to it's`Index` values. Defaults to ascending
-    # order sorting.
-    #
-    # @param [Hash] opts the options for sort_by_index method.
-    # @option opts [Boolean] :ascending false, will sort `index` in
-    #  descending order.
-    #
-    # @return [Vector] new sorted `Vector` according to the index values.
-    #
-    # @example
-    #
-    #   dv = DaruLite::Vector.new [11, 13, 12], index: [23, 21, 22]
-    #   # Say you want to sort index in ascending order
-    #   dv.sort_by_index(ascending: true)
-    #   #=> DaruLite::Vector.new [13, 12, 11], index: [21, 22, 23]
-    #   # Say you want to sort index in descending order
-    #   dv.sort_by_index(ascending: false)
-    #   #=> DaruLite::Vector.new [11, 12, 13], index: [23, 22, 21]
-    def sort_by_index(opts = {})
-      opts = { ascending: true }.merge(opts)
-      _, new_order = resort_index(@index.each_with_index, opts).transpose
-
-      reorder new_order
-    end
-
-    DEFAULT_SORTER = lambda { |(lv, li), (rv, ri)|
-      if lv.nil? && rv.nil?
-        li <=> ri
-      elsif lv.nil?
-        -1
-      elsif rv.nil?
-        1
-      else
-        lv <=> rv
-      end
-    }
-
-    # Just sort the data and get an Array in return using Enumerable#sort.
-    # Non-destructive.
-    # :nocov:
-    def sorted_data(&block)
-      @data.to_a.sort(&block)
-    end
-    # :nocov:
-
-    # Like map, but returns a DaruLite::Vector with the returned values.
-    def recode(dt = nil, &block)
-      return to_enum(:recode, dt) unless block
-
-      dup.recode! dt, &block
-    end
-
-    # Destructive version of recode!
-    def recode!(dt = nil, &block)
-      return to_enum(:recode!, dt) unless block
-
-      @data.map!(&block).data
-      @data = cast_vector_to(dt || @dtype)
-      self
-    end
-
-    # Delete an element if block returns true. Destructive.
-    def delete_if
-      return to_enum(:delete_if) unless block_given?
-
-      keep_e, keep_i = each_with_index.reject { |n, _i| yield(n) }.transpose
-
-      @data = cast_vector_to @dtype, keep_e
-      @index = DaruLite::Index.new(keep_i)
-
-      update_position_cache
-
-      self
-    end
-
-    # Keep an element if block returns true. Destructive.
-    def keep_if
-      return to_enum(:keep_if) unless block_given?
-
-      delete_if { |val| !yield(val) }
-    end
-
-    # Reports all values that doesn't comply with a condition.
-    # Returns a hash with the index of data and the invalid data.
-    def verify
-      (0...size)
-        .map { |i| [i, @data[i]] }
-        .reject { |_i, val| yield(val) }
-        .to_h
-    end
-
     # Return an Array with the data splitted by a separator.
     #   a=DaruLite::Vector.new(["a,b","c,d","a,b","d"])
     #   a.splitted
@@ -717,93 +358,6 @@ module DaruLite
           [s]
         end
       end
-    end
-
-    # Returns a hash of Vectors, defined by the different values
-    # defined on the fields
-    # Example:
-    #
-    #  a=DaruLite::Vector.new(["a,b","c,d","a,b"])
-    #  a.split_by_separator
-    #  =>  {"a"=>#<DaruLite::Vector:0x7f2dbcc09d88
-    #        @data=[1, 0, 1]>,
-    #       "b"=>#<DaruLite::Vector:0x7f2dbcc09c48
-    #        @data=[1, 1, 0]>,
-    #      "c"=>#<DaruLite::Vector:0x7f2dbcc09b08
-    #        @data=[0, 1, 1]>}
-    #
-    def split_by_separator(sep = ',')
-      split_data = splitted sep
-      split_data
-        .flatten.uniq.compact.to_h do |key|
-        [
-          key,
-          DaruLite::Vector.new(split_data.map { |v| split_value(key, v) })
-        ]
-      end
-    end
-
-    def split_by_separator_freq(sep = ',')
-      split_by_separator(sep).transform_values do |v|
-        v.sum(&:to_i)
-      end
-    end
-
-    def reset_index!
-      @index = DaruLite::Index.new(Array.new(size) { |i| i })
-      self
-    end
-
-    # Replace all nils in the vector with the value passed as an argument. Destructive.
-    # See #replace_nils for non-destructive version
-    #
-    # == Arguments
-    #
-    # * +replacement+ - The value which should replace all nils
-    def replace_nils!(replacement)
-      indexes(*DaruLite::MISSING_VALUES).each do |idx|
-        self[idx] = replacement
-      end
-
-      self
-    end
-
-    # Rolling fillna
-    # replace all Float::NAN and NIL values with the preceeding or following value
-    #
-    # @param direction [Symbol] (:forward, :backward) whether replacement value is preceeding or following
-    #
-    # @example
-    #  dv = DaruLite::Vector.new([1, 2, 1, 4, nil, Float::NAN, 3, nil, Float::NAN])
-    #
-    #   2.3.3 :068 > dv.rolling_fillna(:forward)
-    #   => #<DaruLite::Vector(9)>
-    #   0   1
-    #   1   2
-    #   2   1
-    #   3   4
-    #   4   4
-    #   5   4
-    #   6   3
-    #   7   3
-    #   8   3
-    #
-    def rolling_fillna!(direction = :forward)
-      enum = direction == :forward ? index : index.reverse_each
-      last_valid_value = 0
-      enum.each do |idx|
-        if valid_value?(self[idx])
-          last_valid_value = self[idx]
-        else
-          self[idx] = last_valid_value
-        end
-      end
-      self
-    end
-
-    # Non-destructive version of rolling_fillna!
-    def rolling_fillna(direction = :forward)
-      dup.rolling_fillna!(direction)
     end
 
     # Lags the series by `k` periods.
@@ -845,187 +399,6 @@ module DaruLite
       end
     end
 
-    def detach_index
-      DaruLite::DataFrame.new(
-        index: @index.to_a,
-        values: @data.to_a
-      )
-    end
-
-    # Non-destructive version of #replace_nils!
-    def replace_nils(replacement)
-      dup.replace_nils!(replacement)
-    end
-
-    # number of non-missing elements
-    def n_valid
-      size - indexes(*DaruLite::MISSING_VALUES).size
-    end
-    deprecate :n_valid, :count_values, 2016, 10
-
-    # Count the number of values specified
-    # @param values [Array] values to count for
-    # @return [Integer] the number of times the values mentioned occurs
-    # @example
-    #   dv = DaruLite::Vector.new [1, 2, 1, 2, 3, 4, nil, nil]
-    #   dv.count_values nil
-    #   # => 2
-    def count_values(*values)
-      positions(*values).size
-    end
-
-    # Returns *true* if an index exists
-    def has_index?(index)
-      @index.include? index
-    end
-
-    # @param keys [Array] can be positions (if by_position is true) or indexes (if by_position if false)
-    # @return [DaruLite::Vector]
-    def get_sub_vector(keys, by_position: true)
-      return DaruLite::Vector.new([]) if keys == []
-
-      keys = @index.pos(*keys) unless by_position
-
-      sub_vect = at(*keys)
-      sub_vect = DaruLite::Vector.new([sub_vect]) unless sub_vect.is_a?(DaruLite::Vector)
-
-      sub_vect
-    end
-
-    # @return [DaruLite::DataFrame] the vector as a single-vector dataframe
-    def to_df
-      DaruLite::DataFrame.new({ @name => @data }, name: @name, index: @index)
-    end
-
-    # Convert Vector to a horizontal or vertical Ruby Matrix.
-    #
-    # == Arguments
-    #
-    # * +axis+ - Specify whether you want a *:horizontal* or a *:vertical* matrix.
-    def to_matrix(axis = :horizontal)
-      case axis
-      when :horizontal
-        Matrix[to_a]
-      when :vertical
-        Matrix.columns([to_a])
-      else
-        raise ArgumentError, "axis should be either :horizontal or :vertical, not #{axis}"
-      end
-    end
-
-    # Convert to hash (explicit). Hash keys are indexes and values are the correspoding elements
-    def to_h
-      @index.to_h { |index| [index, self[index]] }
-    end
-
-    # Return an array
-    def to_a
-      @data.to_a
-    end
-
-    # Convert the hash from to_h to json
-    def to_json(*)
-      to_h.to_json
-    end
-
-    # Convert to html for iruby
-    def to_html(threshold = 30)
-      table_thead = to_html_thead
-      table_tbody = to_html_tbody(threshold)
-      path = if index.is_a?(MultiIndex)
-               File.expand_path('iruby/templates/vector_mi.html.erb', __dir__)
-             else
-               File.expand_path('iruby/templates/vector.html.erb', __dir__)
-             end
-      ERB.new(File.read(path).strip).result(binding)
-    end
-
-    def to_html_thead
-      table_thead_path =
-        if index.is_a?(MultiIndex)
-          File.expand_path('iruby/templates/vector_mi_thead.html.erb', __dir__)
-        else
-          File.expand_path('iruby/templates/vector_thead.html.erb', __dir__)
-        end
-      ERB.new(File.read(table_thead_path).strip).result(binding)
-    end
-
-    def to_html_tbody(threshold = 30)
-      table_tbody_path =
-        if index.is_a?(MultiIndex)
-          File.expand_path('iruby/templates/vector_mi_tbody.html.erb', __dir__)
-        else
-          File.expand_path('iruby/templates/vector_tbody.html.erb', __dir__)
-        end
-      ERB.new(File.read(table_tbody_path).strip).result(binding)
-    end
-
-    def to_s
-      "#<#{self.class}#{": #{@name}" if @name}(#{size})#{':category' if category?}>"
-    end
-
-    # Create a summary of the Vector
-    # @param indent_level [Fixnum] indent level
-    # @return [String] String containing the summary of the Vector
-    # @example
-    #   dv = DaruLite::Vector.new [1, 2, 3]
-    #   puts dv.summary
-    #
-    #   # =
-    #   #   n :3
-    #   #   non-missing:3
-    #   #   median: 2
-    #   #   mean: 2.0000
-    #   #   std.dev.: 1.0000
-    #   #   std.err.: 0.5774
-    #   #   skew: 0.0000
-    #   #   kurtosis: -2.3333
-    def summary(indent_level = 0)
-      non_missing = size - count_values(*DaruLite::MISSING_VALUES)
-      summary = ('  =' * indent_level) + "= #{name}" \
-                                         "\n  n :#{size}" \
-                                         "\n  non-missing:#{non_missing}"
-      case type
-      when :object
-        summary << object_summary
-      when :numeric
-        summary << numeric_summary
-      end
-      summary.split("\n").join("\n#{'  ' * indent_level}")
-    end
-
-    # Displays summary for an object type Vector
-    # @return [String] String containing object vector summary
-    def object_summary
-      nval = count_values(*DaruLite::MISSING_VALUES)
-      summary = "\n  factors: #{factors.to_a.join(',')}" \
-                "\n  mode: #{mode.to_a.join(',')}" \
-                "\n  Distribution\n"
-
-      data = frequencies.sort.each_with_index.map do |v, k|
-        [k, v, format('%0.2f%%', ((nval.zero? ? 1 : v.quo(nval)) * 100))]
-      end
-
-      summary + Formatters::Table.format(data)
-    end
-
-    # Displays summary for an numeric type Vector
-    # @return [String] String containing numeric vector summary
-    def numeric_summary
-      summary = "\n  median: #{median}" +
-                format("\n  mean: %0.4f", mean)
-      if sd
-        summary << (format("\n  std.dev.: %0.4f", sd) +
-                   format("\n  std.err.: %0.4f", se))
-      end
-
-      if count_values(*DaruLite::MISSING_VALUES).zero?
-        summary << (format("\n  skew: %0.4f", skew) +
-                   format("\n  kurtosis: %0.4f", kurtosis))
-      end
-      summary
-    end
-
     # Over rides original inspect for pretty printing in irb
     def inspect(spacing = 20, threshold = 15)
       row_headers = index.is_a?(MultiIndex) ? index.sparse_tuples : index.to_a
@@ -1040,68 +413,6 @@ module DaruLite
         )
     end
 
-    # Sets new index for vector. Preserves index->value correspondence.
-    # Sets nil for new index keys absent from original index.
-    # @note Unlike #reorder! which takes positions as input it takes
-    #   index as an input to reorder the vector
-    # @param [DaruLite::Index, DaruLite::MultiIndex] new_index new index to order with
-    # @return [DaruLite::Vector] vector reindexed with new index
-    def reindex!(new_index)
-      values = []
-      each_with_index do |val, i|
-        values[new_index[i]] = val if new_index.include?(i)
-      end
-      values.fill(nil, values.size, new_index.size - values.size)
-
-      @data = cast_vector_to @dtype, values
-      @index = new_index
-
-      update_position_cache
-
-      self
-    end
-
-    # Reorder the vector with given positions
-    # @note Unlike #reindex! which takes index as input, it takes
-    #   positions as an input to reorder the vector
-    # @param [Array] order the order to reorder the vector with
-    # @return reordered vector
-    # @example
-    #   dv = DaruLite::Vector.new [3, 2, 1], index: ['c', 'b', 'a']
-    #   dv.reorder! [2, 1, 0]
-    #   # => #<DaruLite::Vector(3)>
-    #   #   a   1
-    #   #   b   2
-    #   #   c   3
-    def reorder!(order)
-      @index = @index.reorder order
-      data_array = order.map { |i| @data[i] }
-      @data = cast_vector_to @dtype, data_array, @nm_dtype
-      update_position_cache
-      self
-    end
-
-    # Non-destructive version of #reorder!
-    def reorder(order)
-      dup.reorder! order
-    end
-
-    # Create a new vector with a different index, and preserve the indexing of
-    # current elements.
-    def reindex(new_index)
-      dup.reindex!(new_index)
-    end
-
-    def index=(idx)
-      idx = Index.coerce(idx)
-
-      raise ArgumentError, "Size of supplied index #{idx.size} does not match size of Vector" if idx.size != size
-      raise ArgumentError, 'Can only assign type Index and its subclasses.' unless idx.is_a?(DaruLite::Index)
-
-      @index = idx
-      self
-    end
-
     # Give the vector a new name
     #
     # @param new_name [Symbol] The new name.
@@ -1111,12 +422,6 @@ module DaruLite
     end
 
     alias name= rename
-
-    # Duplicated a vector
-    # @return [DaruLite::Vector] duplicated vector
-    def dup
-      DaruLite::Vector.new @data.dup, name: @name, index: @index.dup
-    end
 
     # == Bootstrap
     # Generate +nr+ resamples (with replacement) of size  +s+
@@ -1195,130 +500,6 @@ module DaruLite
       DaruLite::DataFrame.new ps
     end
 
-    # Returns an array of either none or integer values, indicating the
-    # +regexp+ matching with the given array.
-    #
-    # @param regexp [Regexp] A regular matching expression. For example, +/weeks/+.
-    #
-    # @return [Array] Containing either +nil+ or integer values, according to the match with the given +regexp+
-    #
-    # @example
-    #   dv = DaruLite::Vector.new(['3 days', '5 weeks', '2 weeks'])
-    #   dv.match(/weeks/)
-    #
-    #   # => [false, true, true]
-    def match(regexp)
-      @data.map { |value| !!(value =~ regexp) }
-    end
-
-    # Creates a new vector consisting only of non-nil data
-    #
-    # == Arguments
-    #
-    # @param as_a [Symbol] Passing :array will return only the elements
-    # as an Array. Otherwise will return a DaruLite::Vector.
-    #
-    # @param _duplicate [Symbol] In case no missing data is found in the
-    # vector, setting this to false will return the same vector.
-    # Otherwise, a duplicate will be returned irrespective of
-    # presence of missing data.
-
-    def only_valid(as_a = :vector, _duplicate = true)
-      # FIXME: Now duplicate is just ignored.
-      #   There are no spec that fail on this case, so I'll leave it
-      #   this way for now - zverok, 2016-05-07
-
-      new_index = @index.to_a - indexes(*DaruLite::MISSING_VALUES)
-      new_vector = new_index.map { |idx| self[idx] }
-
-      if as_a == :vector
-        DaruLite::Vector.new new_vector, index: new_index, name: @name, dtype: dtype
-      else
-        new_vector
-      end
-    end
-    deprecate :only_valid, :reject_values, 2016, 10
-
-    # Return a vector with specified values removed
-    # @param values [Array] values to reject from resultant vector
-    # @return [DaruLite::Vector] vector with specified values removed
-    # @example
-    #   dv = DaruLite::Vector.new [1, 2, nil, Float::NAN]
-    #   dv.reject_values nil, Float::NAN
-    #   # => #<DaruLite::Vector(2)>
-    #   #   0   1
-    #   #   1   2
-    def reject_values(*values)
-      resultant_pos = size.times.to_a - positions(*values)
-      dv = at(*resultant_pos)
-      # Handle the case when number of positions is 1
-      # and hence #at doesn't return a vector
-      if dv.is_a?(DaruLite::Vector)
-        dv
-      else
-        pos = resultant_pos.first
-        at(pos..pos)
-      end
-    end
-
-    # Return indexes of values specified
-    # @param values [Array] values to find indexes for
-    # @return [Array] array of indexes of values specified
-    # @example
-    #   dv = DaruLite::Vector.new [1, 2, nil, Float::NAN], index: 11..14
-    #   dv.indexes nil, Float::NAN
-    #   # => [13, 14]
-    def indexes(*values)
-      index.to_a.values_at(*positions(*values))
-    end
-
-    # Replaces specified values with a new value
-    # @param [Array] old_values array of values to replace
-    # @param [object] new_value new value to replace with
-    # @note It performs the replace in place.
-    # @return [DaruLite::Vector] Same vector itself with values
-    #   replaced with new value
-    # @example
-    #   dv = DaruLite::Vector.new [1, 2, :a, :b]
-    #   dv.replace_values [:a, :b], nil
-    #   dv
-    #   # =>
-    #   # #<DaruLite::Vector:19903200 @name = nil @metadata = {} @size = 4 >
-    #   #     nil
-    #   #   0   1
-    #   #   1   2
-    #   #   2 nil
-    #   #   3 nil
-    def replace_values(old_values, new_value)
-      old_values = [old_values] unless old_values.is_a? Array
-      size.times do |pos|
-        set_at([pos], new_value) if include_with_nan? old_values, at(pos)
-      end
-      self
-    end
-
-    # Returns a Vector containing only missing data (preserves indexes).
-    def only_missing(as_a = :vector)
-      case as_a
-      when :vector
-        self[*indexes(*DaruLite::MISSING_VALUES)]
-      when :array
-        self[*indexes(*DaruLite::MISSING_VALUES)].to_a
-      end
-    end
-    deprecate :only_missing, nil, 2016, 10
-
-    # Returns a Vector with only numerical data. Missing data is included
-    # but non-Numeric objects are excluded. Preserves index.
-    def only_numerics
-      numeric_indexes =
-        each_with_index
-        .select { |v, _i| v.is_a?(Numeric) || v.nil? }
-        .map(&:last)
-
-      self[*numeric_indexes]
-    end
-
     DATE_REGEXP = /^(\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})$/.freeze
 
     # Returns the database type for the vector, according to its content
@@ -1333,12 +514,6 @@ module DaruLite
       else
         'INTEGER'
       end
-    end
-
-    # Copies the structure of the vector (i.e the index, size, etc.) and fills all
-    # all values with nils.
-    def clone_structure
-      DaruLite::Vector.new(([nil] * size), name: @name, index: @index.dup)
     end
 
     # Save the vector to a file
@@ -1396,61 +571,6 @@ module DaruLite
       name.to_s.end_with?('=') || has_index?(name) || super
     end
 
-    # Partition a numeric variable into categories.
-    # @param [Array<Numeric>] partitions an array whose consecutive elements
-    #   provide intervals for categories
-    # @param [Hash] opts options to cut the partition
-    # @option opts [:left, :right] :close_at specifies whether the interval closes at
-    #   the right side of left side
-    # @option opts [Array] :labels names of the categories
-    # @return [DaruLite::Vector] numeric variable converted to categorical variable
-    # @example
-    #   heights = DaruLite::Vector.new [30, 35, 32, 50, 42, 51]
-    #   height_cat = heights.cut [30, 40, 50, 60], labels=['low', 'medium', 'high']
-    #   # => #<DaruLite::Vector(6)>
-    #   #       0    low
-    #   #       1    low
-    #   #       2    low
-    #   #       3   high
-    #   #       4 medium
-    #   #       5   high
-    def cut(partitions, opts = {})
-      close_at = opts[:close_at] || :right
-      labels = opts[:labels]
-      partitions = partitions.to_a
-      values = to_a.map { |val| cut_find_category partitions, val, close_at }
-      cats = cut_categories(partitions, close_at)
-
-      dv = DaruLite::Vector.new values,
-                                index: @index,
-                                type: :category,
-                                categories: cats
-
-      # Rename categories if new labels provided
-      if labels
-        dv.rename_categories cats.zip(labels).to_h
-      else
-        dv
-      end
-    end
-
-    def positions(*values)
-      case values
-      when [nil]
-        nil_positions
-      when [Float::NAN]
-        nan_positions
-      when [nil, Float::NAN], [Float::NAN, nil]
-        nil_positions + nan_positions
-      else
-        size.times.select { |i| include_with_nan? values, @data[i] }
-      end
-    end
-
-    def group_by(*args)
-      to_df.group_by(*args)
-    end
-
     private
 
     def copy(values)
@@ -1469,11 +589,6 @@ module DaruLite
         @nan_positions = size.times.select do |i|
           @data[i].respond_to?(:nan?) && @data[i].nan?
         end
-    end
-
-    # Helper method returning validity of arbitrary value
-    def valid_value?(v)
-      !((v.respond_to?(:nan?) && v.nan?) || v.nil?)
     end
 
     def initialize_vector(source, opts)
@@ -1508,16 +623,6 @@ module DaruLite
     def guard_type_check(value)
       if (object? && (value.nil? || value.is_a?(Numeric))) || (numeric? && !value.is_a?(Numeric) && !value.nil?)
         @possibly_changed_type = true
-      end
-    end
-
-    def split_value(key, v)
-      if v.nil?
-        nil
-      elsif v.include?(key)
-        1
-      else
-        0
       end
     end
 
@@ -1664,15 +769,6 @@ module DaruLite
     def update_position_cache
       @nil_positions = nil
       @nan_positions = nil
-    end
-
-    def resort_index(vector_index, opts)
-      if block_given?
-        vector_index.sort { |(lv, _li), (rv, _ri)| yield(lv, rv) }
-      else
-        vector_index.sort(&DEFAULT_SORTER)
-      end
-        .tap { |res| res.reverse! unless opts[:ascending] }
     end
   end
 end
