@@ -22,6 +22,10 @@ shared_examples_for 'a fetchable DataFrame' do
           index: [:one, :two, :three, :four, :five]))
       end
 
+      it 'returns Vectors with the correct names' do
+        df.vectors.each { |vector_name | expect(df[vector_name].name).to eq(vector_name) }
+      end
+
       it "returns a DataFrame" do
         temp = DaruLite::DataFrame.new({b: [11,12,13,14,15], a: [1,2,3,4,5]},
           order: [:a, :b], index: [:one, :two, :three, :four, :five])
@@ -56,6 +60,10 @@ shared_examples_for 'a fetchable DataFrame' do
       it "returns a vector when specifying full tuple" do
         expect(df_mi[:a, :one, :bar]).to eq(
           DaruLite::Vector.new(vector_arry1, index: multi_index))
+      end
+
+      it 'returns Vectors with the correct names' do
+        df.vectors.each { |vector_name | expect(df[vector_name].name).to eq(vector_name) }
       end
 
       it "returns DataFrame when specified first layer of MultiIndex" do
