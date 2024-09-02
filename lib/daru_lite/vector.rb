@@ -314,6 +314,14 @@ module DaruLite
       update_position_cache
     end
 
+    # Delete element by position
+    def delete_at_position(position)
+      @data.delete_at(position)
+      @index = @index.delete_at(position)
+
+      update_position_cache
+    end
+
     # The type of data contained in the vector. Can be :object.
     #
     # Running through the data to figure out the kind of data is delayed to the
