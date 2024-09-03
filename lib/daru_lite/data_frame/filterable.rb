@@ -101,9 +101,9 @@ module DaruLite
       end
 
       def keep_row_if
-        (@index.size - 1).downto(0) do |position|
-          delete_at_position(position) unless yield(row_at(position))
-        end
+        @index.size.times
+              .filter_map { |position| position unless yield(row_at(position)) }
+              .reverse_each { |position| delete_at_position(position) }
       end
 
       def keep_vector_if
