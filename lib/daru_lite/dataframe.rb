@@ -285,7 +285,7 @@ module DaruLite
 
     # Delete a row based on its position
     def delete_at_position(position)
-      raise IndexError, "Position #{position} does not exist." unless size - 1 >= position
+      raise IndexError, "Position #{position} does not exist." unless position < size
 
       each_vector { |vector| vector.delete_at_position(position) }
       @index = @index.delete_at(position)
