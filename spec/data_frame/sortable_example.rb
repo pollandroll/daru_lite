@@ -28,12 +28,20 @@ shared_examples_for 'a sortable DataFrame' do
   describe "#rotate_vectors" do
     subject { df.rotate_vectors(-1) }
 
+    context "only one vector in the dataframe" do
+      let(:df) { DaruLite::DataFrame.new({ a: [1,2,3] }) }
+
+      it "return the dataframe without any change" do
+        expect(subject).to eq(df)
+      end
+    end
+
     context "several vectors in the dataframe" do
       let(:df) do
         DaruLite::DataFrame.new({
-          a: [1,2,3],
-          b: [4,5,6],
-          total: [5,7,9]
+          a: [1, 2, 3],
+          b: [4, 5, 6],
+          total: [5, 7, 9]
         })
       end
       let(:new_order) { [:total, :a, :b] }
@@ -43,11 +51,19 @@ shared_examples_for 'a sortable DataFrame' do
       end
     end
 
-    context "only one vector in the dataframe" do
-      let(:df) { DaruLite::DataFrame.new({ a: [1,2,3] }) }
+    context "vectors labels are of mixed classes" do
+      let(:df) do
+        DaruLite::DataFrame.new({
+          a: [1, 2, 3],
+          'b' => [4, 5, 6],
+          nil => [5, 7, 9],
+          1 => [10, 11, 12]
+        })
+      end
+      let(:new_order) { [1, :a, 'b', nil] }
 
-      it "return the dataframe without any change" do
-        expect(subject).to eq(df)
+      it "return the dataframe with the position of the last vector change to first" do
+        expect(subject.vectors.to_a).to eq(new_order)
       end
     end
   end
