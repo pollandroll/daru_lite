@@ -102,7 +102,7 @@ module DaruLite
 
       def keep_row_if
         @index.size.times
-              .filter_map { |position| position unless yield(row_at(position)) }
+              .reject { |position| yield(row_at(position)) }
               .reverse_each { |position| delete_at_position(position) }
       end
 
