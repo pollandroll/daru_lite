@@ -284,6 +284,8 @@ module DaruLite
     end
 
     # Delete a row based on its position
+    # More robust than #delete_row when working with a CategoricalIndex or when the
+    # Index includes integers
     def delete_at_position(position)
       raise IndexError, "Position #{position} does not exist." unless position < size
 
