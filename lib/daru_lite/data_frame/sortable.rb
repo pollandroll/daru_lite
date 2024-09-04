@@ -16,8 +16,7 @@ module DaruLite
       #   #   1   5   2
       #   #   2   6   3
       def order=(order_array)
-        raise ArgumentError, 'Invalid order' unless
-          order_array.sort_by(&:to_s) == vectors.to_a.sort_by(&:to_s)
+        raise ArgumentError, 'Invalid order' unless order_array.tally == vectors.to_a.tally
 
         initialize(to_h, order: order_array)
       end
