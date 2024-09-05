@@ -53,7 +53,7 @@ shared_examples_for 'a sortable DataFrame' do
       let(:df) { DaruLite::DataFrame.new({ a: [1,2,3] }) }
 
       it "return the dataframe without any change" do
-        expect(subject).to eq(df)
+        expect { subject }.not_to change { df.vectors.to_a }
       end
     end
 
@@ -68,7 +68,7 @@ shared_examples_for 'a sortable DataFrame' do
       let(:new_order) { [:total, :a, :b] }
 
       it "return the dataframe with the position of the last vector change to first" do
-        expect(subject.vectors.to_a).to eq(new_order)
+        expect { subject }.to change { df.vectors.to_a }.to(new_order)
       end
     end
 
@@ -84,7 +84,7 @@ shared_examples_for 'a sortable DataFrame' do
       let(:new_order) { [1, :a, 'b', nil] }
 
       it "return the dataframe with the position of the last vector change to first" do
-        expect(subject.vectors.to_a).to eq(new_order)
+        expect { subject }.to change { df.vectors.to_a }.to(new_order)
       end
     end
   end
