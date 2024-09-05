@@ -1,5 +1,7 @@
 shared_examples_for 'a sortable DataFrame' do
   describe '#order=' do
+    subject { df.order = new_order }
+
     let(:df) do
       DaruLite::DataFrame.new({
         a: [1, 2, 3],
@@ -8,12 +10,15 @@ shared_examples_for 'a sortable DataFrame' do
     end
 
     context 'correct order' do
-      before { df.order = [:b, :a] }
-      subject { df }
+      let(:new_order) { [:b, :a] }
 
-      its(:'vectors.to_a') { is_expected.to eq [:b, :a] }
-      its(:'b.to_a') { is_expected.to eq [4, 5, 6] }
-      its(:'a.to_a') { is_expected.to eq [1, 2, 3] }
+      it "sets correct order" do
+        expect { subject }.to change { df.vectors.to_a }.to(new_order)
+      end
+
+      it 'vector data is unchanged' do
+        expect { subject }.not_to change { [df[:a].to_a, df[:b].to_a] }
+      end
     end
 
     context 'insufficient vectors' do
@@ -23,31 +28,63 @@ shared_examples_for 'a sortable DataFrame' do
     context 'wrong vectors' do
       it { expect { df.order = [:a, :b, 'b'] }.to raise_error }
     end
+
+    context "vectors labels are of mixed classes" do
+      let(:df) do
+        DaruLite::DataFrame.new({
+          a: [1, 2, 3],
+          'b' => [4, 5, 6],
+          nil => [5, 7, 9],
+          1 => [10, 11, 12]
+        })
+      end
+      let(:new_order) { [nil, :a, 1, 'b'] }
+
+      it "sets correct order" do
+        expect { subject }.to change { df.vectors.to_a }.to(new_order)
+      end
+    end
   end
 
   describe "#rotate_vectors" do
     subject { df.rotate_vectors(-1) }
 
+    context "only one vector in the dataframe" do
+      let(:df) { DaruLite::DataFrame.new({ a: [1,2,3] }) }
+
+      it "return the dataframe without any change" do
+        expect { subject }.not_to change { df.vectors.to_a }
+      end
+    end
+
     context "several vectors in the dataframe" do
       let(:df) do
         DaruLite::DataFrame.new({
-          a: [1,2,3],
-          b: [4,5,6],
-          total: [5,7,9]
+          a: [1, 2, 3],
+          b: [4, 5, 6],
+          total: [5, 7, 9]
         })
       end
       let(:new_order) { [:total, :a, :b] }
 
       it "return the dataframe with the position of the last vector change to first" do
-        expect(subject.vectors.to_a).to eq(new_order)
+        expect { subject }.to change { df.vectors.to_a }.to(new_order)
       end
     end
 
-    context "only one vector in the dataframe" do
-      let(:df) { DaruLite::DataFrame.new({ a: [1,2,3] }) }
+    context "vectors labels are of mixed classes" do
+      let(:df) do
+        DaruLite::DataFrame.new({
+          a: [1, 2, 3],
+          'b' => [4, 5, 6],
+          nil => [5, 7, 9],
+          1 => [10, 11, 12]
+        })
+      end
+      let(:new_order) { [1, :a, 'b', nil] }
 
-      it "return the dataframe without any change" do
-        expect(subject).to eq(df)
+      it "return the dataframe with the position of the last vector change to first" do
+        expect { subject }.to change { df.vectors.to_a }.to(new_order)
       end
     end
   end
