@@ -389,6 +389,14 @@ describe DaruLite::Index do
 
   end
 
+  describe '#delete_at' do
+    subject { idx.delete_at(1)}
+
+    let(:idx) { DaruLite::Index.new([:a, :b, 1, 2]) }
+
+    it { is_expected.to eq DaruLite::Index.new([:a, 1, 2]) }
+  end
+
   context '#to_df' do
     let(:idx) do
       DaruLite::Index.new(['speaker', 'mic', 'guitar', 'amp'],

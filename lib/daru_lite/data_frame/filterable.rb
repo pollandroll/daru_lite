@@ -101,9 +101,9 @@ module DaruLite
       end
 
       def keep_row_if
-        @index
-          .reject { |idx| yield access_row(idx) }
-          .each { |idx| delete_row idx }
+        @index.size.times
+              .reject { |position| yield(row_at(position)) }
+              .reverse_each { |position| delete_at_position(position) }
       end
 
       def keep_vector_if

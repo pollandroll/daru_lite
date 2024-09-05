@@ -246,6 +246,19 @@ module DaruLite
       DaruLite::Index.new(to_a + indexes)
     end
 
+    # Takes a positional value and returns a new Index without the element at given position
+    # @param position [Integer] positional value
+    # @return [object] index object
+    # @example
+    #   idx = DaruLite::Index.new [:a, :b, :c]
+    #   idx.delete_at(0)
+    #   # => #<DaruLite::Index(2): {b, c}>
+    def delete_at(position)
+      indexes = to_a
+      indexes.delete_at(position)
+      self.class.new(indexes)
+    end
+
     def _dump(*)
       Marshal.dump(relation_hash: @relation_hash)
     end

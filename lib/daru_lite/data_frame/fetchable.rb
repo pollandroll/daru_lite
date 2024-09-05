@@ -29,10 +29,15 @@ module DaruLite
 
         if positions.is_a? Integer
           row = get_rows_for([positions])
-          DaruLite::Vector.new row, index: @vectors
+          DaruLite::Vector.new(row, index: @vectors, name: @index.at(positions))
         else
           new_rows = get_rows_for(original_positions)
-          DaruLite::DataFrame.new new_rows, index: @index.at(*original_positions), order: @vectors
+          DaruLite::DataFrame.new(
+            new_rows,
+            index: @index.at(*original_positions),
+            order: @vectors,
+            name: @name
+          )
         end
       end
 

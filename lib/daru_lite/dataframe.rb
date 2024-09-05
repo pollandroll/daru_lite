@@ -283,6 +283,18 @@ module DaruLite
       set_size
     end
 
+    # Delete a row based on its position
+    # More robust than #delete_row when working with a CategoricalIndex or when the
+    # Index includes integers
+    def delete_at_position(position)
+      raise IndexError, "Position #{position} does not exist." unless position < size
+
+      each_vector { |vector| vector.delete_at_position(position) }
+      @index = @index.delete_at(position)
+
+      set_size
+    end
+
     # Creates a DataFrame with the random data, of n size.
     # If n not given, uses original number of rows.
     #

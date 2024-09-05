@@ -128,16 +128,47 @@ shared_examples_for 'a filterable DataFrame' do
   end
 
   describe "#keep_row_if" do
-    pending "changing row from under the iterator trips this"
-    it "keeps row if block evaluates to true" do
-      df = DaruLite::DataFrame.new({b: [10,12,20,23,30], a: [50,30,30,1,5],
-        c: [10,20,30,40,50]}, order: [:a, :b, :c],
-        index: [:one, :two, :three, :four, :five])
+    subject { df.keep_row_if { |row| row[:a] % 10 == 0 } }
 
-      df.keep_row_if do |row|
-        row[:a] % 10 == 0
+    let(:index) { [:one, :two, :three, :four, :five] }
+    let(:order) { [:a, :b, :c] }
+    let(:df)  do
+      DaruLite::DataFrame.new({
+          b: [10, 12, 20, 23, 30],
+          a: [50, 30, 30, 1, 5],
+          c: [10, 20, 30, 40, 50]
+        },
+        order:,
+        index:
+      )
+    end
+
+    context DaruLite::Index do
+      it "keeps row if block evaluates to true" do
+        subject
+        expect(df).to eq(
+          DaruLite::DataFrame.new(
+            { b: [10, 12, 20], a: [50, 30, 30], c: [10, 20, 30] },
+            order:,
+            index: index[..2]
+          )
+        )
       end
-      # TODO: write expectation
+    end
+
+    context DaruLite::CategoricalIndex do
+      let (:index) { DaruLite::CategoricalIndex.new([:a, 1, 1, :a, :c]) }
+
+      it "keeps row if block evaluates to true" do
+        subject
+        expect(df).to eq(
+          DaruLite::DataFrame.new(
+            { b: [10, 12, 20], a: [50, 30, 30], c: [10, 20, 30] },
+            order:,
+            index: DaruLite::CategoricalIndex.new([:a, 1, 1])
+          )
+        )
+      end
     end
   end
 
