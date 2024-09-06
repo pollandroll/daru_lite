@@ -200,7 +200,7 @@ module DaruLite
     end
 
     def to_a
-      @keys
+      @keys.dup
     end
 
     def key(value)

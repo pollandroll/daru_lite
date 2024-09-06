@@ -1,36 +1,47 @@
 require 'spec_helper.rb'
 
 describe DaruLite::CategoricalIndex do
+  let(:index) { described_class.new(keys) }
+  let(:keys) { [:a, :b, :a, :a, :c] }
+
+  describe "#to_a" do
+    subject { index.to_a }
+
+    it { is_expected.to eq(keys) }
+
+    it 'the returns array is not a variable of the index' do
+      expect { subject << 'four' }.not_to change { index.to_a }
+    end
+  end
+
   context "#pos" do
     context "when the category is non-numeric" do
-      let(:idx) { described_class.new [:a, :b, :a, :a, :c] }
-
       context "single category" do
-        subject { idx.pos :a }
+        subject { index.pos :a }
 
         it { is_expected.to eq [0, 2, 3] }
       end
 
       context "multiple categories" do
-        subject { idx.pos :a, :c }
+        subject { index.pos :a, :c }
 
         it { is_expected.to eq [0, 2, 3, 4] }
       end
 
       context "invalid category" do
-        it { expect { idx.pos :e }.to raise_error IndexError }
+        it { expect { index.pos :e }.to raise_error IndexError }
       end
 
       context "positional index" do
-        it { expect(idx.pos 0).to eq 0 }
+        it { expect(index.pos 0).to eq 0 }
       end
 
       context "invalid positional index" do
-        it { expect { idx.pos 5 }.to raise_error IndexError }
+        it { expect { index.pos 5 }.to raise_error IndexError }
       end
 
       context "multiple positional indexes" do
-        subject { idx.pos 0, 1, 2 }
+        subject { index.pos 0, 1, 2 }
 
         it { is_expected.to be_a Array }
         its(:size) { is_expected.to eq 3 }
