@@ -178,4 +178,12 @@ describe DaruLite::CategoricalIndex do
       it { expect(idx.valid? :a, 1, 5).to eq false }
     end
   end
+
+  describe '#delete_at' do
+    subject { index.delete_at(3) }
+
+    let(:index) { described_class.new([:a, 1, :a, 1, 'c']) }
+
+    it { is_expected.to eq(described_class.new([:a, 1, :a, 'c'])) }
+  end
 end

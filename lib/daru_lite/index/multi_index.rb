@@ -196,6 +196,15 @@ module DaruLite
       DaruLite::MultiIndex.from_tuples(to_a + [indexes])
     end
 
+    # Takes a positional value and returns a new Index without the element at given position
+    # @param position [Integer] positional value
+    # @return [object] index object
+    def delete_at(position)
+      indexes = to_a
+      indexes.delete_at(position)
+      self.class.from_tuples(indexes)
+    end
+
     def reorder(new_order)
       from = to_a
       MultiIndex.from_tuples(new_order.map { |i| from[i] })

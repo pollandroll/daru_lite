@@ -327,7 +327,7 @@ describe DaruLite::MultiIndex do
 
     context 'multi index with name having empty string' do
       subject {
-        mi= DaruLite::MultiIndex.new(
+        DaruLite::MultiIndex.new(
                   levels: [[:a,:b,:c],[:one,:two],[:bar, :baz, :foo]],
                   labels: [
                     [0,0,0,0,1,1,1,1,2,2,2,2],
@@ -672,5 +672,18 @@ describe DaruLite::MultiIndex do
            'col2' => %w[one two two one],
            'col3' => %w[bar bar baz foo]
     )}
+  end
+
+  describe '#delete_at' do
+    subject { index.delete_at(3)}
+
+    let(:index) do
+      DaruLite::MultiIndex.from_tuples([[:a, :one], [:a, :two], [:b, :one], [:b, :two], [:c, :one]])
+    end
+    let(:expected_index) do
+      DaruLite::MultiIndex.from_tuples([[:a, :one], [:a, :two], [:b, :one], [:c, :one]])
+    end
+
+    it { is_expected.to eq(expected_index) }
   end
 end
