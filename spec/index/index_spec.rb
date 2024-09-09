@@ -1,6 +1,9 @@
 require 'spec_helper.rb'
 
 describe DaruLite::Index do
+  let(:index) { described_class.new(keys) }
+  let(:keys) { ['one', 'two', 'three'] }
+
   context ".new" do
     it "creates an Index object if Index-like data is supplied" do
       i = DaruLite::Index.new [:one, 'one', 1, 2, :two]
@@ -144,6 +147,16 @@ describe DaruLite::Index do
     context 'index with name' do
       subject { DaruLite::Index.new ['one', 'two', 'three'], name: 'number'  }
       its(:inspect) { is_expected.to eq "#<DaruLite::Index(3): number {one, two, three}>" }
+    end
+  end
+
+  describe "#to_a" do
+    subject { index.to_a }
+
+    it { is_expected.to eq(keys) }
+
+    it 'the returns array is not a variable of the index' do
+      expect { subject << 'four' }.not_to change { index.to_a }
     end
   end
 
@@ -390,11 +403,11 @@ describe DaruLite::Index do
   end
 
   describe '#delete_at' do
-    subject { idx.delete_at(1)}
+    subject { index.delete_at(1) }
 
-    let(:idx) { DaruLite::Index.new([:a, :b, 1, 2]) }
+    let(:index) { described_class.new([:a, :b, 1, 2]) }
 
-    it { is_expected.to eq DaruLite::Index.new([:a, 1, 2]) }
+    it { is_expected.to eq(described_class.new([:a, 1, 2])) }
   end
 
   context '#to_df' do

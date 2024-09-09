@@ -128,8 +128,6 @@ shared_examples_for 'a filterable DataFrame' do
   end
 
   describe "#keep_row_if" do
-    subject { df.keep_row_if { |row| row[:a] % 10 == 0 } }
-
     let(:index) { [:one, :two, :three, :four, :five] }
     let(:order) { [:a, :b, :c] }
     let(:df)  do
@@ -143,33 +141,194 @@ shared_examples_for 'a filterable DataFrame' do
       )
     end
 
-    context DaruLite::Index do
+    shared_examples_for '#keep_row_if' do
+      before { subject }
+
       it "keeps row if block evaluates to true" do
-        subject
-        expect(df).to eq(
-          DaruLite::DataFrame.new(
-            { b: [10, 12, 20], a: [50, 30, 30], c: [10, 20, 30] },
-            order:,
-            index: index[..2]
-          )
-        )
+        expect(df).to eq(expected_df)
+      end
+
+      it 'returns correct index' do
+        expect(df.index).to eq(expected_index)
+      end
+
+      it "all vectors have the same index" do
+        expect(df.map(&:index)).to all(eq(expected_index))
       end
     end
 
-    context DaruLite::CategoricalIndex do
-      let (:index) { DaruLite::CategoricalIndex.new([:a, 1, 1, :a, :c]) }
+    context 'a single row is removed' do
+      context DaruLite::Index do
+        subject { df.keep_row_if { |row| row.name != :four } }
 
-      it "keeps row if block evaluates to true" do
-        subject
-        expect(df).to eq(
+        let(:expected_index) { DaruLite::Index.new([:one, :two, :three, :five]) }
+        let(:expected_df) do
+          DaruLite::DataFrame.new(
+            { b: [10, 12, 20, 30], a: [50, 30, 30, 5], c: [10, 20, 30, 50] },
+            order:,
+            index: expected_index
+          )
+        end
+
+        it_behaves_like '#keep_row_if'
+      end
+
+      context DaruLite::CategoricalIndex do
+        subject { df.keep_row_if { |row| row.name != :a } }
+
+        let (:index) { DaruLite::CategoricalIndex.new([:a, 1, 1, :a, :c]) }
+        let(:expected_index) { DaruLite::CategoricalIndex.new([1, 1, :c]) }
+        let(:expected_df) do
+          DaruLite::DataFrame.new(
+            {
+              b: [12, 20, 30],
+              a: [30, 30, 5],
+              c: [20, 30, 50]
+            },
+            order:,
+            index: expected_index
+          )
+        end
+
+        it_behaves_like '#keep_row_if'
+      end
+
+      context DaruLite::MultiIndex do
+        subject { df.keep_row_if { |row| !row.name.include?('two') } }
+
+        let(:index) do
+          DaruLite::MultiIndex.from_tuples([[:a, :one], [:a, :two], [:b, :one], [:b, :two], [:c, :one]])
+        end
+        let(:expected_index) do
+          DaruLite::MultiIndex.from_tuples([[:a, :one], [:b, :one], [:c, :one]])
+        end
+        let(:expected_df) do
+          DaruLite::DataFrame.new(
+            {
+              b: [10, 20, 30],
+              a: [50, 30, 5],
+              c: [10, 30, 50]
+            },
+            order:,
+            index: expected_index
+          )
+        end
+
+        it_behaves_like '#keep_row_if'
+      end
+    end
+
+    context 'several rows are removed' do
+      subject { df.keep_row_if { |row| row[:a] % 10 == 0 } }
+
+      context DaruLite::Index do
+        let(:expected_index) { DaruLite::Index.new([:one, :two, :three]) }
+        let(:expected_df) do
           DaruLite::DataFrame.new(
             { b: [10, 12, 20], a: [50, 30, 30], c: [10, 20, 30] },
             order:,
-            index: DaruLite::CategoricalIndex.new([:a, 1, 1])
+            index: expected_index
           )
-        )
+        end
+
+        it_behaves_like '#keep_row_if'
+      end
+
+      context DaruLite::CategoricalIndex do
+        let (:index) { DaruLite::CategoricalIndex.new([:a, 1, 1, :a, :c]) }
+        let(:expected_index) { DaruLite::CategoricalIndex.new([:a, 1, 1]) }
+        let(:expected_df) do
+          DaruLite::DataFrame.new(
+            { b: [10, 12, 20], a: [50, 30, 30], c: [10, 20, 30] },
+            order:,
+            index: expected_index
+          )
+        end
+
+        it_behaves_like '#keep_row_if'
+      end
+
+      context DaruLite::MultiIndex do
+        let(:index) { DaruLite::MultiIndex.from_tuples([[:a, :one], [:a, :two], [:b, :one], [:b, :two], [:c, :one]]) }
+        let(:expected_index) do
+          DaruLite::MultiIndex.from_tuples([[:a, :one], [:a, :two], [:b, :one]])
+        end
+        let(:expected_df) do
+          DaruLite::DataFrame.new(
+            { b: [10, 12, 20], a: [50, 30, 30], c: [10, 20, 30] },
+            order:,
+            index: expected_index
+          )
+        end
+
+        it_behaves_like '#keep_row_if'
       end
     end
+
+    # context DaruLite::MultiIndex do
+    #   subject { df.keep_row_if { |row| row.name != 'No answer' } }
+
+    #   let(:df) do
+    #     order = DaruLite::MultiIndex.from_tuples(
+    #       [
+    #         [:a, :total],
+    #         [:a, "Male"],
+    #         [:a, "Female"],
+    #         [:a, "Prefer not to answer"],
+    #         [:a, "No answer"],
+    #         [:b, :total],
+    #         [:b, "Male"],
+    #         [:b, "Female"],
+    #         [:b, "Prefer not to answer"],
+    #         [:b, "No answer"],
+    #         [:c, :total],
+    #         [:c, "Male"],
+    #         [:c, "Female"],
+    #         [:c, "Prefer not to answer"],
+    #         [:c, "No answer"]
+    #       ]
+    #     )
+    #     index = [
+    #       :base,
+    #       "Single Malt Whisky",
+    #       "Blended/ Other Whisky",
+    #       "Vodka",
+    #       "Cognac",
+    #       "Brandy",
+    #       "Rum",
+    #       "Gin",
+    #       "Tequila",
+    #       "No answer",
+    #       "NET"
+    #     ]
+    #     DaruLite::DataFrame.new(
+    #       [
+    #         [0.0, nil, nil, nil, nil, nil, nil, nil, nil],
+    #         [nil, nil, nil, nil, nil, nil, nil, nil, nil],
+    #         [nil, nil, nil, nil, nil, nil, nil, nil, nil],
+    #         [nil, nil, nil, nil, nil, nil, nil, nil, nil],
+    #         [nil, nil, nil, nil, nil, nil, nil, nil, nil],
+    #         [Float::NAN, nil, nil, nil, nil, nil, nil, nil, nil],
+    #         [nil, nil, nil, nil, nil, nil, nil, nil, nil],
+    #         [nil, nil, nil, nil, nil, nil, nil, nil, nil],
+    #         [nil, nil, nil, nil, nil, nil, nil, nil, nil],
+    #         [nil, nil, nil, nil, nil, nil, nil, nil, nil],
+    #         [0, nil, nil, nil, nil, nil, nil, nil, nil],
+    #         [0, nil, nil, nil, nil, nil, nil, nil, nil],
+    #         [0, nil, nil, nil, nil, nil, nil, nil, nil],
+    #         [0, nil, nil, nil, nil, nil, nil, nil, nil],
+    #         [0, nil, nil, nil, nil, nil, nil, nil, nil],
+    #       ],
+    #       index:,
+    #       order:
+    #     )
+    #   end
+
+    #   it "all vectors have the same index" do
+    #     subject
+    #     expect(df.map(&:index)).to all(eq(df.index))
+    #   end
+    # end
   end
 
   describe "#keep_vector_if" do

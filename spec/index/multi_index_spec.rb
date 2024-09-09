@@ -1,22 +1,22 @@
 require 'spec_helper.rb'
 
 describe DaruLite::MultiIndex do
-  before(:each) do
-    @index_tuples = [
-      [:a,:one,:bar],
-      [:a,:one,:baz],
-      [:a,:two,:bar],
-      [:a,:two,:baz],
-      [:b,:one,:bar],
-      [:b,:two,:bar],
-      [:b,:two,:baz],
-      [:b,:one,:foo],
-      [:c,:one,:bar],
-      [:c,:one,:baz],
-      [:c,:two,:foo],
-      [:c,:two,:bar]
+  let(:index) { described_class.from_tuples(index_tuples) }
+  let(:index_tuples) do
+    [
+      [:a, :one, :bar],
+      [:a, :one, :baz],
+      [:a, :two, :bar],
+      [:a, :two, :baz],
+      [:b, :one, :bar],
+      [:b, :two, :bar],
+      [:b, :two, :baz],
+      [:b, :one, :foo],
+      [:c, :one, :bar],
+      [:c, :one, :baz],
+      [:c, :two, :foo],
+      [:c, :two, :bar]
     ]
-    @multi_mi = DaruLite::MultiIndex.from_tuples(@index_tuples)
   end
 
   context ".initialize" do
@@ -71,16 +71,16 @@ describe DaruLite::MultiIndex do
 
       it "raises SizeError for wrong number of name" do
         error_msg = "\'names\' and \'levels\' should be of same size. Size of the \'name\' array is 2 and size of the MultiIndex \'levels\' and \'labels\' is 3.\nIf you do not want to set name for particular level (say level \'i\') then put empty string on index \'i\' of the \'name\' Array."
-        expect { @multi_mi.name = ['n1', 'n2'] }.to raise_error(SizeError, error_msg)
+        expect { index.name = ['n1', 'n2'] }.to raise_error(SizeError, error_msg)
 
         error_msg = "'names' and 'levels' should be of same size. Size of the 'name' array is 0 and size of the MultiIndex 'levels' and 'labels' is 3.\nIf you do not want to set name for particular level (say level 'i') then put empty string on index 'i' of the 'name' Array."
-        expect { @multi_mi.name = [ ] }.to raise_error(SizeError, error_msg)
+        expect { index.name = [ ] }.to raise_error(SizeError, error_msg)
 
         error_msg = "'names' and 'levels' should be of same size. Size of the 'name' array is 1 and size of the MultiIndex 'levels' and 'labels' is 3.\nIf you do not want to set name for particular level (say level 'i') then put empty string on index 'i' of the 'name' Array."
-        expect { @multi_mi.name = [''] }.to raise_error(SizeError, error_msg)
+        expect { index.name = [''] }.to raise_error(SizeError, error_msg)
 
         error_msg = "'names' and 'levels' should be of same size. Size of the 'name' array is 4 and size of the MultiIndex 'levels' and 'labels' is 3."
-        expect { @multi_mi.name = ['n1', 'n2', 'n3', 'n4'] }.to raise_error(SizeError, error_msg)
+        expect { index.name = ['n1', 'n2', 'n3', 'n4'] }.to raise_error(SizeError, error_msg)
       end
     end
   end
@@ -101,8 +101,8 @@ describe DaruLite::MultiIndex do
     end
 
     it "creates a triple layer MultiIndex from tuples" do
-      expect(@multi_mi.levels).to eq([[:a,:b,:c], [:one, :two],[:bar,:baz,:foo]])
-      expect(@multi_mi.labels).to eq([
+      expect(index.levels).to eq([[:a,:b,:c], [:one, :two],[:bar,:baz,:foo]])
+      expect(index.labels).to eq([
         [0,0,0,0,1,1,1,1,2,2,2,2],
         [0,0,1,1,0,1,1,0,0,0,1,1],
         [0,1,0,1,0,0,1,2,0,1,2,0]
@@ -132,23 +132,23 @@ describe DaruLite::MultiIndex do
 
   context "#size" do
     it "returns size of MultiIndex" do
-      expect(@multi_mi.size).to eq(12)
+      expect(index.size).to eq(12)
     end
   end
 
   context "#[]" do
     it "returns the row number when specifying the complete tuple" do
-      expect(@multi_mi[:a, :one, :baz]).to eq(1)
+      expect(index[:a, :one, :baz]).to eq(1)
     end
 
     it "returns MultiIndex when specifying incomplete tuple" do
-      expect(@multi_mi[:b]).to eq(DaruLite::MultiIndex.from_tuples([
+      expect(index[:b]).to eq(DaruLite::MultiIndex.from_tuples([
         [:b,:one,:bar],
         [:b,:two,:bar],
         [:b,:two,:baz],
         [:b,:one,:foo]
       ]))
-      expect(@multi_mi[:b, :one]).to eq(DaruLite::MultiIndex.from_tuples([
+      expect(index[:b, :one]).to eq(DaruLite::MultiIndex.from_tuples([
         [:b,:one,:bar],
         [:b,:one,:foo]
       ]))
@@ -156,7 +156,7 @@ describe DaruLite::MultiIndex do
     end
 
     it "returns MultiIndex when specifying wholly numeric ranges" do
-      expect(@multi_mi[3..6]).to eq(DaruLite::MultiIndex.from_tuples([
+      expect(index[3..6]).to eq(DaruLite::MultiIndex.from_tuples([
         [:a,:two,:baz],
         [:b,:one,:bar],
         [:b,:two,:bar],
@@ -165,11 +165,11 @@ describe DaruLite::MultiIndex do
     end
 
     it "raises error when specifying invalid index" do
-      expect { @multi_mi[:a, :three] }.to raise_error IndexError
-      expect { @multi_mi[:a, :one, :xyz] }.to raise_error IndexError
-      expect { @multi_mi[:x] }.to raise_error IndexError
-      expect { @multi_mi[:x, :one] }.to raise_error IndexError
-      expect { @multi_mi[:x, :one, :bar] }.to raise_error IndexError
+      expect { index[:a, :three] }.to raise_error IndexError
+      expect { index[:a, :one, :xyz] }.to raise_error IndexError
+      expect { index[:x] }.to raise_error IndexError
+      expect { index[:x, :one] }.to raise_error IndexError
+      expect { index[:x, :one, :bar] }.to raise_error IndexError
     end
 
     it "works with numerical first levels" do
@@ -189,93 +189,89 @@ describe DaruLite::MultiIndex do
     end
   end
 
+  describe "#to_a" do
+    subject { index.to_a }
+
+    it { is_expected.to eq(index_tuples) }
+
+    it 'the returns array is not a variable of the index' do
+      expect { subject << [:d, :one, :bar] }.not_to change { index.to_a }
+    end
+  end
+
   context "#include?" do
     it "checks if a completely specified tuple exists" do
-      expect(@multi_mi.include?([:a,:one,:bar])).to eq(true)
+      expect(index.include?([:a,:one,:bar])).to eq(true)
     end
 
     it "checks if a top layer incomplete tuple exists" do
-      expect(@multi_mi.include?([:a])).to eq(true)
+      expect(index.include?([:a])).to eq(true)
     end
 
     it "checks if a middle layer incomplete tuple exists" do
-      expect(@multi_mi.include?([:a, :one])).to eq(true)
+      expect(index.include?([:a, :one])).to eq(true)
     end
 
     it "checks for non-existence of completely specified tuple" do
-      expect(@multi_mi.include?([:b, :two, :foo])).to eq(false)
+      expect(index.include?([:b, :two, :foo])).to eq(false)
     end
 
     it "checks for non-existence of a top layer incomplete tuple" do
-      expect(@multi_mi.include?([:d])).to eq(false)
+      expect(index.include?([:d])).to eq(false)
     end
 
     it "checks for non-existence of a middle layer incomplete tuple" do
-      expect(@multi_mi.include?([:c, :three])).to eq(false)
+      expect(index.include?([:c, :three])).to eq(false)
     end
   end
 
   context "#key" do
     it "returns the tuple of the specified number" do
-      expect(@multi_mi.key(3)).to eq([:a,:two,:baz])
+      expect(index.key(3)).to eq([:a,:two,:baz])
     end
 
     it "returns nil for non-existent pointer number" do
       expect {
-        @multi_mi.key(100)
+        index.key(100)
       }.to raise_error ArgumentError
     end
   end
 
   context "#to_a" do
     it "returns tuples as an Array" do
-      expect(@multi_mi.to_a).to eq(@index_tuples)
+      expect(index.to_a).to eq(index_tuples)
     end
   end
 
   context "#dup" do
     it "completely duplicates the object" do
-      duplicate = @multi_mi.dup
-      expect(duplicate)          .to eq(@multi_mi)
-      expect(duplicate.object_id).to_not eq(@multi_mi.object_id)
+      duplicate = index.dup
+      expect(duplicate)          .to eq(index)
+      expect(duplicate.object_id).to_not eq(index.object_id)
     end
   end
 
   context "#inspect" do
     context 'small index' do
-      subject {
-        DaruLite::MultiIndex.from_tuples [
-          [:a,:one,:bar],
-          [:a,:one,:baz],
-          [:a,:two,:bar],
-          [:a,:two,:baz],
-          [:b,:one,:bar],
-          [:b,:two,:bar],
-          [:b,:two,:baz],
-          [:b,:one,:foo],
-          [:c,:one,:bar],
-          [:c,:one,:baz],
-          [:c,:two,:foo],
-          [:c,:two,:bar]
-        ]
-      }
+      subject { index.inspect }
 
-      its(:inspect) { is_expected.to eq %Q{
-        |#<DaruLite::MultiIndex(12x3)>
-        |   a one bar
-        |         baz
-        |     two bar
-        |         baz
-        |   b one bar
-        |     two bar
-        |         baz
-        |     one foo
-        |   c one bar
-        |         baz
-        |     two foo
-        |         bar
+      it do
+        is_expected.to eq %Q{
+          |#<DaruLite::MultiIndex(12x3)>
+          |   a one bar
+          |         baz
+          |     two bar
+          |         baz
+          |   b one bar
+          |     two bar
+          |         baz
+          |     one foo
+          |   c one bar
+          |         baz
+          |     two foo
+          |         bar
         }.unindent
-      }
+      end
     end
 
     context 'large index' do
@@ -331,7 +327,7 @@ describe DaruLite::MultiIndex do
 
     context 'multi index with name having empty string' do
       subject {
-        mi= DaruLite::MultiIndex.new(
+        DaruLite::MultiIndex.new(
                   levels: [[:a,:b,:c],[:one,:two],[:bar, :baz, :foo]],
                   labels: [
                     [0,0,0,0,1,1,1,1,2,2,2,2],
@@ -676,5 +672,18 @@ describe DaruLite::MultiIndex do
            'col2' => %w[one two two one],
            'col3' => %w[bar bar baz foo]
     )}
+  end
+
+  describe '#delete_at' do
+    subject { index.delete_at(3)}
+
+    let(:index) do
+      DaruLite::MultiIndex.from_tuples([[:a, :one], [:a, :two], [:b, :one], [:b, :two], [:c, :one]])
+    end
+    let(:expected_index) do
+      DaruLite::MultiIndex.from_tuples([[:a, :one], [:a, :two], [:b, :one], [:c, :one]])
+    end
+
+    it { is_expected.to eq(expected_index) }
   end
 end

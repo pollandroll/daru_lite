@@ -289,8 +289,8 @@ module DaruLite
     def delete_at_position(position)
       raise IndexError, "Position #{position} does not exist." unless position < size
 
-      each_vector { |vector| vector.delete_at_position(position) }
       @index = @index.delete_at(position)
+      each_vector { |vector| vector.delete_at_position(position) }
 
       set_size
     end
