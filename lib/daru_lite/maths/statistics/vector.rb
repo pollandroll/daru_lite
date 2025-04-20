@@ -89,8 +89,8 @@ module DaruLite
           #
           #   dv.max(2) { |a,b| a.size <=> b.size }
           #   #=> ["Jon Starkgaryen","Daenerys"]
-          def max(size = nil, &block)
-            reject_values(*DaruLite::MISSING_VALUES).to_a.max(size, &block)
+          def max(size = nil, &)
+            reject_values(*DaruLite::MISSING_VALUES).to_a.max(size, &)
           end
 
           # Returns the maximum value(s) present in the vector, with a compulsory object block.
@@ -134,8 +134,8 @@ module DaruLite
           #
           #   dv.min(2) { |a,b| a.size <=> b.size }
           #   #=> ["Tyrion","Daenerys"]
-          def min(size = nil, &block)
-            reject_values(*DaruLite::MISSING_VALUES).to_a.min(size, &block)
+          def min(size = nil, &)
+            reject_values(*DaruLite::MISSING_VALUES).to_a.min(size, &)
           end
 
           # Returns the minimum value(s) present in the vector, with a compulsory object block.
@@ -179,9 +179,9 @@ module DaruLite
           #
           #   dv.max(2) { |a,b| a.size <=> b.size }
           #   #=> ["Jon Starkgaryen","Daenerys"]
-          def max(size = nil, &block)
+          def max(size = nil, &)
             range = size.nil? ? 0 : (0..size - 1)
-            reject_values(*DaruLite::MISSING_VALUES).to_a.sort(&block).reverse[range]
+            reject_values(*DaruLite::MISSING_VALUES).to_a.sort(&).reverse[range]
           end
 
           # Returns the maximum value(s) present in the vector, with a compulsory object block.
@@ -225,9 +225,9 @@ module DaruLite
           #
           #   dv.min(2) { |a,b| a.size <=> b.size }
           #   #=> ["Tyrion","Daenerys"]
-          def min(size = nil, &block)
+          def min(size = nil, &)
             range = size.nil? ? 0 : (0..size - 1)
-            reject_values(*DaruLite::MISSING_VALUES).to_a.sort(&block)[range]
+            reject_values(*DaruLite::MISSING_VALUES).to_a.sort(&)[range]
           end
 
           # Returns the minimum value(s) present in the vector, with a compulsory object block.
@@ -276,8 +276,8 @@ module DaruLite
         #
         #   dv.index_of_max(2) { |a,b| a.size <=> b.size }
         #   #=> [:j, :d]
-        def index_of_max(size = nil, &block)
-          vals = max(size, &block)
+        def index_of_max(size = nil, &)
+          vals = max(size, &)
           dv   = reject_values(*DaruLite::MISSING_VALUES)
           vals.is_a?(Array) ? (vals.map { |x| dv.index_of(x) }) : dv.index_of(vals)
         end
@@ -299,8 +299,8 @@ module DaruLite
         #
         #   dv.index_of_max_by(2) { |i| i.size }
         #   #=> [:j, :d]
-        def index_of_max_by(size = nil, &block)
-          vals = max_by(size, &block)
+        def index_of_max_by(size = nil, &)
+          vals = max_by(size, &)
           dv   = reject_values(*DaruLite::MISSING_VALUES)
           vals.is_a?(Array) ? (vals.map { |x| dv.index_of(x) }) : dv.index_of(vals)
         end
@@ -325,8 +325,8 @@ module DaruLite
         #
         #   dv.index_of_min(2) { |a,b| a.size <=> b.size }
         #   #=> [:t, :d]
-        def index_of_min(size = nil, &block)
-          vals = min(size, &block)
+        def index_of_min(size = nil, &)
+          vals = min(size, &)
           dv   = reject_values(*DaruLite::MISSING_VALUES)
           vals.is_a?(Array) ? (vals.map { |x| dv.index_of(x) }) : dv.index_of(vals)
         end
@@ -348,8 +348,8 @@ module DaruLite
         #
         #   dv.index_of_min(2) { |i| i.size }
         #   #=> [:t, :d]
-        def index_of_min_by(size = nil, &block)
-          vals = min_by(size, &block)
+        def index_of_min_by(size = nil, &)
+          vals = min_by(size, &)
           dv   = reject_values(*DaruLite::MISSING_VALUES)
           vals.is_a?(Array) ? (vals.map { |x| dv.index_of(x) }) : dv.index_of(vals)
         end

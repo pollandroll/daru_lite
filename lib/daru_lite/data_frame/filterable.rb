@@ -68,8 +68,8 @@ module DaruLite
       #   df.filter(:row) do |row|
       #     row[:a] + row[:d] < 100
       #   end
-      def filter(axis = :vector, &block)
-        dispatch_to_axis_pl axis, :filter, &block
+      def filter(axis = :vector, &)
+        dispatch_to_axis_pl(axis, :filter, &)
       end
 
       # Returns a dataframe in which rows with any of the mentioned values
@@ -113,8 +113,8 @@ module DaruLite
       end
 
       # creates a new vector with the data of a given field which the block returns true
-      def filter_vector(vec, &block)
-        DaruLite::Vector.new(each_row.select(&block).map { |row| row[vec] })
+      def filter_vector(vec, &)
+        DaruLite::Vector.new(each_row.select(&).map { |row| row[vec] })
       end
 
       # Iterates over each row and retains it in a new DataFrame if the block returns

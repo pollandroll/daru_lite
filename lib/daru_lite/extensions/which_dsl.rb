@@ -12,8 +12,8 @@ module DaruLite
     # df.which{ (`NameTitle` == 'Dr') & (`Sex` == 'female') }
     # equals
     # df.where( df['NameTitle'].eq('Dr') & df['Sex'].eq('female') )
-    def which(&block)
-      WhichQuery.new(self, &block).exec
+    def which(&)
+      WhichQuery.new(self, &).exec
     end
   end
 

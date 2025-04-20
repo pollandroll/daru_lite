@@ -7,13 +7,13 @@ module DaruLite
 
       def_delegators :@data, :slice!
 
-      def each(&block)
-        @data.each(&block)
+      def each(&)
+        @data.each(&)
         self
       end
 
-      def map!(&block)
-        @data.map!(&block)
+      def map!(&)
+        @data.map!(&)
         self
       end
 

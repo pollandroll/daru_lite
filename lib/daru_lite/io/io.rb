@@ -1,7 +1,11 @@
 module DaruLite
   require_relative 'csv/converters'
+
   module IOHelpers
     class << self
+      INT_PATTERN = /^[-+]?\d+$/
+      FLOAT_PATTERN = /^[-+]?\d+[,.]?\d*(e-?\d+)?$/
+
       def process_row(row, empty)
         row.to_a.map do |c|
           if empty.include?(c)
@@ -23,9 +27,6 @@ module DaruLite
 
       private
 
-      INT_PATTERN = /^[-+]?\d+$/
-      FLOAT_PATTERN = /^[-+]?\d+[,.]?\d*(e-?\d+)?$/
-
       def try_string_to_number(s)
         case s
         when INT_PATTERN
@@ -41,6 +42,8 @@ module DaruLite
 
   module IO
     class << self
+      DARU_OPT_KEYS = %i[clone order index name].freeze
+
       # Functions for loading/writing Excel files.
 
       def from_excel(path, opts = {})
@@ -196,8 +199,6 @@ module DaruLite
         DaruLite.error "\nInstall the #{name} gem version #{version} for using  #{name} functions."
       end
 
-      DARU_OPT_KEYS = %i[clone order index name].freeze
-
       def from_csv_prepare_opts(opts)
         opts[:col_sep]           ||= ','
         opts[:skip_blanks]       ||= true
@@ -245,7 +246,7 @@ module DaruLite
       def html_parse_table(table)
         headers, headers_size = html_scrape_tag(table, 'th')
         data, size = html_scrape_tag(table, 'td')
-        data = data.keep_if { |x| x.count == size }
+        data.keep_if { |x| x.count == size }
         order, indice = html_parse_hash(headers, size, headers_size) if headers_size >= size
         return unless (indice.nil? || indice.count == data.count) && !order.nil? && order.count.positive?
 

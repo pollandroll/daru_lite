@@ -30,7 +30,7 @@ module DaruLite
         (
           (?<offset>MONTH|YEAR|S|H|MB|ME|M|D|YB|YE) |
           (?<offset>W)(-(?<weekday>#{DOW_REGEXP}))?
-        )$/x.freeze
+        )$/x
 
       # Generates a DaruLite::DateOffset object for generic offsets or one of the
       # specialized classed within DaruLite::Offsets depending on the 'frequency'
@@ -131,7 +131,7 @@ module DaruLite
         end
       end
 
-      DATE_PRECISION_REGEXP = /^(\d\d\d\d)(-\d{1,2}(-\d{1,2}( \d{1,2}(:\d{1,2}(:\d{1,2})?)?)?)?)?$/.freeze
+      DATE_PRECISION_REGEXP = /^(\d\d\d\d)(-\d{1,2}(-\d{1,2}( \d{1,2}(:\d{1,2}(:\d{1,2})?)?)?)?)?$/
       DATE_PRECISIONS = [nil, :year, :month, :day, :hour, :min, :sec].freeze
 
       def determine_date_precision_of(date_string)
@@ -222,8 +222,8 @@ module DaruLite
       new(source, freq: :infer) if source && ArrayHelper.array_of?(source, ::DateTime)
     end
 
-    def each(&block)
-      to_a.each(&block)
+    def each(&)
+      to_a.each(&)
     end
 
     attr_reader :frequency, :offset, :periods, :keys
@@ -367,20 +367,20 @@ module DaruLite
       end
     end
 
-    def pos(*args)
+    def pos(*)
       # to filled
-      out = self[*args]
+      out = self[*]
       return out if out.is_a? Numeric
 
       out.map { |date| self[date] }
     end
 
-    def subset(*args)
-      self[*args]
+    def subset(*)
+      self[*]
     end
 
-    def valid?(*args)
-      self[*args]
+    def valid?(*)
+      self[*]
       true
     rescue IndexError
       false

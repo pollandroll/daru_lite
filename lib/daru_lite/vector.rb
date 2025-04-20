@@ -413,7 +413,7 @@ module DaruLite
 
       "#<#{self.class}(#{size})#{':category' if category?}>\n" +
         Formatters::Table.format(
-          to_a.lazy.map { |v| [v] },
+          to_a.lazy.zip,
           headers: @name && [@name],
           row_headers: row_headers,
           threshold: threshold,
@@ -508,7 +508,7 @@ module DaruLite
       DaruLite::DataFrame.new ps
     end
 
-    DATE_REGEXP = /^(\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})$/.freeze
+    DATE_REGEXP = /^(\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})$/
 
     # Returns the database type for the vector, according to its content
     def db_type
@@ -563,7 +563,7 @@ module DaruLite
       dv
     end
 
-    def method_missing(name, *args, &block)
+    def method_missing(name, *args, &)
       # FIXME: it is shamefully fragile. Should be either made stronger
       # (string/symbol dychotomy, informative errors) or removed totally. - zverok
       if name =~ /(.+)=/

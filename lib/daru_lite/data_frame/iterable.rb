@@ -68,8 +68,8 @@ module DaruLite
       #
       # * +axis+ - The axis to iterate over. Can be :vector (or :column)
       # or :row. Default to :vector.
-      def each(axis = :vector, &block)
-        dispatch_to_axis axis, :each, &block
+      def each(axis = :vector, &)
+        dispatch_to_axis(axis, :each, &)
       end
 
       # Iterate over a row or vector and return results in a DaruLite::Vector.
@@ -87,8 +87,8 @@ module DaruLite
       #
       # * +axis+ - The axis to iterate over. Can be :vector (or :column)
       # or :row. Default to :vector.
-      def collect(axis = :vector, &block)
-        dispatch_to_axis_pl axis, :collect, &block
+      def collect(axis = :vector, &)
+        dispatch_to_axis_pl(axis, :collect, &)
       end
 
       # Map over each vector or row of the data frame according to
@@ -107,8 +107,8 @@ module DaruLite
       #
       # * +axis+ - The axis to map over. Can be :vector (or :column) or :row.
       # Default to :vector.
-      def map(axis = :vector, &block)
-        dispatch_to_axis_pl axis, :map, &block
+      def map(axis = :vector, &)
+        dispatch_to_axis_pl(axis, :map, &)
       end
 
       # Destructive map. Modifies the DataFrame. Each run of the block
@@ -119,11 +119,11 @@ module DaruLite
       #
       # * +axis+ - The axis to map over. Can be :vector (or :column) or :row.
       # Default to :vector.
-      def map!(axis = :vector, &block)
+      def map!(axis = :vector, &)
         if %i[vector column].include?(axis)
-          map_vectors!(&block)
+          map_vectors!(&)
         elsif axis == :row
-          map_rows!(&block)
+          map_rows!(&)
         end
       end
 
@@ -144,8 +144,8 @@ module DaruLite
       #
       # * +axis+ - The axis to map over. Can be :vector (or :column) or :row.
       # Default to :vector.
-      def recode(axis = :vector, &block)
-        dispatch_to_axis_pl axis, :recode, &block
+      def recode(axis = :vector, &)
+        dispatch_to_axis_pl(axis, :recode, &)
       end
 
       # Replace specified values with given value

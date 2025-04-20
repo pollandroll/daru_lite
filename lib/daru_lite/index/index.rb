@@ -20,7 +20,7 @@ module DaruLite
 
     # We over-ride the .new method so that any sort of Index can be generated
     # from DaruLite::Index based on the types of arguments supplied.
-    def self.new(*args, &block)
+    def self.new(*args, &)
       # FIXME: I'm not sure this clever trick really deserves our attention.
       # Most of common ruby libraries just avoid it in favor of usual
       # factor method, like `Index.create`. When `Index.new(...).class != Index`
@@ -29,7 +29,7 @@ module DaruLite
 
       MultiIndex.try_from_tuples(source) ||
         DateTimeIndex.try_create(source) ||
-        allocate.tap { |i| i.send :initialize, *args, &block }
+        allocate.tap { |i| i.send(:initialize, *args, &) }
     end
 
     def self.coerce(maybe_index)
@@ -377,7 +377,7 @@ module DaruLite
     def numeric_pos(key)
       if @relation_hash.key?(key)
         @relation_hash[key]
-      elsif key.is_a?(Numeric) && (key < size && key >= -size)
+      elsif key.is_a?(Numeric) && key < size && key >= -size
         key
       else
         raise IndexError, "Specified index #{key.inspect} does not exist"

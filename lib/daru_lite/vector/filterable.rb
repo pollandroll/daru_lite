@@ -58,8 +58,8 @@ module DaruLite
       #   #  0   3 days
       #   #  1   35 days
       #   #  2   14 days
-      def apply_where(bool_array, &block)
-        DaruLite::Core::Query.vector_apply_where self, bool_array, &block
+      def apply_where(bool_array, &)
+        DaruLite::Core::Query.vector_apply_where(self, bool_array, &)
       end
 
       # Keep only unique elements of the vector alongwith their indexes.

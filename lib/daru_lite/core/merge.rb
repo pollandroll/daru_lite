@@ -1,6 +1,14 @@
 module DaruLite
   module Core
     class MergeFrame
+      LEFT_RIGHT_COMBINATIONS = {
+        #       left   right
+        inner: [false, false],
+        left: [true, false],
+        right: [false, true],
+        outer: [true, true]
+      }.freeze
+
       class NilSorter
         include Comparable
 
@@ -54,14 +62,6 @@ module DaruLite
                   :right, :right_key_values, :keep_right, :right_keys
 
       attr_accessor :merge_key
-
-      LEFT_RIGHT_COMBINATIONS = {
-        #       left   right
-        inner: [false, false],
-        left: [true, false],
-        right: [false, true],
-        outer: [true, true]
-      }.freeze
 
       def init_opts(opts)
         @on = opts[:on]
