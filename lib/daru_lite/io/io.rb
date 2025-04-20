@@ -23,8 +23,8 @@ module DaruLite
 
       private
 
-      INT_PATTERN = /^[-+]?\d+$/.freeze
-      FLOAT_PATTERN = /^[-+]?\d+[,.]?\d*(e-?\d+)?$/.freeze
+      INT_PATTERN = /^[-+]?\d+$/
+      FLOAT_PATTERN = /^[-+]?\d+[,.]?\d*(e-?\d+)?$/
 
       def try_string_to_number(s)
         case s
@@ -124,7 +124,8 @@ module DaruLite
 
       # Execute a query and create a data frame from the result
       #
-      # @param db [DBI::DatabaseHandle, String] A DBI connection OR Path to a SQlite3 database.
+      # @param db [ActiveRecord::ConnectionAdapters::AbstractAdapter, String] An ActiveRecord connection
+      # OR Path to a SQlite3 database.
       # @param query [String] The query to be executed
       #
       # @return A dataframe containing the data resulting from the query
@@ -134,7 +135,6 @@ module DaruLite
       end
 
       def dataframe_write_sql(ds, dbh, table)
-        require 'dbi'
         query = "INSERT INTO #{table} (#{ds.vectors.to_a.join(',')}) VALUES (#{(['?'] * ds.vectors.size).join(',')})"
         sth   = dbh.prepare(query)
         ds.each_row { |c| sth.execute(*c.to_a) }
@@ -272,7 +272,7 @@ module DaruLite
       end
 
       def html_search(table, match = nil)
-        match.nil? ? true : (table.to_s.include? match)
+        match.nil? || (table.to_s.include? match)
       end
 
       # Allows user to override the scraped order / index / data

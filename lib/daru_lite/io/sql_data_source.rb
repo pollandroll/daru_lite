@@ -16,24 +16,6 @@ module DaruLite
         end
       end
 
-      # Private adapter class for DBI::DatabaseHandle
-      # @private
-      class DbiAdapter < Adapter
-        private
-
-        def column_names
-          result.column_names
-        end
-
-        def rows
-          result.to_a.map(&:to_a)
-        end
-
-        def result
-          @result ||= @conn.execute(@query)
-        end
-      end
-
       # Private adapter class for connections of ActiveRecord
       # @private
       class ActiveRecordConnectionAdapter < Adapter
@@ -52,7 +34,6 @@ module DaruLite
         end
       end
 
-      private_constant :DbiAdapter
       private_constant :ActiveRecordConnectionAdapter
 
       def self.make_dataframe(db, query)
@@ -76,8 +57,6 @@ module DaruLite
         db = attempt_sqlite3_connection(db) if db.is_a?(String) && Pathname(db).exist?
 
         case db
-        when DBI::DatabaseHandle
-          DbiAdapter.new(db, query)
         when ActiveRecord::ConnectionAdapters::AbstractAdapter
           ActiveRecordConnectionAdapter.new(db, query)
         else
@@ -86,11 +65,15 @@ module DaruLite
       end
 
       def attempt_sqlite3_connection(db)
-        DBI.connect("DBI:SQLite3:#{db}")
-      rescue SQLite3::NotADatabaseException
+        ActiveRecord::Base.establish_connection(
+          adapter: 'sqlite3',
+          database: db
+        )
+        ActiveRecord::Base.connection.tap(&:verify!)
+      rescue ActiveRecord::StatementInvalid
         raise ArgumentError, "Expected #{db} to point to a SQLite3 database"
       rescue NameError
-        raise NameError, "In order to establish a connection to #{db}, please require 'dbi'"
+        raise NameError, "In order to establish a connection to #{db}, please require 'ActiveRecord'"
       end
     end
   end
