@@ -1,5 +1,4 @@
 require 'sqlite3'
-require 'dbi'
 require 'active_record'
 
 module DaruLite::RSpec

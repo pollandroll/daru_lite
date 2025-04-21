@@ -38,6 +38,8 @@ module DaruLite
     include DaruLite::Maths::Arithmetic::DataFrame
     include DaruLite::Maths::Statistics::DataFrame
 
+    AXES = %i[row vector].freeze
+
     attr_accessor(*Configuration::INSPECT_OPTIONS_KEYS)
 
     extend Gem::Deprecate
@@ -478,15 +480,17 @@ module DaruLite
       self
     end
 
-    def method_missing(name, *args, &block)
-      if /(.+)=/.match?(name)
-        name = name[/(.+)=/].delete('=')
+    def method_missing(name, *args, &)
+      stringified_name = name.to_s
+
+      if /^([^=]+)=/.match?(stringified_name)
+        name = stringified_name[/^([^=]+)=/].delete('=')
         name = name.to_sym unless has_vector?(name)
         insert_or_modify_vector [name], args[0]
       elsif has_vector?(name)
         self[name]
-      elsif has_vector?(name.to_s)
-        self[name.to_s]
+      elsif has_vector?(stringified_name)
+        self[stringified_name]
       else
         super
       end
@@ -527,27 +531,25 @@ module DaruLite
       end
     end
 
-    def dispatch_to_axis(axis, method, *args, &block)
+    def dispatch_to_axis(axis, method, *, &)
       if %i[vector column].include?(axis)
-        send(:"#{method}_vector", *args, &block)
+        send(:"#{method}_vector", *, &)
       elsif axis == :row
-        send(:"#{method}_row", *args, &block)
+        send(:"#{method}_row", *, &)
       else
         raise ArgumentError, "Unknown axis #{axis}"
       end
     end
 
-    def dispatch_to_axis_pl(axis, method, *args, &block)
+    def dispatch_to_axis_pl(axis, method, *, &)
       if %i[vector column].include?(axis)
-        send(:"#{method}_vectors", *args, &block)
+        send(:"#{method}_vectors", *, &)
       elsif axis == :row
-        send(:"#{method}_rows", *args, &block)
+        send(:"#{method}_rows", *, &)
       else
         raise ArgumentError, "Unknown axis #{axis}"
       end
     end
-
-    AXES = %i[row vector].freeze
 
     def extract_axis(names, default = :vector)
       if AXES.include?(names.last)

@@ -175,22 +175,6 @@ describe DaruLite::IO do
     context ".from_sql" do
       include_context 'with accounts table in sqlite3 database'
 
-      context 'with a database handler of DBI' do
-        let(:db) do
-          DBI.connect("DBI:SQLite3:#{db_name}")
-        end
-
-        subject { DaruLite::DataFrame.from_sql(db, "select * from accounts") }
-
-        it "loads data from an SQL database" do
-          accounts = subject
-          expect(accounts.class).to eq DaruLite::DataFrame
-          expect(accounts.nrows).to eq 2
-          expect(accounts.row[0][:id]).to eq 1
-          expect(accounts.row[0][:name]).to eq "Homer"
-        end
-      end
-
       context 'with a database connection of ActiveRecord' do
         let(:connection) do
           DaruLite::RSpec::Account.establish_connection "sqlite3:#{db_name}"

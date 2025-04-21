@@ -3,7 +3,6 @@ $:.unshift File.expand_path("../../lib", __FILE__)
 require 'benchmark'
 require 'daru_lite'
 require 'sqlite3'
-require 'dbi'
 require 'active_record'
 
 db_name = 'daru_lite_test.sqlite'

@@ -1,7 +1,11 @@
 module DaruLite
   require_relative 'csv/converters'
+
   module IOHelpers
     class << self
+      INT_PATTERN = /^[-+]?\d+$/
+      FLOAT_PATTERN = /^[-+]?\d+[,.]?\d*(e-?\d+)?$/
+
       def process_row(row, empty)
         row.to_a.map do |c|
           if empty.include?(c)
@@ -23,9 +27,6 @@ module DaruLite
 
       private
 
-      INT_PATTERN = /^[-+]?\d+$/.freeze
-      FLOAT_PATTERN = /^[-+]?\d+[,.]?\d*(e-?\d+)?$/.freeze
-
       def try_string_to_number(s)
         case s
         when INT_PATTERN
@@ -41,6 +42,8 @@ module DaruLite
 
   module IO
     class << self
+      DARU_OPT_KEYS = %i[clone order index name].freeze
+
       # Functions for loading/writing Excel files.
 
       def from_excel(path, opts = {})
@@ -124,7 +127,8 @@ module DaruLite
 
       # Execute a query and create a data frame from the result
       #
-      # @param db [DBI::DatabaseHandle, String] A DBI connection OR Path to a SQlite3 database.
+      # @param db [ActiveRecord::ConnectionAdapters::AbstractAdapter, String] An ActiveRecord connection
+      # OR Path to a SQlite3 database.
       # @param query [String] The query to be executed
       #
       # @return A dataframe containing the data resulting from the query
@@ -134,7 +138,6 @@ module DaruLite
       end
 
       def dataframe_write_sql(ds, dbh, table)
-        require 'dbi'
         query = "INSERT INTO #{table} (#{ds.vectors.to_a.join(',')}) VALUES (#{(['?'] * ds.vectors.size).join(',')})"
         sth   = dbh.prepare(query)
         ds.each_row { |c| sth.execute(*c.to_a) }
@@ -196,8 +199,6 @@ module DaruLite
         DaruLite.error "\nInstall the #{name} gem version #{version} for using  #{name} functions."
       end
 
-      DARU_OPT_KEYS = %i[clone order index name].freeze
-
       def from_csv_prepare_opts(opts)
         opts[:col_sep]           ||= ','
         opts[:skip_blanks]       ||= true
@@ -245,7 +246,7 @@ module DaruLite
       def html_parse_table(table)
         headers, headers_size = html_scrape_tag(table, 'th')
         data, size = html_scrape_tag(table, 'td')
-        data = data.keep_if { |x| x.count == size }
+        data.keep_if { |x| x.count == size }
         order, indice = html_parse_hash(headers, size, headers_size) if headers_size >= size
         return unless (indice.nil? || indice.count == data.count) && !order.nil? && order.count.positive?
 
@@ -272,7 +273,7 @@ module DaruLite
       end
 
       def html_search(table, match = nil)
-        match.nil? ? true : (table.to_s.include? match)
+        match.nil? || (table.to_s.include? match)
       end
 
       # Allows user to override the scraped order / index / data

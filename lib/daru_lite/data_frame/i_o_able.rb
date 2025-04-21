@@ -32,8 +32,8 @@ module DaruLite
         #     :col_sep           => ',',
         #     :converters        => :numeric
         #   }
-        def from_csv(path, opts = {}, &block)
-          DaruLite::IO.from_csv path, opts, &block
+        def from_csv(path, opts = {}, &)
+          DaruLite::IO.from_csv(path, opts, &)
         end
 
         # Read data from an Excel file into a DataFrame.
@@ -45,28 +45,30 @@ module DaruLite
         # == Options
         #
         # *:worksheet_id - ID of the worksheet that is to be read.
-        def from_excel(path, opts = {}, &block)
-          DaruLite::IO.from_excel path, opts, &block
+        def from_excel(path, opts = {}, &)
+          DaruLite::IO.from_excel(path, opts, &)
         end
 
         # Read a database query and returns a Dataset
         #
-        # @param dbh [DBI::DatabaseHandle, String] A DBI connection OR Path to a SQlite3 database.
+        # @param arh [ActiveRecord::ConnectionAdapters::AbstractAdapter, String] An ActiveRecord connection
+        # OR Path to a SQlite3 database.
         # @param query [String] The query to be executed
         #
         # @return A dataframe containing the data resulting from the query
         #
         # USE:
         #
-        #  dbh = DBI.connect("DBI:Mysql:database:localhost", "user", "password")
+        #  ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: "path/to/sqlite.db")
+        #  arh = ActiveRecord::Base.connection
         #  DaruLite::DataFrame.from_sql(dbh, "SELECT * FROM test")
         #
         #  #Alternatively
         #
-        #  require 'dbi'
+        #  require 'active_record'
         #  DaruLite::DataFrame.from_sql("path/to/sqlite.db", "SELECT * FROM test")
-        def from_sql(dbh, query)
-          DaruLite::IO.from_sql dbh, query
+        def from_sql(arh, query)
+          DaruLite::IO.from_sql arh, query
         end
 
         # Read a dataframe from AR::Relation
@@ -149,16 +151,17 @@ module DaruLite
       #
       # == Arguments
       #
-      # * dbh - DBI database connection object.
+      # * arh - ActiveRecord database connection object.
       # * query - Query string.
       #
       # == Usage
       #
       #  ds = DaruLite::DataFrame.new({:id=>DaruLite::Vector.new([1,2,3]), :name=>DaruLite::Vector.new(["a","b","c"])})
-      #  dbh = DBI.connect("DBI:Mysql:database:localhost", "user", "password")
-      #  ds.write_sql(dbh,"test")
-      def write_sql(dbh, table)
-        DaruLite::IO.dataframe_write_sql self, dbh, table
+      #  ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: "path/to/sqlite.db")
+      #  arh = ActiveRecord::Base.connection
+      #  ds.write_sql(arh,"test")
+      def write_sql(arh, table)
+        DaruLite::IO.dataframe_write_sql self, arh, table
       end
 
       # Use marshalling to save dataframe to a file.

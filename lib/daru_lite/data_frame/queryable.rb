@@ -31,9 +31,9 @@ module DaruLite
       #   df.any?(:row) do |row|
       #     row[:a] < 3 and row[:b] == 'b'
       #   end #=> true
-      def any?(axis = :vector, &block)
+      def any?(axis = :vector, &)
         if %i[vector column].include?(axis)
-          @data.any?(&block)
+          @data.any?(&)
         elsif axis == :row
           each_row do |row|
             return true if yield(row)
@@ -53,11 +53,11 @@ module DaruLite
       #   df.all?(:row) do |row|
       #     row[:a] < 10
       #   end #=> true
-      def all?(axis = :vector, &block)
+      def all?(axis = :vector, &)
         if %i[vector column].include?(axis)
-          @data.all?(&block)
+          @data.all?(&)
         elsif axis == :row
-          each_row.all?(&block)
+          each_row.all?(&)
         else
           raise ArgumentError, "Unidentified axis #{axis}"
         end

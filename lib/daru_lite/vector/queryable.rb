@@ -17,12 +17,12 @@ module DaruLite
         values.any? { |v| include_with_nan? @data, v }
       end
 
-      def any?(&block)
-        @data.data.any?(&block)
+      def any?(&)
+        @data.data.any?(&)
       end
 
-      def all?(&block)
-        @data.data.all?(&block)
+      def all?(&)
+        @data.data.all?(&)
       end
 
       # Returns an array of either none or integer values, indicating the

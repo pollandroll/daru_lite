@@ -165,10 +165,10 @@ module DaruLite
 
         private
 
-        def apply_method_to_numerics(method, *args)
+        def apply_method_to_numerics(method, *)
           numerics = @vectors.to_a.map { |n| [n, @data[@vectors[n]]] }
                              .select { |_n, v| v.numeric? }
-          computed = numerics.map { |_n, v| v.send(method, *args) }
+          computed = numerics.map { |_n, v| v.send(method, *) }
 
           DaruLite::DataFrame.new(computed, index: @index, order: numerics.map(&:first), clone: false)
         end

@@ -1,6 +1,5 @@
 require 'daru_lite/io/sql_data_source'
 require 'sqlite3'
-require 'dbi'
 require 'active_record'
 
 RSpec.describe DaruLite::IO::SqlDataSource do
@@ -17,13 +16,6 @@ RSpec.describe DaruLite::IO::SqlDataSource do
 
   describe '.make_dataframe' do
     subject(:df) { DaruLite::IO::SqlDataSource.make_dataframe(source, query) }
-
-    context 'with DBI::DatabaseHandle' do
-      let(:source) { DBI.connect("DBI:SQLite3:#{db_name}") }
-      it { is_expected.to be_a(DaruLite::DataFrame) }
-      it { expect(df.row[0]).to have_attributes(id: 1, age: 20) }
-      its(:nrows) { is_expected.to eq 2 }
-    end
 
     context 'with ActiveRecord::Connection' do
       it { is_expected.to be_a(DaruLite::DataFrame) }

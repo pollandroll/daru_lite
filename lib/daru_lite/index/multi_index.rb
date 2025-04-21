@@ -1,11 +1,11 @@
 module DaruLite
   class MultiIndex < Index # rubocop:disable Metrics/ClassLength
-    def each(&block)
-      to_a.each(&block)
+    def each(&)
+      to_a.each(&)
     end
 
-    def map(&block)
-      to_a.map(&block)
+    def map(&)
+      to_a.map(&)
     end
 
     attr_reader :labels, :name

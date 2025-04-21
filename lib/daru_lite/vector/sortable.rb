@@ -17,10 +17,10 @@ module DaruLite
       #   v = DaruLite::Vector.new ["My first guitar", "jazz", "guitar"]
       #   # Say you want to sort these strings by length.
       #   v.sort(ascending: false) { |a,b| a.length <=> b.length }
-      def sort(opts = {}, &block)
+      def sort(opts = {}, &)
         opts = { ascending: true }.merge(opts)
 
-        vector_index = resort_index(@data.each_with_index, opts, &block)
+        vector_index = resort_index(@data.each_with_index, opts, &)
         vector, index = vector_index.transpose
 
         index = @index.reorder index
@@ -68,8 +68,8 @@ module DaruLite
       # Just sort the data and get an Array in return using Enumerable#sort.
       # Non-destructive.
       # :nocov:
-      def sorted_data(&block)
-        @data.to_a.sort(&block)
+      def sorted_data(&)
+        @data.to_a.sort(&)
       end
       # :nocov:
 

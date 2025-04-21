@@ -110,8 +110,8 @@ module DaruLite
       #   # 4 555
       #   # 5 666
       #   # 6 777
-      def vector_by_calculation(&block)
-        a = each_row.map { |r| r.instance_eval(&block) }
+      def vector_by_calculation(&)
+        a = each_row.map { |r| r.instance_eval(&) }
 
         DaruLite::Vector.new a, index: @index
       end
