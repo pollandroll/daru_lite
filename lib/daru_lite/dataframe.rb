@@ -481,14 +481,16 @@ module DaruLite
     end
 
     def method_missing(name, *args, &)
-      if /(.+)=/.match?(name)
-        name = name[/(.+)=/].delete('=')
+      stringified_name = name.to_s
+
+      if /^([^=]+)=/.match?(stringified_name)
+        name = stringified_name[/^([^=]+)=/].delete('=')
         name = name.to_sym unless has_vector?(name)
         insert_or_modify_vector [name], args[0]
       elsif has_vector?(name)
         self[name]
-      elsif has_vector?(name.to_s)
-        self[name.to_s]
+      elsif has_vector?(stringified_name)
+        self[stringified_name]
       else
         super
       end

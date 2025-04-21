@@ -564,9 +564,7 @@ module DaruLite
     end
 
     def method_missing(name, *args, &)
-      # FIXME: it is shamefully fragile. Should be either made stronger
-      # (string/symbol dychotomy, informative errors) or removed totally. - zverok
-      if name =~ /(.+)=/
+      if name =~ /^([^=]+)=/
         self[Regexp.last_match(1).to_sym] = args[0]
       elsif has_index?(name)
         self[name]
