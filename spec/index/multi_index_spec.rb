@@ -141,6 +141,10 @@ describe DaruLite::MultiIndex do
       expect(index[:a, :one, :baz]).to eq(1)
     end
 
+    it "returns the row numbers when specifying multiple tuples" do
+      expect(index[[:a, :one, :baz], [:b, :two, :bar]]).to eq([1, 5])
+    end
+
     it "returns MultiIndex when specifying incomplete tuple" do
       expect(index[:b]).to eq(DaruLite::MultiIndex.from_tuples([
         [:b,:one,:bar],
@@ -523,6 +527,14 @@ describe DaruLite::MultiIndex do
       it { is_expected.to eq [0, 1] }
     end
 
+    context "multiple tuple indexes" do
+      subject { idx.pos [:b,:two,:bar], [:b,:one,:foo] }
+
+      it { is_expected.to be_a Array }
+      its(:size) { is_expected.to eq 2 }
+      it { is_expected.to eq [1, 3] }
+    end
+
     # TODO: Add specs for IndexError
   end
 
@@ -550,6 +562,14 @@ describe DaruLite::MultiIndex do
       it { is_expected.to be_a described_class }
       its(:size) { is_expected.to eq 2 }
       its(:to_a) { is_expected.to eq [[:b, :one, :bar], [:b, :two, :bar]] }
+    end
+
+    context "multiple tuple indexes" do
+      subject { idx.subset [:b,:two,:bar], [:b,:one,:foo] }
+
+      it { is_expected.to be_a described_class }
+      its(:size) { is_expected.to eq 2 }
+      its(:to_a) { is_expected.to eq [[:b,:two,:bar], [:b,:one,:foo]] }
     end
 
     # TODO: Checks for invalid indexes
