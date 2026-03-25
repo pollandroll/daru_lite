@@ -41,7 +41,7 @@ shared_examples_for 'a joinable DataFrame' do
   end
 
 
-  context "#union" do
+  describe "#union" do
     let(:df1) do
       DaruLite::DataFrame.new({
         a: [1, 2, 3],
@@ -64,43 +64,59 @@ shared_examples_for 'a joinable DataFrame' do
       )
     end
 
-    it 'does not modify the original dataframes' do
-      df1_a = df1[:a].to_a.dup
-      df2_a = df2[:a].to_a.dup
+    shared_examples_for '#union' do
+      it 'does not modify the original dataframes' do
+        df1_a = df1[:a].to_a.dup
+        df2_a = df2[:a].to_a.dup
 
-      _ = df1.union df2
-      expect(df1[:a].to_a).to eq df1_a
-      expect(df2[:a].to_a).to eq df2_a
+        _ = df1.union df2
+        expect(df1[:a].to_a).to eq df1_a
+        expect(df2[:a].to_a).to eq df2_a
+      end
+
+      it 'creates a new dataframe that is a concatenation of the two dataframe arguments' do
+        df1_a = df1[:a].to_a.dup
+        df2_a = df2[:a].to_a.dup
+
+        df_union = df1.union df2
+        expect(df_union[:a].to_a).to eq df1_a + df2_a
+      end
+
+      it 'fills in missing vectors with nils' do
+        df1_b = df1[:b].to_a.dup
+        df2_c = df2[:c].to_a.dup
+
+        df_union = df1.union df2
+        expect(df_union[:b].to_a).to eq df1_b + [nil] * df2.size
+        expect(df_union[:c].to_a).to eq [nil] * df1.size + df2_c
+      end
+
+      it 'overwrites part of the first dataframe if there are double indices' do
+        vec = DaruLite::Vector.new({a: 4, b: nil, c: 4})
+        expect(df1.union(df3).row[5]).to eq vec
+      end
+
+      it 'concats the indices' do
+        v1 = df1.index.to_a
+        v2 = df2.index.to_a
+
+        df_union = df1.union df2
+        expect(df_union.index.to_a).to eq v1 + v2
+      end
     end
 
-    it 'creates a new dataframe that is a concatenation of the two dataframe arguments' do
-      df1_a = df1[:a].to_a.dup
-      df2_a = df2[:a].to_a.dup
-
-      df_union = df1.union df2
-      expect(df_union[:a].to_a).to eq df1_a + df2_a
+    context 'with regular index' do
+      it_behaves_like '#union'
     end
 
-    it 'fills in missing vectors with nils' do
-      df1_b = df1[:b].to_a.dup
-      df2_c = df2[:c].to_a.dup
+    context 'with multi index' do
+      before do
+        df1.index = DaruLite::MultiIndex.from_tuples([[:a, 1],[:b, 3],[:c, 5]])
+        df2.index = DaruLite::MultiIndex.from_tuples([[:a, 7],[:b, 9],[:c, 11]])
+        df3.index = DaruLite::MultiIndex.from_tuples([[:c, 5],[:a, 7],[:b, 9]])
+      end
 
-      df_union = df1.union df2
-      expect(df_union[:b].to_a).to eq df1_b + [nil] * df2.size
-      expect(df_union[:c].to_a).to eq [nil] * df1.size + df2_c
-    end
-
-    it 'overwrites part of the first dataframe if there are double indices' do
-      vec = DaruLite::Vector.new({a: 4, b: nil, c: 4})
-      expect(df1.union(df3).row[5]).to eq vec
-    end
-
-    it 'concats the indices' do
-      v1 = df1.index.to_a
-      v2 = df2.index.to_a
-
-      df_union = df1.union df2
-      expect(df_union.index.to_a).to eq v1 + v2
+      it_behaves_like '#union'
     end
   end
 end
