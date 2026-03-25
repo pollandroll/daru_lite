@@ -122,8 +122,10 @@ module DaruLite
     end
 
     def [](*key)
-      key.flatten!
-      if key[0].is_a?(Range)
+      if key[0].is_a?(Array)
+        collection = key.map { |actual_key| self[*actual_key] }
+        collection.one? ? collection.first : collection
+      elsif key[0].is_a?(Range)
         retrieve_from_range(key[0])
       elsif key[0].is_a?(Integer) && key.size == 1
         try_retrieve_from_integer(key[0])
@@ -158,7 +160,7 @@ module DaruLite
 
         return indexes
       end
-      res = self[indexes]
+      res = self[*indexes]
       return res if res.is_a? Integer
 
       res.map { |i| self[i] }
