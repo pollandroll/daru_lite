@@ -22,7 +22,10 @@ module DaruLite
         df = row[*(@index.to_a - other_df.index.to_a)]
 
         df = df.concat(other_df)
-        df.index = DaruLite::Index.new(index)
+        df.index = @index.class.public_send(
+          @index.is_a?(DaruLite::MultiIndex) ? :from_tuples : :new,
+          index
+        )
         df
       end
 
