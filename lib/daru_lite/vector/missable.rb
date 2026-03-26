@@ -4,7 +4,7 @@ module DaruLite
       extend Gem::Deprecate
 
       # Reports whether missing data is present in the Vector.
-      def has_missing_data? # rubocop:disable Naming/PredicateName
+      def has_missing_data? # rubocop:disable Naming/PredicatePrefix
         !indexes(*DaruLite::MISSING_VALUES).empty?
       end
       alias flawed? has_missing_data?

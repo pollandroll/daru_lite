@@ -15,7 +15,7 @@ module DaruLite
       end
 
       # Returns *true* if an index exists
-      def has_index?(index) # rubocop:disable Naming/PredicateName
+      def has_index?(index) # rubocop:disable Naming/PredicatePrefix
         @index.include? index
       end
 
