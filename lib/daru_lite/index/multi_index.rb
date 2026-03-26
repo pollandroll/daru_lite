@@ -169,7 +169,7 @@ module DaruLite
     def subset(*indexes)
       if indexes.first.is_a? Integer
         MultiIndex.from_tuples(indexes.map { |index| key(index) })
-      elsif include? indexes.first
+      elsif indexes.first.is_a?(Array) && include?(indexes.first)
         # Same logic as in DaruLite::Index#subset
         MultiIndex.from_tuples indexes
       else
