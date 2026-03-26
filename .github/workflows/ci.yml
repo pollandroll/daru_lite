@@ -1,15 +1,6 @@
 name: CI
 on: [push]
 
-env:
-  CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
-  # `github.ref` points to the *merge commit* when running tests on a pull request, which will be a commit
-  # that doesn't exists in our code base. Since this workflow triggers from a PR, we use the HEAD SHA instead.
-  #
-  # NOTE: These are both used by Code Climate (cc-test-reporter).
-  GIT_COMMIT_SHA: ${{github.event.pull_request.head.sha}}
-  GIT_BRANCH: ${{github.head_ref}}
-
 jobs:
   lint:
     runs-on: ubuntu-latest
