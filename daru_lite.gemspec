@@ -3,23 +3,21 @@ $:.unshift File.expand_path("../lib", __FILE__)
 
 require 'daru_lite/version.rb'
 
-DaruLite::DESCRIPTION = <<MSG
-Daru (Data Analysis in RUby) is a library for analysis, manipulation and visualization
-of data. Daru works seamlessly accross interpreters and leverages interpreter-specific
-optimizations whenever they are available.
-
-It is the default data storage gem for all the statsample gems (glm, timeseries, etc.)
-and can be used with many others like mixed_models, gnuplotrb and iruby.
-
-Daru Lite is a fork of Daru that aims to focus on data manipulation and stability.
-MSG
-
 Gem::Specification.new do |spec|
   spec.name          = 'daru_lite'
   spec.version       = DaruLite::VERSION
   spec.authors       = ['Thomas Naude-Filonnière', 'Maxime Lasserre', 'Julie Thomas', 'Amar Slaoua', 'Mourtada Belhantri']
   spec.summary       = %q{Data Analysis in RUby, stripped down}
-  spec.description   = DaruLite::DESCRIPTION
+  spec.description   = <<~MSG
+    Daru (Data Analysis in RUby) is a library for analysis, manipulation and visualization
+    of data. Daru works seamlessly accross interpreters and leverages interpreter-specific
+    optimizations whenever they are available.
+
+    It is the default data storage gem for all the statsample gems (glm, timeseries, etc.)
+    and can be used with many others like mixed_models, gnuplotrb and iruby.
+
+    Daru Lite is a fork of Daru that aims to focus on data manipulation and stability.
+  MSG
   spec.homepage      = "https://github.com/pollandroll/daru"
   spec.license       = 'BSD-2-Clause'
 
