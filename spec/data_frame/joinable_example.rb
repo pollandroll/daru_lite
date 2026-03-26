@@ -45,22 +45,19 @@ shared_examples_for 'a joinable DataFrame' do
     let(:df1) do
       DaruLite::DataFrame.new({
         a: [1, 2, 3],
-        b: [1, 2, 3]},
-        index: [1,3,5]
+        b: [1, 2, 3]}
       )
     end
     let(:df2) do
       DaruLite::DataFrame.new({
         a: [4, 5, 6],
-        c: [4, 5, 6]},
-        index: [7,9,11]
+        c: [4, 5, 6]}
       )
     end
     let(:df3) do
       DaruLite::DataFrame.new({
         a: [4, 5, 6],
-        c: [4, 5, 6]},
-        index: [5,7,9]
+        c: [4, 5, 6]}
       )
     end
 
@@ -93,7 +90,7 @@ shared_examples_for 'a joinable DataFrame' do
 
       it 'overwrites part of the first dataframe if there are double indices' do
         vec = DaruLite::Vector.new({a: 4, b: nil, c: 4})
-        expect(df1.union(df3).row[5]).to eq vec
+        expect(df1.union(df3).row[df1_df3_common_indice]).to eq vec
       end
 
       it 'concats the indices' do
@@ -106,14 +103,26 @@ shared_examples_for 'a joinable DataFrame' do
     end
 
     context 'with regular index' do
+      let(:df1_df3_common_indice) { 5 }
+      let(:df2_df3_common_indices) { [7, 9] }
+
+      before do
+        df1.index = [1, 3, df1_df3_common_indice]
+        df2.index = [*df2_df3_common_indices, 11]
+        df3.index = [df1_df3_common_indice, *df2_df3_common_indices]
+      end
+
       it_behaves_like '#union'
     end
 
     context 'with multi index' do
+      let(:df1_df3_common_indice) { [:c, 5] }
+      let(:df2_df3_common_indices) { [[:a, 7],[:b, 9]] }
+
       before do
-        df1.index = DaruLite::MultiIndex.from_tuples([[:a, 1],[:b, 3],[:c, 5]])
-        df2.index = DaruLite::MultiIndex.from_tuples([[:a, 7],[:b, 9],[:c, 11]])
-        df3.index = DaruLite::MultiIndex.from_tuples([[:c, 5],[:a, 7],[:b, 9]])
+        df1.index = DaruLite::MultiIndex.from_tuples([[:a, 1], [:b, 3], df1_df3_common_indice])
+        df2.index = DaruLite::MultiIndex.from_tuples([*df2_df3_common_indices, [:c, 11]])
+        df3.index = DaruLite::MultiIndex.from_tuples([df1_df3_common_indice, *df2_df3_common_indices])
       end
 
       it_behaves_like '#union'
