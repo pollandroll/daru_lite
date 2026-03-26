@@ -229,7 +229,7 @@ module DaruLite
     #   #     2  false
     #   #     3  false
     #   #     4  true
-    def is_values(*indexes) # rubocop:disable Naming/PredicateName
+    def is_values(*indexes) # rubocop:disable Naming/PredicatePrefix
       bool_array = @keys.map { |r| indexes.include?(r) }
       DaruLite::Vector.new(bool_array)
     end
