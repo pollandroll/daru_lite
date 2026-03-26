@@ -38,16 +38,5 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-    - name: "Download cc-test-reporter from codeclimate.com"
-      run: |
-        curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-        chmod +x ./cc-test-reporter
-    - name: "Report to Code Climate that we will send a coverage report."
-      run: ./cc-test-reporter before-build
     - name: Run tests
       run: bundle exec rspec
-    - name: Upload code coverage to Code Climate
-      run: |
-        ./cc-test-reporter after-build \
-          --coverage-input-type simplecov \
-          ./coverage/.resultset.json
