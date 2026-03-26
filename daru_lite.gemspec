@@ -46,7 +46,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'simplecov_json_formatter', '~> 0.1.4'
   spec.add_development_dependency 'spreadsheet', '~> 1.3.0'
   spec.add_development_dependency 'sqlite3', '~> 2.9.0'
-  # issue : https://github.com/SciRuby/daru/issues/493 occured
-  # with latest version of sqlite3
-  spec.add_development_dependency 'webmock', '~> 3.25.0'
+  spec.add_development_dependency 'webmock', '~> 3.26.0'
 end
