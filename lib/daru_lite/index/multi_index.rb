@@ -122,18 +122,17 @@ module DaruLite
     end
 
     def [](*key)
-      if key[0].is_a?(Array)
-        collection = key.map { |actual_key| self[*actual_key] }
+      if key.all? { |subkey| subkey.is_a?(Array) && subkey.length > 1 }
+        collection = key.map { |key| retrieve_from_tuples(key) }
         collection.one? ? collection.first : collection
-      elsif key[0].is_a?(Range)
-        retrieve_from_range(key[0])
-      elsif key[0].is_a?(Integer) && key.size == 1
-        try_retrieve_from_integer(key[0])
       else
-        begin
-          retrieve_from_tuples key
-        rescue NoMethodError
-          raise IndexError, "Specified index #{key.inspect} do not exist"
+        key.flatten!
+        if key[0].is_a?(Range)
+          retrieve_from_range(key[0])
+        elsif key[0].is_a?(Integer) && key.size == 1
+          try_retrieve_from_integer(key[0])
+        else
+          retrieve_from_tuples(key)
         end
       end
     end
@@ -238,6 +237,8 @@ module DaruLite
       return chosen[0] if chosen.size == 1 && key.size == @levels.size
 
       multi_index_from_multiple_selections(chosen)
+    rescue NoMethodError
+      raise IndexError, "Specified index #{key.inspect} do not exist"
     end
 
     def multi_index_from_multiple_selections(chosen)

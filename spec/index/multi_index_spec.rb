@@ -141,6 +141,10 @@ describe DaruLite::MultiIndex do
       expect(index[:a, :one, :baz]).to eq(1)
     end
 
+    it "returns the row number when specifying last tuple part as an array" do
+      expect(index[:a, :one, [:baz]]).to eq(1)
+    end
+
     it "returns the row numbers when specifying multiple tuples" do
       expect(index[[:a, :one, :baz], [:b, :two, :bar]]).to eq([1, 5])
     end
