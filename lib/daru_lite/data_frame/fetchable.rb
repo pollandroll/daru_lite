@@ -222,7 +222,7 @@ module DaruLite
       end
 
       def access_vector_multi_index(*names)
-        pos = @vectors[names]
+        pos = @vectors[*names]
 
         return @data[pos] if pos.is_a?(Integer)
 

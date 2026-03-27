@@ -58,6 +58,11 @@ shared_examples_for 'a fetchable DataFrame' do
           DaruLite::Vector.new(vector_arry1, index: multi_index))
       end
 
+      it "returns a vector when specifying last tuple part as an array" do
+        expect(df_mi[:a, :one, [:bar]]).to eq(
+          DaruLite::Vector.new(vector_arry1, index: multi_index))
+      end
+
       it "returns DataFrame when specified first layer of MultiIndex" do
         sub_order = DaruLite::MultiIndex.from_tuples([
           [:one, :bar],

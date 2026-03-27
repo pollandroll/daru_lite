@@ -123,8 +123,7 @@ module DaruLite
 
     def [](*key)
       if key.all? { |subkey| subkey.is_a?(Array) && subkey.length > 1 }
-        collection = key.map { |key| retrieve_from_tuples(key) }
-        collection.one? ? collection.first : collection
+        retrieve_from_tuples(*key)
       else
         key.flatten!
         if key[0].is_a?(Range)
@@ -132,7 +131,7 @@ module DaruLite
         elsif key[0].is_a?(Integer) && key.size == 1
           try_retrieve_from_integer(key[0])
         else
-          retrieve_from_tuples(key)
+          retrieve_from_tuple(key)
         end
       end
     end
@@ -216,14 +215,19 @@ module DaruLite
     end
 
     def try_retrieve_from_integer(int)
-      @levels[0].key?(int) ? retrieve_from_tuples([int]) : int
+      @levels[0].key?(int) ? retrieve_from_tuple([int]) : int
     end
 
     def retrieve_from_range(range)
       MultiIndex.from_tuples(range.map { |index| key(index) })
     end
 
-    def retrieve_from_tuples(key)
+    def retrieve_from_tuples(*keys)
+      collection = keys.map { |key| retrieve_from_tuple(key) }
+      collection.one? ? collection.first : collection
+    end
+
+    def retrieve_from_tuple(key)
       chosen = []
 
       key.each_with_index do |k, depth|
@@ -289,7 +293,7 @@ module DaruLite
     end
 
     private :find_all_indexes, :multi_index_from_multiple_selections,
-            :retrieve_from_range, :retrieve_from_tuples, :validate_name
+            :retrieve_from_range, :retrieve_from_tuple, :validate_name
 
     def key(index)
       raise ArgumentError, "Key #{index} is too large" if index >= @labels[0].size
