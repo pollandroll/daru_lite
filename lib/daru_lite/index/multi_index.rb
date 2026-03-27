@@ -292,8 +292,8 @@ module DaruLite
       raise SizeError, [error_msg, suggestion_msg].join("\n") if names.size < levels.size
     end
 
-    private :find_all_indexes, :multi_index_from_multiple_selections,
-            :retrieve_from_range, :retrieve_from_tuple, :validate_name
+    private :find_all_indexes, :multi_index_from_multiple_selections, :retrieve_from_range,
+            :retrieve_from_tuples, :retrieve_from_tuple, :validate_name
 
     def key(index)
       raise ArgumentError, "Key #{index} is too large" if index >= @labels[0].size
