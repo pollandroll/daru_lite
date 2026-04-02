@@ -1076,6 +1076,17 @@ describe DaruLite::DataFrame do
 
       expect(df2).to eq(df)
     end
+
+    it 'handles nil values in the rows vector' do
+      v1 = DaruLite::Vector.new [nil, 'a', nil, 'a']
+      v2 = DaruLite::Vector.new %w[x x y y]
+      v3 = DaruLite::Vector.new [1, 2, 3, 4]
+      df = DaruLite::DataFrame.crosstab_by_assignation(v1, v2, v3)
+
+      expect(df[:_id].to_a).to eq([nil, 'a'])
+      expect(df['x'].to_a).to eq([1, 2])
+      expect(df['y'].to_a).to eq([3, 4])
+    end
   end
 
   context '#inspect' do
