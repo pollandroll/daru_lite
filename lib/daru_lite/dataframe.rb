@@ -85,15 +85,23 @@ module DaruLite
         raise 'Three vectors should be equal size' if
           rows.size != columns.size || rows.size != values.size
 
+        # Use `uniq` instead of `factors` to include nil/NaN values as valid
+        # row categories. `factors` (from statistics) excludes MISSING_VALUES
+        # (nil, Float::NAN), which caused a size mismatch: the data hashes
+        # would grow an extra key when a nil row value was assigned (line below),
+        # while the :_id column (built from factors) stayed shorter. This
+        # produced a DataFrame with inconsistent column sizes, leading to an
+        # IndexError downstream when calling set_index + DataFrame.rows.
+        row_index = rows.uniq.to_a
         data = Hash.new do |h, col|
-          h[col] = rows.factors.map { |r| [r, nil] }.to_h
+          h[col] = row_index.map { |r| [r, nil] }.to_h
         end
         columns.zip(rows, values).each { |c, r, v| data[c][r] = v }
 
         # FIXME: in fact, WITHOUT this line you'll obtain more "right"
         # data: with vectors having "rows" as an index...
         data = data.transform_values(&:values)
-        data[:_id] = rows.factors
+        data[:_id] = row_index
 
         DataFrame.new(data)
       end
