@@ -180,7 +180,7 @@ module DaruLite
           #   dv.max(2) { |a,b| a.size <=> b.size }
           #   #=> ["Jon Starkgaryen","Daenerys"]
           def max(size = nil, &)
-            range = size.nil? ? 0 : (0..size - 1)
+            range = size.nil? ? 0 : (0..(size - 1))
             reject_values(*DaruLite::MISSING_VALUES).to_a.sort(&).reverse[range]
           end
 
@@ -203,7 +203,7 @@ module DaruLite
           def max_by(size = nil, &block)
             raise ArgumentError, 'Expected compulsory object block in max_by method' unless block
 
-            reject_values(*DaruLite::MISSING_VALUES).to_a.sort_by(&block).reverse[size.nil? ? 0 : (0..size - 1)]
+            reject_values(*DaruLite::MISSING_VALUES).to_a.sort_by(&block).reverse[size.nil? ? 0 : (0..(size - 1))]
           end
 
           # Returns the minimum value(s) present in the vector, with an optional comparator block.
@@ -226,7 +226,7 @@ module DaruLite
           #   dv.min(2) { |a,b| a.size <=> b.size }
           #   #=> ["Tyrion","Daenerys"]
           def min(size = nil, &)
-            range = size.nil? ? 0 : (0..size - 1)
+            range = size.nil? ? 0 : (0..(size - 1))
             reject_values(*DaruLite::MISSING_VALUES).to_a.sort(&)[range]
           end
 
@@ -252,7 +252,7 @@ module DaruLite
           def min_by(size = nil, &block)
             raise ArgumentError, 'Expected compulsory object block in min_by method' unless block
 
-            reject_values(*DaruLite::MISSING_VALUES).to_a.sort_by(&block)[size.nil? ? 0 : (0..size - 1)]
+            reject_values(*DaruLite::MISSING_VALUES).to_a.sort_by(&block)[size.nil? ? 0 : (0..(size - 1))]
           end
         end
 
@@ -279,7 +279,7 @@ module DaruLite
         def index_of_max(size = nil, &)
           vals = max(size, &)
           dv   = reject_values(*DaruLite::MISSING_VALUES)
-          vals.is_a?(Array) ? (vals.map { |x| dv.index_of(x) }) : dv.index_of(vals)
+          vals.is_a?(Array) ? vals.map { |x| dv.index_of(x) } : dv.index_of(vals)
         end
 
         # Returns the index of the maximum value(s) present in the vector, with a compulsory
@@ -302,7 +302,7 @@ module DaruLite
         def index_of_max_by(size = nil, &)
           vals = max_by(size, &)
           dv   = reject_values(*DaruLite::MISSING_VALUES)
-          vals.is_a?(Array) ? (vals.map { |x| dv.index_of(x) }) : dv.index_of(vals)
+          vals.is_a?(Array) ? vals.map { |x| dv.index_of(x) } : dv.index_of(vals)
         end
 
         # Returns the index of the minimum value(s) present in the vector, with an optional
@@ -328,7 +328,7 @@ module DaruLite
         def index_of_min(size = nil, &)
           vals = min(size, &)
           dv   = reject_values(*DaruLite::MISSING_VALUES)
-          vals.is_a?(Array) ? (vals.map { |x| dv.index_of(x) }) : dv.index_of(vals)
+          vals.is_a?(Array) ? vals.map { |x| dv.index_of(x) } : dv.index_of(vals)
         end
 
         # Returns the index of the minimum value(s) present in the vector, with a compulsory
@@ -351,7 +351,7 @@ module DaruLite
         def index_of_min_by(size = nil, &)
           vals = min_by(size, &)
           dv   = reject_values(*DaruLite::MISSING_VALUES)
-          vals.is_a?(Array) ? (vals.map { |x| dv.index_of(x) }) : dv.index_of(vals)
+          vals.is_a?(Array) ? vals.map { |x| dv.index_of(x) } : dv.index_of(vals)
         end
 
         # Return the maximum element present in the Vector, as a Vector.
@@ -409,11 +409,7 @@ module DaruLite
 
         # Count number of occurrences of each value in the Vector
         def value_counts
-          values = @data.each_with_object(Hash.new(0)) do |d, memo|
-            memo[d] += 1
-          end
-
-          DaruLite::Vector.new(values)
+          DaruLite::Vector.new(@data.tally)
         end
 
         def proportion(value = 1)

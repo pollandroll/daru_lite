@@ -118,9 +118,9 @@ module DaruLite
         if lkey == rkey
           self.merge_key = lkey
           add_indicator(merge_matching_rows, :both)
-        elsif !rkey || lt(lkey, rkey)
+        elsif !rkey || lt?(lkey, rkey)
           add_indicator(left_row_missing_right, :left_only)
-        else # !lkey || lt(rkey, lkey)
+        else # !lkey || lt?(rkey, lkey)
           add_indicator(right_row_missing_left, :right_only)
         end
       end
@@ -181,7 +181,7 @@ module DaruLite
         expand_row(val, right_keys) if keep_right
       end
 
-      def lt(k1, k2)
+      def lt?(k1, k2)
         (k1 <=> k2) == -1
       end
 

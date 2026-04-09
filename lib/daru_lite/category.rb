@@ -858,7 +858,7 @@ module DaruLite
     end
 
     def user_defined_coding(df)
-      DaruLite::DataFrame.rows (Array.new(size) { |pos| df.row[at(pos)].to_a }),
+      DaruLite::DataFrame.rows Array.new(size) { |pos| df.row[at(pos)].to_a },
                                index: @index,
                                order: df.vectors.to_a
     end

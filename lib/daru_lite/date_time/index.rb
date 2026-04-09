@@ -96,7 +96,7 @@ module DaruLite
       def infer_offset(data)
         diffs = data.each_cons(2).map { |d1, d2| d2 - d1 }
 
-        return nil unless diffs.uniq.count == 1
+        return nil unless diffs.uniq.one?
 
         return TIME_INTERVALS[diffs.first].new if TIME_INTERVALS.include?(diffs.first)
 
@@ -216,6 +216,7 @@ module DaruLite
 
   class DateTimeIndex < Index
     include Enumerable
+
     Helper = DateTimeIndexHelper
 
     def self.try_create(source)

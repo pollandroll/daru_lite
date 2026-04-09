@@ -1,6 +1,7 @@
 module DaruLite
   class Index # rubocop:disable Metrics/ClassLength
     include Enumerable
+
     # It so happens that over riding the .new method in a super class also
     # tampers with the default .new method for class that inherit from the
     # super class (Index in this case). Thus we first alias the original
@@ -170,7 +171,7 @@ module DaruLite
       if start_idx.nil?
         nil
       elsif en_idx.nil?
-        Array(start_idx..size - 1)
+        Array(start_idx..(size - 1))
       else
         Array(start_idx..en_idx)
       end

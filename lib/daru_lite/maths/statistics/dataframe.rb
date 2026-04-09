@@ -166,8 +166,7 @@ module DaruLite
         private
 
         def apply_method_to_numerics(method, *)
-          numerics = @vectors.to_a.map { |n| [n, @data[@vectors[n]]] }
-                             .select { |_n, v| v.numeric? }
+          numerics = @vectors.to_a.map { |n| [n, @data[@vectors[n]]] }.select { |_n, v| v.numeric? }
           computed = numerics.map { |_n, v| v.send(method, *) }
 
           DaruLite::DataFrame.new(computed, index: @index, order: numerics.map(&:first), clone: false)
@@ -189,9 +188,8 @@ module DaruLite
 
         def compute_stats(method)
           DaruLite::Vector.new(
-            numeric_vectors.each_with_object({}) do |vec, hash|
-              hash[vec] = self[vec].send(method)
-            end, name: method
+            numeric_vectors.to_h { [it, self[it].send(method)] },
+            name: method
           )
         end
         alias sds std
