@@ -249,7 +249,7 @@ module DaruLite
       end
 
       def freq_string
-        "#{@n == 1 ? '' : @n.to_s}W-#{DaruLite::DAYS_OF_WEEK.key(@weekday)}"
+        "#{@n.to_s unless @n == 1}W-#{DaruLite::DAYS_OF_WEEK.key(@weekday)}"
       end
     end
 
