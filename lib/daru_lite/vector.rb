@@ -164,6 +164,7 @@ module DaruLite
       if opts[:type] == :category
         # Initialize category type vector
         extend DaruLite::Category
+
         initialize_category source, opts
       else
         # Initialize non-category type vector
@@ -256,7 +257,7 @@ module DaruLite
       other = other.zip(Array.new(other.size, 0)).to_h
       DaruLite::Core::Query::BoolArray.new(
         @data.each_with_object([]) do |d, memo|
-          memo << (other.key?(d))
+          memo << other.key?(d)
         end
       )
     end

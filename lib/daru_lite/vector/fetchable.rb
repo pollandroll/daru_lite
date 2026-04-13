@@ -56,8 +56,9 @@ module DaruLite
       end
 
       def tail(q = 10)
-        start = [size - q, 0].max
-        self[start..(size - 1)]
+        from = [size - q, 0].max
+        to = size - 1
+        self[from..to]
       end
 
       def last(q = 1)

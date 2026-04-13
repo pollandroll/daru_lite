@@ -738,10 +738,10 @@ module DaruLite
 
       case source.first
       when Array
-        vectors ||= (0..source.size - 1).to_a
+        vectors ||= (0..(source.size - 1)).to_a
         initialize_from_array_of_arrays source, vectors, index, opts
       when Vector
-        vectors ||= (0..source.size - 1).to_a
+        vectors ||= (0..(source.size - 1)).to_a
         initialize_from_array_of_vectors source, vectors, index, opts
       when Hash
         initialize_from_array_of_hashes source, vectors, index, opts
@@ -817,10 +817,7 @@ module DaruLite
       elsif vectors_have_same_index
         source.values[0].index.dup
       else
-        all_indexes = source
-                      .values.map { |v| v.index.to_a }
-                      .flatten.uniq.sort # sort only if missing indexes detected
-
+        all_indexes = source.values.map { |v| v.index.to_a }.flatten.uniq.sort # sort only if missing indexes detected
         DaruLite::Index.new all_indexes
       end
     end

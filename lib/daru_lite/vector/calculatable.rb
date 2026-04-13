@@ -51,7 +51,7 @@ module DaruLite
                   "\n  Distribution\n"
 
         data = frequencies.sort.each_with_index.map do |v, k|
-          [k, v, format('%0.2f%%', ((nval.zero? ? 1 : v.quo(nval)) * 100))]
+          [k, v, format('%0.2f%%', (nval.zero? ? 1 : v.quo(nval)) * 100)]
         end
 
         summary + Formatters::Table.format(data)

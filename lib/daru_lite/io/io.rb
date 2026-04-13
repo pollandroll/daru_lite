@@ -141,7 +141,6 @@ module DaruLite
         query = "INSERT INTO #{table} (#{ds.vectors.to_a.join(',')}) VALUES (#{(['?'] * ds.vectors.size).join(',')})"
         sth   = dbh.prepare(query)
         ds.each_row { |c| sth.execute(*c.to_a) }
-        true
       end
 
       # Load dataframe from AR::Relation
@@ -161,12 +160,13 @@ module DaruLite
 
       def from_plaintext(filename, fields)
         ds = DaruLite::DataFrame.new({}, order: fields)
-        fp = File.open(filename, 'r')
-        fp.each_line do |line|
-          row = DaruLite::IOHelpers.process_row(line.strip.split(/\s+/), [''])
-          next if row == ["\x1A"]
+        File.open(filename, 'r') do |fp|
+          fp.each_line do |line|
+            row = DaruLite::IOHelpers.process_row(line.strip.split(/\s+/), [''])
+            next if row == ["\x1A"]
 
-          ds.add_row(row)
+            ds.add_row(row)
+          end
         end
         ds.update
         fields.each { |f| ds[f].rename f }
@@ -175,9 +175,7 @@ module DaruLite
 
       # Loading and writing Marshalled DataFrame/Vector
       def save(klass, filename)
-        fp = File.open(filename, 'w')
-        Marshal.dump(klass, fp)
-        fp.close
+        File.open(filename, 'w') { Marshal.dump(klass, it) }
       end
 
       def load(filename)
@@ -248,7 +246,7 @@ module DaruLite
         data, size = html_scrape_tag(table, 'td')
         data.keep_if { |x| x.count == size }
         order, indice = html_parse_hash(headers, size, headers_size) if headers_size >= size
-        return unless (indice.nil? || indice.count == data.count) && !order.nil? && order.count.positive?
+        return unless (indice.nil? || indice.count == data.count) && !order.nil? && order.any?
 
         { data: data.compact, index: indice, order: order }
       end
@@ -267,7 +265,7 @@ module DaruLite
         order = headers[headers_index]
         order_index = order.count - size
         order = order[order_index..]
-        indice = headers[headers_index + 1..].flatten
+        indice = headers[(headers_index + 1)..].flatten
         indice = nil if indice.to_a.empty?
         [order, indice]
       end
