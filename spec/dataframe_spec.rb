@@ -1087,6 +1087,16 @@ describe DaruLite::DataFrame do
       expect(df['x'].to_a).to eq([1, 2])
       expect(df['y'].to_a).to eq([3, 4])
     end
+
+    it 'raises IndexError when given duplicate (row, column) pairs' do
+      rows    = DaruLite::Vector.new(%w[a a b])
+      columns = DaruLite::Vector.new(%w[x x y])
+      values  = DaruLite::Vector.new([1, 2, 3])
+
+      expect {
+        described_class.crosstab_by_assignation(rows, columns, values)
+      }.to raise_error(IndexError, /Duplicate/)
+    end
   end
 
   context '#inspect' do
