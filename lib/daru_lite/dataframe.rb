@@ -85,15 +85,16 @@ module DaruLite
         raise 'Three vectors should be equal size' if
           rows.size != columns.size || rows.size != values.size
 
+        row_index = rows.uniq.to_a
         data = Hash.new do |h, col|
-          h[col] = rows.factors.map { |r| [r, nil] }.to_h
+          h[col] = row_index.map { |r| [r, nil] }.to_h
         end
         columns.zip(rows, values).each { |c, r, v| data[c][r] = v }
 
         # FIXME: in fact, WITHOUT this line you'll obtain more "right"
         # data: with vectors having "rows" as an index...
         data = data.transform_values(&:values)
-        data[:_id] = rows.factors
+        data[:_id] = row_index
 
         DataFrame.new(data)
       end
