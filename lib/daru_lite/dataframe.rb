@@ -105,7 +105,7 @@ module DaruLite
       def validate_no_duplicate_pairs(rows, columns)
         seen = Set.new
         columns.to_a.zip(rows.to_a).each do |pair|
-          raise IndexError, "Duplicate (row, column) pair: #{pair.reverse.inspect}" unless seen.add?(pair)
+          raise IndexError, "Duplicate (column, row) pair: #{pair.inspect}" unless seen.add?(pair)
         end
       end
 
