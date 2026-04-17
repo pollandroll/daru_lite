@@ -89,6 +89,7 @@ module DaruLite
         data = Hash.new do |h, col|
           h[col] = row_index.map { |r| [r, nil] }.to_h
         end
+        validate_no_duplicate_pairs(rows, columns)
         columns.zip(rows, values).each { |c, r, v| data[c][r] = v }
 
         # FIXME: in fact, WITHOUT this line you'll obtain more "right"
@@ -100,6 +101,13 @@ module DaruLite
       end
 
       private
+
+      def validate_no_duplicate_pairs(rows, columns)
+        seen = Set.new
+        columns.to_a.zip(rows.to_a).each do |pair|
+          raise IndexError, "Duplicate (column, row) pair: #{pair.inspect}" unless seen.add?(pair)
+        end
+      end
 
       def guess_order(source)
         case source.first
