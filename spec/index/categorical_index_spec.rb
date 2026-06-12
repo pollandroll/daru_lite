@@ -68,6 +68,38 @@ describe DaruLite::CategoricalIndex do
     end
   end
 
+  describe "#[]" do
+    context "when the category occurs once" do
+      subject { index[:b] }
+
+      it { is_expected.to eq 1 }
+    end
+
+    context "when the category occurs multiple times" do
+      subject { index[:a] }
+
+      it { is_expected.to eq [0, 2, 3] }
+    end
+
+    context "when given a positional index" do
+      subject { index[0] }
+
+      it { is_expected.to eq 0 }
+    end
+
+    context "when given multiple categories" do
+      subject { index[:a, :c] }
+
+      it { is_expected.to eq [0, 2, 3, 4] }
+    end
+
+    context "when the category is absent" do
+      subject { index[:z] }
+
+      it { is_expected.to be_nil }
+    end
+  end
+
   context "#subset" do
     let(:idx) { described_class.new [:a, 1, :a, 1, :c] }
 

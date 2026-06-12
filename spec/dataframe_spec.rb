@@ -886,6 +886,23 @@ describe DaruLite::DataFrame do
       expect(df).to eq(DaruLite::DataFrame.new({b: [11,12,14,15], a: [1,2,4,5],
       c: [11,22,44,55]}, order: [:a, :b, :c], index: [:one, :two, :four, :five]))
     end
+
+    context "when the data frame has a CategoricalIndex" do
+      let(:categorical_df) do
+        frame = DaruLite::DataFrame.new(
+          { a: [1, 2, 3], b: [11, 22, 33] },
+          order: [:a, :b],
+          index: [:base, :one, :two]
+        )
+        frame.index = DaruLite::CategoricalIndex.new([:base, :one, :two])
+        frame
+      end
+
+      it "deletes the specified row without raising" do
+        expect { categorical_df.delete_row :base }.not_to raise_error
+        expect(categorical_df.index.to_a).to eq [:one, :two]
+      end
+    end
   end
 
   context "#rename_vectors!" do

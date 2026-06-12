@@ -65,6 +65,22 @@ module DaruLite
       positions.size == 1 ? positions.first : positions.sort
     end
 
+    # Returns the position(s) of the given category/categories or position(s).
+    # Mirrors Index#[] but resolves against the categorical structure
+    # (@cat_hash / @array) instead of @relation_hash, which CategoricalIndex
+    # never populates.
+    # @param keys [Array<object>] categories or positions to look up
+    # @return [Integer, Array<Integer>, nil] position(s), or nil if absent
+    # @example
+    #   idx = DaruLite::CategoricalIndex.new [:a, :b, :a]
+    #   idx[:b]   # => 1
+    #   idx[:z]   # => nil
+    def [](*keys)
+      pos(*keys)
+    rescue IndexError
+      nil
+    end
+
     # Returns index value from position
     # @param pos [Integer] the position to look for
     # @return [object] category corresponding to position
