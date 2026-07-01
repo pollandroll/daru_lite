@@ -340,6 +340,22 @@ shared_examples_for 'a filterable DataFrame' do
       expect(df).to eq(DaruLite::DataFrame.new({a: [1,2,3,4,5]}, order: [:a],
         index: [:one, :two, :three, :four, :five]))
     end
+
+    context "with duplicate tuples in a MultiIndex" do
+      let(:multi_index_df) do
+        DaruLite::DataFrame.new(
+          [[1, 4], [2, 5], [3, 6]],
+          order: DaruLite::MultiIndex.from_tuples([[:count, 'A'], [:count, 'A'], [:pct, 'B']]),
+          index: %w[r1 r2]
+        )
+      end
+
+      it "keeps the matching vectors without raising on the ambiguous lookup" do
+        multi_index_df.keep_vector_if { |_vector, (_metric, label)| label != 'B' }
+
+        expect(multi_index_df.vectors.to_a).to eq([[:count, 'A'], [:count, 'A']])
+      end
+    end
   end
 
   describe "#filter_vectors" do

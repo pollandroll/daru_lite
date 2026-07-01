@@ -107,9 +107,14 @@ module DaruLite
       end
 
       def keep_vector_if
-        @vectors.each do |vector|
-          delete_vector(vector) unless yield(@data[@vectors[vector]], vector)
+        kept_positions = (0...@vectors.size).select do |position|
+          yield(@data[position], @vectors.to_a[position])
         end
+
+        @data = kept_positions.map { |position| @data[position] }
+        @vectors = DaruLite::Index.coerce(kept_positions.map { |position| @vectors.to_a[position] })
+
+        self
       end
 
       # creates a new vector with the data of a given field which the block returns true
