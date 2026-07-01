@@ -107,9 +107,22 @@ module DaruLite
       end
 
       def keep_vector_if
-        @vectors.each do |vector|
-          delete_vector(vector) unless yield(@data[@vectors[vector]], vector)
+        vector_names = @vectors.to_a
+        kept_positions = @vectors.size.times.select do |position|
+          yield(@data[position], vector_names[position])
         end
+        kept_names = kept_positions.map { |position| vector_names[position] }
+
+        @data = kept_positions.map { |position| @data[position] }
+        @vectors =
+          if @vectors.is_a?(DaruLite::MultiIndex)
+            # An empty result can't form a MultiIndex, so it falls back to a plain Index.
+            kept_names.any? ? DaruLite::MultiIndex.from_tuples(kept_names) : DaruLite::Index.new(kept_names)
+          else
+            @vectors.class.new(kept_names)
+          end
+
+        self
       end
 
       # creates a new vector with the data of a given field which the block returns true

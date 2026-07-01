@@ -340,6 +340,53 @@ shared_examples_for 'a filterable DataFrame' do
       expect(df).to eq(DaruLite::DataFrame.new({a: [1,2,3,4,5]}, order: [:a],
         index: [:one, :two, :three, :four, :five]))
     end
+
+    context "with duplicate tuples in a MultiIndex" do
+      let(:multi_index_df) do
+        DaruLite::DataFrame.new(
+          [[1, 4], [2, 5], [3, 6]],
+          order: DaruLite::MultiIndex.from_tuples([[:count, 'A'], [:count, 'A'], [:pct, 'B']]),
+          index: %w[r1 r2]
+        )
+      end
+
+      it "keeps the matching vectors without raising on the ambiguous lookup" do
+        multi_index_df.keep_vector_if { |_vector, (_metric, label)| label != 'B' }
+
+        expect(multi_index_df.vectors).to be_a(DaruLite::MultiIndex)
+        expect(multi_index_df.vectors.to_a).to eq([[:count, 'A'], [:count, 'A']])
+      end
+
+      it "does not raise when no vector is kept" do
+        expect { multi_index_df.keep_vector_if { |_vector, _tuple| false } }.not_to raise_error
+        expect(multi_index_df.vectors.to_a).to eq([])
+      end
+    end
+
+    context "with duplicate categories in a CategoricalIndex" do
+      let(:categorical_df) do
+        DaruLite::DataFrame.new(
+          [[1, 4], [2, 5], [3, 6]],
+          order: DaruLite::CategoricalIndex.new([:a, :a, :b]),
+          index: %w[r1 r2]
+        )
+      end
+
+      it "keeps the matching vectors and preserves the CategoricalIndex" do
+        categorical_df.keep_vector_if { |_vector, category| category == :a }
+
+        expect(categorical_df.vectors).to be_a(DaruLite::CategoricalIndex)
+        expect(categorical_df.vectors.to_a).to eq([:a, :a])
+        expect(categorical_df.map_vectors(&:to_a)).to eq([[1, 4], [2, 5]])
+      end
+
+      it "preserves the CategoricalIndex when no vector is kept" do
+        categorical_df.keep_vector_if { |_vector, _category| false }
+
+        expect(categorical_df.vectors).to be_a(DaruLite::CategoricalIndex)
+        expect(categorical_df.vectors.to_a).to eq([])
+      end
+    end
   end
 
   describe "#filter_vectors" do
