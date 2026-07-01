@@ -379,6 +379,13 @@ shared_examples_for 'a filterable DataFrame' do
         expect(categorical_df.vectors.to_a).to eq([:a, :a])
         expect(categorical_df.map_vectors(&:to_a)).to eq([[1, 4], [2, 5]])
       end
+
+      it "preserves the CategoricalIndex when no vector is kept" do
+        categorical_df.keep_vector_if { |_vector, _category| false }
+
+        expect(categorical_df.vectors).to be_a(DaruLite::CategoricalIndex)
+        expect(categorical_df.vectors.to_a).to eq([])
+      end
     end
   end
 

@@ -116,13 +116,11 @@ module DaruLite
         @data = kept_positions.map { |position| @data[position] }
         # Rebuild the index through its own class so its type is preserved
         # (e.g. a MultiIndex stays a MultiIndex, a CategoricalIndex keeps its
-        # duplicate categories), unlike DaruLite::Index.coerce. An empty result
-        # can't form a MultiIndex, so it falls back to a plain Index.
+        # duplicate categories), unlike DaruLite::Index.coerce.
         @vectors =
-          if @vectors.is_a?(DaruLite::MultiIndex) && kept_names.any?
-            DaruLite::MultiIndex.from_tuples(kept_names)
-          elsif kept_names.empty?
-            DaruLite::Index.new(kept_names)
+          if @vectors.is_a?(DaruLite::MultiIndex)
+            # An empty result can't form a MultiIndex, so it falls back to a plain Index.
+            kept_names.any? ? DaruLite::MultiIndex.from_tuples(kept_names) : DaruLite::Index.new(kept_names)
           else
             @vectors.class.new(kept_names)
           end
