@@ -107,12 +107,25 @@ module DaruLite
       end
 
       def keep_vector_if
+        vector_names = @vectors.to_a
         kept_positions = (0...@vectors.size).select do |position|
-          yield(@data[position], @vectors.to_a[position])
+          yield(@data[position], vector_names[position])
         end
+        kept_names = kept_positions.map { |position| vector_names[position] }
 
         @data = kept_positions.map { |position| @data[position] }
-        @vectors = DaruLite::Index.coerce(kept_positions.map { |position| @vectors.to_a[position] })
+        # Rebuild the index through its own class so its type is preserved
+        # (e.g. a MultiIndex stays a MultiIndex, a CategoricalIndex keeps its
+        # duplicate categories), unlike DaruLite::Index.coerce. An empty result
+        # can't form a MultiIndex, so it falls back to a plain Index.
+        @vectors =
+          if @vectors.is_a?(DaruLite::MultiIndex) && kept_names.any?
+            DaruLite::MultiIndex.from_tuples(kept_names)
+          elsif kept_names.empty?
+            DaruLite::Index.new(kept_names)
+          else
+            @vectors.class.new(kept_names)
+          end
 
         self
       end
