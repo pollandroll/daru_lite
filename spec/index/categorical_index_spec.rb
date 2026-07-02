@@ -32,6 +32,10 @@ describe DaruLite::CategoricalIndex do
         it { expect { index.pos :e }.to raise_error IndexError }
       end
 
+      context "range argument" do
+        it { expect { index.pos :a..:c }.to raise_error ArgumentError }
+      end
+
       context "positional index" do
         it { expect(index.pos 0).to eq 0 }
       end
@@ -98,6 +102,44 @@ describe DaruLite::CategoricalIndex do
 
       it { is_expected.to be_nil }
     end
+
+    context "when given a range" do
+      it { expect { index[:a..:c] }.to raise_error ArgumentError }
+    end
+  end
+
+  describe "#key" do
+    context "when given a position" do
+      subject { index.key(1) }
+
+      it { is_expected.to eq :b }
+    end
+
+    context "when the position holds a duplicated category" do
+      subject { index.key(3) }
+
+      it { is_expected.to eq :a }
+    end
+
+    context "when the position is out of range" do
+      subject { index.key(99) }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when given a non-numeric value" do
+      subject { index.key(:a) }
+
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe "#slice" do
+    it { expect { index.slice(:a, :c) }.to raise_error NotImplementedError }
+  end
+
+  describe "#subset_slice" do
+    it { expect { index.subset_slice(:a, :c) }.to raise_error NotImplementedError }
   end
 
   context "#subset" do
