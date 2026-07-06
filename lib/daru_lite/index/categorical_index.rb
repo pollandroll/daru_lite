@@ -55,7 +55,7 @@ module DaruLite
     #   x.pos :a, 1
     #   # => [0, 1, 2, 3]
     def pos(*indexes)
-      raise ArgumentError, UNSUPPORTED_RANGE_MSG if indexes.any?(Range)
+      raise ArgumentError, UNSUPPORTED_RANGE_MSG if indexes.any? { |i| i.is_a?(Range) && !include?(i) }
 
       positions = indexes.map do |index|
         if include? index
@@ -104,16 +104,16 @@ module DaruLite
 
     # Label-range slicing is not supported: categories are unordered and may
     # repeat, so a range of positions between two labels is ambiguous.
-    # @raise [NotImplementedError] always
+    # @raise [ArgumentError] always
     def slice(*)
-      raise NotImplementedError, UNSUPPORTED_RANGE_MSG
+      raise ArgumentError, UNSUPPORTED_RANGE_MSG
     end
 
     # Label-range slicing is not supported: categories are unordered and may
     # repeat, so a range of positions between two labels is ambiguous.
-    # @raise [NotImplementedError] always
+    # @raise [ArgumentError] always
     def subset_slice(*)
-      raise NotImplementedError, UNSUPPORTED_RANGE_MSG
+      raise ArgumentError, UNSUPPORTED_RANGE_MSG
     end
 
     # Returns index value from position
@@ -249,9 +249,9 @@ module DaruLite
     end
 
     # Label-range slicing is not supported (see #slice / #subset_slice).
-    # @raise [NotImplementedError] always
+    # @raise [ArgumentError] always
     def preprocess_range(_rng)
-      raise NotImplementedError, UNSUPPORTED_RANGE_MSG
+      raise ArgumentError, UNSUPPORTED_RANGE_MSG
     end
 
     def int_from_cat(cat)

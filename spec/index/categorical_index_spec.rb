@@ -36,6 +36,12 @@ describe DaruLite::CategoricalIndex do
         it { expect { index.pos :a..:c }.to raise_error ArgumentError }
       end
 
+      context "when a category is itself a Range" do
+        let(:index) { described_class.new [(1..2), (3..4), (1..2)] }
+
+        it { expect(index.pos(1..2)).to eq [0, 2] }
+      end
+
       context "positional index" do
         it { expect(index.pos 0).to eq 0 }
       end
@@ -106,6 +112,12 @@ describe DaruLite::CategoricalIndex do
     context "when given a range" do
       it { expect { index[:a..:c] }.to raise_error ArgumentError }
     end
+
+    context "when a category is itself a Range" do
+      let(:index) { described_class.new [(1..2), (3..4), (1..2)] }
+
+      it { expect(index[1..2]).to eq [0, 2] }
+    end
   end
 
   describe "#key" do
@@ -135,11 +147,11 @@ describe DaruLite::CategoricalIndex do
   end
 
   describe "#slice" do
-    it { expect { index.slice(:a, :c) }.to raise_error NotImplementedError }
+    it { expect { index.slice(:a, :c) }.to raise_error ArgumentError }
   end
 
   describe "#subset_slice" do
-    it { expect { index.subset_slice(:a, :c) }.to raise_error NotImplementedError }
+    it { expect { index.subset_slice(:a, :c) }.to raise_error ArgumentError }
   end
 
   context "#subset" do
