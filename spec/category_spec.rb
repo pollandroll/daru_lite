@@ -1189,6 +1189,32 @@ describe DaruLite::Vector, "categorical" do
     end
   end
 
+  context "positional slicing on a CategoricalIndex-backed Vector" do
+    let(:dv) do
+      DaruLite::Vector.new(
+        [10, 20, 30, 40, 50],
+        index: DaruLite::CategoricalIndex.new([:a, :b, :a, :a, :c])
+      )
+    end
+
+    context "#head" do
+      it { expect(dv.head(2).to_a).to eq [10, 20] }
+      it { expect(dv.head(99).to_a).to eq [10, 20, 30, 40, 50] }
+    end
+
+    context "#tail" do
+      it { expect(dv.tail(2).to_a).to eq [40, 50] }
+    end
+
+    context "#last" do
+      it { expect(dv.last(2).to_a).to eq [40, 50] }
+    end
+
+    context "positional range" do
+      it { expect(dv[0..2].to_a).to eq [10, 20, 30] }
+    end
+  end
+
   context "#set_at" do
     context DaruLite::Index do
       let (:idx) { DaruLite::Index.new [1, 0, :c] }

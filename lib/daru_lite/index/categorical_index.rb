@@ -55,7 +55,9 @@ module DaruLite
     #   x.pos :a, 1
     #   # => [0, 1, 2, 3]
     def pos(*indexes)
-      raise ArgumentError, UNSUPPORTED_RANGE_MSG if indexes.any? { |i| i.is_a?(Range) && !include?(i) }
+      if indexes.size == 1 && indexes.first.is_a?(Range) && !include?(indexes.first)
+        return pos_from_range(indexes.first)
+      end
 
       positions = indexes.map do |index|
         if include? index
@@ -252,6 +254,18 @@ module DaruLite
     # @raise [ArgumentError] always
     def preprocess_range(_rng)
       raise ArgumentError, UNSUPPORTED_RANGE_MSG
+    end
+
+    # A positional (integer) range resolves to the positions it spans, mirroring
+    # pandas iloc / Vector#head / #tail. A non-integer label range is rejected
+    # because categories are unordered and may repeat (like pandas .loc on an
+    # unordered CategoricalIndex).
+    # @raise [ArgumentError] when the range bounds are not integers
+    def pos_from_range(rng)
+      raise ArgumentError, UNSUPPORTED_RANGE_MSG unless rng.begin.is_a?(Integer) && rng.end.is_a?(Integer)
+
+      # size.times.to_a[rng] clamps to valid positions; nil (fully out of range) -> []
+      size.times.to_a[rng] || []
     end
 
     def int_from_cat(cat)
