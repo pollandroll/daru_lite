@@ -805,6 +805,11 @@ module DaruLite
 
       @index = deduce_index index, source, vectors_have_same_index
 
+      missing = @vectors.to_a.reject { |name| source.key?(name) }
+      unless missing.empty?
+        raise ArgumentError, ":order includes vectors not present in the source: #{missing.join(', ')}"
+      end
+
       if clone
         @data = clone_vectors source, vectors_have_same_index
 

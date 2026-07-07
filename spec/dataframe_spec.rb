@@ -271,6 +271,16 @@ describe DaruLite::DataFrame do
         expect(df[:b].object_id).to eq(vb.object_id)
       end
 
+      it "raises a descriptive error when :order names an unknown column" do
+        va = DaruLite::Vector.new([1, 2, 3])
+        expect {
+          DaruLite::DataFrame.new({ a: va }, order: [:a, :b])
+        }.to raise_error(ArgumentError, /not present in the source/)
+        expect {
+          DaruLite::DataFrame.new({ a: va }, order: [:a, :b], clone: false)
+        }.to raise_error(ArgumentError, /not present in the source/)
+      end
+
       it "allows creation of empty dataframe with only order" do
         df = DaruLite::DataFrame.new({}, order: [:a, :b, :c])
         df[:a] = DaruLite::Vector.new([1,2,3,4,5,6])
