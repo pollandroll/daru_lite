@@ -260,6 +260,17 @@ describe DaruLite::DataFrame do
         expect(v.name).to eq(:orig)
       end
 
+      it "aligns columns with :order when clone: false and hash key order differs" do
+        va = DaruLite::Vector.new([1, 2, 3])
+        vb = DaruLite::Vector.new([4, 5, 6])
+        df = DaruLite::DataFrame.new({ b: vb, a: va }, order: [:a, :b], clone: false)
+
+        expect(df[:a].to_a).to eq([1, 2, 3])
+        expect(df[:b].to_a).to eq([4, 5, 6])
+        expect(df[:a].object_id).to eq(va.object_id)
+        expect(df[:b].object_id).to eq(vb.object_id)
+      end
+
       it "allows creation of empty dataframe with only order" do
         df = DaruLite::DataFrame.new({}, order: [:a, :b, :c])
         df[:a] = DaruLite::Vector.new([1,2,3,4,5,6])

@@ -816,7 +816,10 @@ module DaruLite
         # vectors.
         @data.zip(@vectors.to_a).each { |vect, name| vect.name = name } unless @vectors.is_a?(MultiIndex)
       else
-        @data.concat source.values
+        # Order the shared vectors by column key (not source-hash order) so
+        # @data stays parallel to @vectors — otherwise an explicit :order that
+        # differs from the hash key order would misalign columns with labels.
+        @data.concat(@vectors.to_a.map { |name| source[name] })
       end
     end
 
