@@ -810,6 +810,12 @@ module DaruLite
       else
         @data.concat source.values
       end
+
+      # Keep each column vector's name in sync with its column key so that
+      # extraction (df[:b]) always returns a vector named after its column.
+      return if @vectors.is_a?(MultiIndex)
+
+      @data.zip(@vectors.to_a).each { |vect, name| vect.name = name }
     end
 
     def deduce_index(index, source, vectors_have_same_index)
