@@ -45,6 +45,21 @@ shared_examples_for 'a fetchable DataFrame' do
         expect(df[:a, :vector]).to eq df[:a]
         expect(df[:one, :row]).to eq [1, 11, 11].dv(:one, [:a, :b, :c])
       end
+
+      it 'names extracted vectors after their column key, not the source vector name' do
+        idx = [:one, :two, :three]
+        df_from_vectors = DaruLite::DataFrame.new(
+          {
+            a: DaruLite::Vector.new([1, 2, 3], name: :a,     index: idx),
+            b: DaruLite::Vector.new([4, 5, 6], name: :wrong, index: idx),
+            c: DaruLite::Vector.new([7, 8, 9],               index: idx)
+          }
+        )
+
+        expect(df_from_vectors[:a].name).to eq(:a)
+        expect(df_from_vectors[:b].name).to eq(:b)
+        expect(df_from_vectors[:c].name).to eq(:c)
+      end
     end
 
     context DaruLite::MultiIndex do
