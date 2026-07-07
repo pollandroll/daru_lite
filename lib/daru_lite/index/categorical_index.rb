@@ -1,5 +1,9 @@
 module DaruLite
   class CategoricalIndex < Index
+    UNSUPPORTED_RANGE_MSG =
+      'CategoricalIndex does not support label-range slicing: ' \
+      'categories are unordered and may repeat'.freeze
+
     # Create a categorical index object.
     # @param indexes [Array<object>] array of indexes
     # @return [DaruLite::CategoricalIndex] categorical index
@@ -51,6 +55,10 @@ module DaruLite
     #   x.pos :a, 1
     #   # => [0, 1, 2, 3]
     def pos(*indexes)
+      if indexes.size == 1 && indexes.first.is_a?(Range) && !include?(indexes.first)
+        return pos_from_range(indexes.first)
+      end
+
       positions = indexes.map do |index|
         if include? index
           @cat_hash[index]
@@ -79,6 +87,35 @@ module DaruLite
       pos(*keys)
     rescue IndexError
       nil
+    end
+
+    # Returns the category located at a positional value.
+    # Mirrors Index#key but reads the categorical structure instead of @keys,
+    # which CategoricalIndex never populates.
+    # @param value [Integer] positional value
+    # @return [object, nil] category at the position, or nil if out of range
+    # @example
+    #   idx = DaruLite::CategoricalIndex.new [:a, :b, :a]
+    #   idx.key 1   # => :b
+    #   idx.key 99  # => nil
+    def key(value)
+      return nil unless value.is_a?(Numeric)
+
+      to_a[value]
+    end
+
+    # Label-range slicing is not supported: categories are unordered and may
+    # repeat, so a range of positions between two labels is ambiguous.
+    # @raise [ArgumentError] always
+    def slice(*)
+      raise ArgumentError, UNSUPPORTED_RANGE_MSG
+    end
+
+    # Label-range slicing is not supported: categories are unordered and may
+    # repeat, so a range of positions between two labels is ambiguous.
+    # @raise [ArgumentError] always
+    def subset_slice(*)
+      raise ArgumentError, UNSUPPORTED_RANGE_MSG
     end
 
     # Returns index value from position
@@ -205,6 +242,31 @@ module DaruLite
     end
 
     private
+
+    # Single-key position lookup, resolved against the categorical structure.
+    # Overrides Index#numeric_pos, which reads the never-populated @relation_hash.
+    # @raise [IndexError] when the key is neither a valid category nor position
+    def numeric_pos(key)
+      pos(key)
+    end
+
+    # Label-range slicing is not supported (see #slice / #subset_slice).
+    # @raise [ArgumentError] always
+    def preprocess_range(_rng)
+      raise ArgumentError, UNSUPPORTED_RANGE_MSG
+    end
+
+    # A positional (integer) range resolves to the positions it spans, mirroring
+    # pandas iloc / Vector#head / #tail. A non-integer label range is rejected
+    # because categories are unordered and may repeat (like pandas .loc on an
+    # unordered CategoricalIndex).
+    # @raise [ArgumentError] when the range bounds are not integers
+    def pos_from_range(rng)
+      raise ArgumentError, UNSUPPORTED_RANGE_MSG unless rng.begin.is_a?(Integer) && rng.end.is_a?(Integer)
+
+      # size.times.to_a[rng] clamps to valid positions; nil (fully out of range) -> []
+      size.times.to_a[rng] || []
+    end
 
     def int_from_cat(cat)
       @cat_hash.keys.index cat

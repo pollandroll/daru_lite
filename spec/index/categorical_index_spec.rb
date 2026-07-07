@@ -32,6 +32,24 @@ describe DaruLite::CategoricalIndex do
         it { expect { index.pos :e }.to raise_error IndexError }
       end
 
+      context "label range argument" do
+        it { expect { index.pos :a..:c }.to raise_error ArgumentError }
+      end
+
+      context "positional (integer) range argument" do
+        it { expect(index.pos(0..2)).to eq [0, 1, 2] }
+
+        context "when the range extends past the end" do
+          it { expect(index.pos(0..99)).to eq [0, 1, 2, 3, 4] }
+        end
+      end
+
+      context "when a category is itself a Range" do
+        let(:index) { described_class.new [(1..2), (3..4), (1..2)] }
+
+        it { expect(index.pos(1..2)).to eq [0, 2] }
+      end
+
       context "positional index" do
         it { expect(index.pos 0).to eq 0 }
       end
@@ -98,6 +116,56 @@ describe DaruLite::CategoricalIndex do
 
       it { is_expected.to be_nil }
     end
+
+    context "when given a label range" do
+      it { expect { index[:a..:c] }.to raise_error ArgumentError }
+    end
+
+    context "when given a positional (integer) range" do
+      subject { index[0..2] }
+
+      it { is_expected.to eq [0, 1, 2] }
+    end
+
+    context "when a category is itself a Range" do
+      let(:index) { described_class.new [(1..2), (3..4), (1..2)] }
+
+      it { expect(index[1..2]).to eq [0, 2] }
+    end
+  end
+
+  describe "#key" do
+    context "when given a position" do
+      subject { index.key(1) }
+
+      it { is_expected.to eq :b }
+    end
+
+    context "when the position holds a duplicated category" do
+      subject { index.key(3) }
+
+      it { is_expected.to eq :a }
+    end
+
+    context "when the position is out of range" do
+      subject { index.key(99) }
+
+      it { is_expected.to be_nil }
+    end
+
+    context "when given a non-numeric value" do
+      subject { index.key(:a) }
+
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe "#slice" do
+    it { expect { index.slice(:a, :c) }.to raise_error ArgumentError }
+  end
+
+  describe "#subset_slice" do
+    it { expect { index.subset_slice(:a, :c) }.to raise_error ArgumentError }
   end
 
   context "#subset" do
