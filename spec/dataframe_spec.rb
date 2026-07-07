@@ -253,6 +253,13 @@ describe DaruLite::DataFrame do
         expect(df[:c].object_id).to eq(c.object_id)
       end
 
+      it "does not rename the caller's vectors when clone: false" do
+        v = DaruLite::Vector.new([1, 2, 3], name: :orig)
+        DaruLite::DataFrame.new({ col: v }, clone: false)
+
+        expect(v.name).to eq(:orig)
+      end
+
       it "allows creation of empty dataframe with only order" do
         df = DaruLite::DataFrame.new({}, order: [:a, :b, :c])
         df[:a] = DaruLite::Vector.new([1,2,3,4,5,6])
