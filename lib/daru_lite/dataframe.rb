@@ -267,8 +267,13 @@ module DaruLite
     def delete_vector(vector)
       raise IndexError, "Vector #{vector} does not exist." unless @vectors.include?(vector)
 
-      @data.delete_at @vectors[vector]
-      @vectors = DaruLite::Index.new @vectors.to_a - [vector]
+      # Delete the first matching column by position: a MultiIndex with duplicate tuples resolves a
+      # name to several positions, and removing every duplicate name would desync @vectors from @data.
+      position = @vectors.is_a?(MultiIndex) ? @vectors.positions_for(vector).first : @vectors[vector]
+      @data.delete_at(position)
+      remaining = @vectors.to_a
+      remaining.delete_at(position)
+      @vectors = DaruLite::Index.coerce(remaining)
 
       self
     end
@@ -469,7 +474,9 @@ module DaruLite
         @size    == other.size    &&
         @index   == other.index   &&
         @vectors == other.vectors &&
-        @vectors.to_a.all? { |v| self[v] == other[v] }
+        # Compare columns by position: name-based access is ambiguous (and recurses infinitely)
+        # when the vectors are a MultiIndex with duplicate tuples.
+        @data    == other.data
     end
 
     # Converts the specified non category type vectors to category type vectors
@@ -589,7 +596,7 @@ module DaruLite
       end
 
       if pos.is_a?(DaruLite::Index)
-        assign_multiple_vectors pos, v
+        assign_multiple_vectors name, pos, v
       elsif pos == name &&
             (@vectors.include?(name) || (pos.is_a?(Integer) && pos < @data.size))
 
@@ -599,10 +606,12 @@ module DaruLite
       end
     end
 
-    def assign_multiple_vectors(pos, v)
-      pos.each do |p|
-        @data[@vectors[p]] = v
-      end
+    # Assign +v+ to every column matching +name+ (a partial key, or a full MultiIndex tuple that is
+    # duplicated across several positions). For a MultiIndex, resolve to positions directly: a
+    # duplicated tuple re-looked-up by name would return a MultiIndex instead of an integer.
+    def assign_multiple_vectors(name, pos, v)
+      positions = @vectors.is_a?(MultiIndex) ? @vectors.positions_for(name.flatten) : pos.map { |p| @vectors[p] }
+      positions.each { |position| @data[position] = v }
     end
 
     def assign_or_add_vector_rough(name, v)
@@ -764,11 +773,42 @@ module DaruLite
     end
 
     def initialize_from_array_of_vectors(source, vectors, index, opts)
+      # Build @data positionally rather than round-tripping through a name-keyed hash: duplicate
+      # MultiIndex tuples would collapse into a single hash entry and corrupt the columns.
+      @vectors = Index.coerce(vectors)
+
+      first_index = source.first.index
+      vectors_have_same_index = source.all? { |vector| first_index == vector.index }
+
       clone = opts[:clone] != false
-      hsh = vectors.each_with_index.to_h do |name, idx|
-        [name, source[idx]]
+      clone = true unless index || vectors_have_same_index
+
+      @index = deduce_index_from_vectors(index, source, first_index, vectors_have_same_index)
+
+      @data =
+        if !clone
+          source.dup
+        elsif vectors_have_same_index
+          source.map(&:dup)
+        else
+          source.map { |vector| reindex_vector(vector) }
+        end
+    end
+
+    def deduce_index_from_vectors(index, source, first_index, vectors_have_same_index)
+      if index
+        Index.coerce(index)
+      elsif vectors_have_same_index
+        first_index.dup
+      else
+        DaruLite::Index.new(source.map { |vector| vector.index.to_a }.flatten.uniq.sort)
       end
-      initialize(hsh, index: index, order: vectors, name: @name, clone: clone)
+    end
+
+    def reindex_vector(vector)
+      DaruLite::Vector.new([], index: @index).tap do |new_vector|
+        @index.each { |idx| new_vector[idx] = vector.index.include?(idx) ? vector[idx] : nil }
+      end
     end
 
     def initialize_from_array_of_hashes(source, vectors, index, _opts)

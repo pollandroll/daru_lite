@@ -226,7 +226,7 @@ module DaruLite
 
         return @data[pos] if pos.is_a?(Integer)
 
-        new_vectors = pos.map { |tuple| @data[@vectors[tuple]] }
+        new_vectors = @vectors.positions_for(names.flatten).map { |position| @data[position] }
 
         pos = pos.drop_left_level(names.size) if names.size < @vectors.width
 

@@ -865,6 +865,29 @@ describe DaruLite::DataFrame do
                 index: [:one, :two, :three, :four, :five]))
       end
     end
+
+    context "with duplicate tuples in a MultiIndex" do
+      let(:dup_df) do
+        DaruLite::DataFrame.new(
+          [[1, 2], [3, 4], [5, 6], [7, 8]],
+          order: DaruLite::MultiIndex.from_tuples([
+            [:weighted_count, 'Wave'], [:weighted_count, 'Wave'],
+            [:percentage, 'Wave'], [:percentage, 'Wave']
+          ]),
+          index: %w[Yes No]
+        )
+      end
+
+      it "deletes the first matching column, leaving the other in place" do
+        dup_df.delete_vector([:weighted_count, 'Wave'])
+
+        expect(dup_df.ncols).to eq(3)
+        expect(dup_df.vectors.to_a).to eq([
+          [:weighted_count, 'Wave'], [:percentage, 'Wave'], [:percentage, 'Wave']
+        ])
+        expect(dup_df.data.map(&:to_a)).to eq([[3, 4], [5, 6], [7, 8]])
+      end
+    end
   end
 
   context "#delete_vectors" do

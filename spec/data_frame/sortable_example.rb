@@ -240,7 +240,25 @@ shared_examples_for 'a sortable DataFrame' do
     end
 
     context DaruLite::MultiIndex do
-      pending
+      context "with duplicate tuples" do
+        let(:dup_df) do
+          DaruLite::DataFrame.new(
+            [[1, 2], [3, 4], [5, 6], [7, 8]],
+            order: DaruLite::MultiIndex.from_tuples([
+              [:weighted_count, 'Wave'], [:weighted_count, 'Wave'],
+              [:percentage, 'Wave'], [:percentage, 'Wave']
+            ]),
+            index: %w[Yes No]
+          )
+        end
+
+        it "sorts by a duplicated vector without raising" do
+          sorted = dup_df.sort([[:percentage, 'Wave']], ascending: [false])
+
+          expect(sorted.index.to_a).to eq(%w[No Yes])
+          expect(sorted.data.map(&:to_a)).to eq([[2, 1], [4, 3], [6, 5], [8, 7]])
+        end
+      end
     end
 
     context DaruLite::CategoricalIndex do

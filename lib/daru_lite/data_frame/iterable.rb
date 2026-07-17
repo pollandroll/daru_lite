@@ -25,8 +25,8 @@ module DaruLite
       def each_vector_with_index
         return to_enum(:each_vector_with_index) unless block_given?
 
-        @vectors.each do |vector|
-          yield @data[@vectors[vector]], vector
+        @data.each_with_index do |vector, position|
+          yield vector, @vectors.to_a[position]
         end
 
         self

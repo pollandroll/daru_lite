@@ -166,7 +166,9 @@ module DaruLite
         private
 
         def apply_method_to_numerics(method, *)
-          numerics = @vectors.to_a.map { |n| [n, @data[@vectors[n]]] }.select { |_n, v| v.numeric? }
+          numerics = @data.each_with_index
+                          .map { |v, position| [@vectors.to_a[position], v] }
+                          .select { |_n, v| v.numeric? }
           computed = numerics.map { |_n, v| v.send(method, *) }
 
           DaruLite::DataFrame.new(computed, index: @index, order: numerics.map(&:first), clone: false)
@@ -187,10 +189,12 @@ module DaruLite
         end
 
         def compute_stats(method)
-          DaruLite::Vector.new(
-            numeric_vectors.to_h { [it, self[it].send(method)] },
-            name: method
-          )
+          # Iterate by position (via each_vector_with_index) instead of `self[name]`: a MultiIndex
+          # with duplicate tuples would make the name lookup ambiguous and collapse the result.
+          stats = each_vector_with_index.select { |vector, _name| vector.numeric? }
+                                        .map { |vector, name| [name, vector.send(method)] }
+
+          DaruLite::Vector.new(stats.map(&:last), index: stats.map(&:first), name: method)
         end
         alias sds std
         alias variance variance_sample

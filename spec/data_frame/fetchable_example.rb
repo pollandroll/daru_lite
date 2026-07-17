@@ -79,6 +79,35 @@ shared_examples_for 'a fetchable DataFrame' do
         )
       end
     end
+
+    context "with duplicate tuples in a MultiIndex" do
+      let(:dup_df) do
+        DaruLite::DataFrame.new(
+          [[1, 2], [3, 4], [5, 6], [7, 8]],
+          order: DaruLite::MultiIndex.from_tuples([
+            [:weighted_count, 'Wave'], [:weighted_count, 'Wave'],
+            [:percentage, 'Wave'], [:percentage, 'Wave']
+          ]),
+          index: %w[Yes No]
+        )
+      end
+
+      it "returns a DataFrame with all matching columns for a partial key" do
+        result = dup_df[:weighted_count]
+
+        expect(result).to be_a(DaruLite::DataFrame)
+        expect(result.ncols).to eq(2)
+        expect(result.map_vectors(&:to_a)).to eq([[1, 2], [3, 4]])
+        expect(result.index).to eq(dup_df.index)
+      end
+
+      it "returns a DataFrame with all matching columns for a duplicate full tuple" do
+        result = dup_df[:weighted_count, 'Wave']
+
+        expect(result).to be_a(DaruLite::DataFrame)
+        expect(result.map_vectors(&:to_a)).to eq([[1, 2], [3, 4]])
+      end
+    end
   end
 
   describe "#at" do

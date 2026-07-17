@@ -227,16 +227,29 @@ module DaruLite
       collection.one? ? collection.first : collection
     end
 
-    def retrieve_from_tuple(key)
+    # Return every integer position whose tuple matches the (possibly partial) key.
+    # Unlike #retrieve_from_tuple, the return type is always an Array of positions,
+    # even when a full tuple is duplicated across several positions.
+    #
+    # @param key [Array] a full or left-anchored partial tuple
+    # @return [Array<Integer>] matching positions, in ascending order
+    def positions_for(key)
       chosen = []
 
       key.each_with_index do |k, depth|
         level_index = @levels[depth][k]
         raise IndexError, "Specified index #{key.inspect} do not exist" if level_index.nil?
 
-        label = @labels[depth]
-        chosen = find_all_indexes label, level_index, chosen
+        chosen = find_all_indexes(@labels[depth], level_index, chosen)
       end
+
+      chosen
+    rescue NoMethodError
+      raise IndexError, "Specified index #{key.inspect} do not exist"
+    end
+
+    def retrieve_from_tuple(key)
+      chosen = positions_for(key)
 
       return chosen[0] if chosen.size == 1 && key.size == @levels.size
 

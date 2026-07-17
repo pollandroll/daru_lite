@@ -10,7 +10,13 @@ module DaruLite
       # * +vectors_to_dup+ - An Array specifying the names of Vectors to
       # be duplicated. Will duplicate the entire DataFrame if not specified.
       def dup(vectors_to_dup = nil)
-        vectors_to_dup ||= @vectors.to_a
+        # No argument: copy by position so a MultiIndex with duplicate tuples (which cannot be
+        # re-looked-up unambiguously by name) is preserved intact.
+        if vectors_to_dup.nil?
+          return DaruLite::DataFrame.new(
+            @data.map(&:dup), order: @vectors.dup, index: @index.dup, name: @name, clone: true
+          )
+        end
 
         src = vectors_to_dup.map { |vec| @data[@vectors.pos(vec)].dup }
         new_order = DaruLite::Index.new(vectors_to_dup)
