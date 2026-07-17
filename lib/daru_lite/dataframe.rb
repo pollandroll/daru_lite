@@ -269,11 +269,10 @@ module DaruLite
 
       # Delete the first matching column by position: a MultiIndex with duplicate tuples resolves a
       # name to several positions, and removing every duplicate name would desync @vectors from @data.
+      # Reuse the index's own #delete_at, which preserves the index type.
       position = @vectors.is_a?(MultiIndex) ? @vectors.positions_for(vector).first : @vectors[vector]
       @data.delete_at(position)
-      remaining = @vectors.to_a
-      remaining.delete_at(position)
-      @vectors = DaruLite::Index.coerce(remaining)
+      @vectors = @vectors.delete_at(position)
 
       self
     end
@@ -611,7 +610,9 @@ module DaruLite
     # duplicated tuple re-looked-up by name would return a MultiIndex instead of an integer.
     def assign_multiple_vectors(name, pos, v)
       positions = @vectors.is_a?(MultiIndex) ? @vectors.positions_for(name.flatten) : pos.map { |p| @vectors[p] }
-      positions.each { |position| @data[position] = v }
+      # Give all but the first match an independent copy so duplicate columns don't share one
+      # Vector instance (a later cell mutation would otherwise leak across both).
+      positions.each_with_index { |position, i| @data[position] = i.zero? ? v : v.dup }
     end
 
     def assign_or_add_vector_rough(name, v)
@@ -791,7 +792,7 @@ module DaruLite
         elsif vectors_have_same_index
           source.map(&:dup)
         else
-          source.map { |vector| reindex_vector(vector) }
+          source.map.with_index { |vector, position| reindex_vector(vector, @vectors.to_a[position]) }
         end
     end
 
@@ -805,8 +806,8 @@ module DaruLite
       end
     end
 
-    def reindex_vector(vector)
-      DaruLite::Vector.new([], index: @index).tap do |new_vector|
+    def reindex_vector(vector, name)
+      DaruLite::Vector.new([], name: name, index: @index).tap do |new_vector|
         @index.each { |idx| new_vector[idx] = vector.index.include?(idx) ? vector[idx] : nil }
       end
     end

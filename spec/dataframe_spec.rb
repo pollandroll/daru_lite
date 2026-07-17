@@ -148,6 +148,18 @@ describe DaruLite::DataFrame do
         expect(df.a)      .to eq(DaruLite::Vector.new([2]*5))
       end
 
+      it "names the reindexed vectors after their order labels when indexes differ" do
+        df = DaruLite::DataFrame.new(
+          [
+            DaruLite::Vector.new([1, 2], index: [:one, :two]),
+            DaruLite::Vector.new([3, 4], index: [:two, :three])
+          ],
+          order: [:b, :a]
+        )
+
+        expect(df.data.map(&:name)).to eq([:b, :a])
+      end
+
       it "accepts Index objects for row/col" do
         rows = DaruLite::Index.new [:one, :two, :three, :four, :five]
         cols = DaruLite::Index.new [:a, :b]
@@ -882,6 +894,7 @@ describe DaruLite::DataFrame do
         dup_df.delete_vector([:weighted_count, 'Wave'])
 
         expect(dup_df.ncols).to eq(3)
+        expect(dup_df.vectors).to be_a(DaruLite::MultiIndex)
         expect(dup_df.vectors.to_a).to eq([
           [:weighted_count, 'Wave'], [:percentage, 'Wave'], [:percentage, 'Wave']
         ])

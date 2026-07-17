@@ -240,6 +240,12 @@ shared_examples_for 'a setable DataFrame' do
           expect(dup_df.data.map(&:to_a)).to eq([[10, 20], [10, 20], [5, 6], [7, 8]])
         end
 
+        it "assigns independent Vector instances to duplicate columns" do
+          dup_df[:weighted_count, 'Wave'] = [10, 20]
+
+          expect(dup_df.data[0].object_id).not_to eq(dup_df.data[1].object_id)
+        end
+
         it "assigns every column matching a partial key" do
           dup_df[:percentage] = [99, 98]
 

@@ -575,6 +575,10 @@ describe DaruLite::MultiIndex do
     it "raises IndexError for a non-existent key" do
       expect { idx.positions_for([:z]) }.to raise_error(IndexError)
     end
+
+    it "raises IndexError (not NoMethodError) for a key longer than the levels" do
+      expect { idx.positions_for([:b, :one, :bar, :extra]) }.to raise_error(IndexError)
+    end
   end
 
   context "#subset" do
