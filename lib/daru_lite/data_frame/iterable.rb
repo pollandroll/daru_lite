@@ -25,8 +25,11 @@ module DaruLite
       def each_vector_with_index
         return to_enum(:each_vector_with_index) unless block_given?
 
-        @data.each_with_index do |vector, position|
-          yield vector, @vectors.to_a[position]
+        # Snapshot the data/name pairing up front so the block may safely mutate the DataFrame
+        # (e.g. add vectors) mid-iteration, and pair by position so duplicate MultiIndex tuples
+        # don't trigger an ambiguous name lookup.
+        @data.zip(@vectors.to_a).each do |vector, vector_index| # rubocop:disable Style/ExplicitBlockArgument -- preserve 2-arg yield semantics
+          yield vector, vector_index
         end
 
         self
