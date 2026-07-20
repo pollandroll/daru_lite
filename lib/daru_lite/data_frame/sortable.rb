@@ -158,18 +158,26 @@ module DaruLite
 
       private
 
+      # Resolve a sort-key name to a single integer position. A MultiIndex with duplicate tuples
+      # maps a name to several positions; sorting by such a key uses the first match.
+      def sort_vector_position(name)
+        @vectors.is_a?(MultiIndex) ? @vectors.positions_for(name).first : @vectors[name]
+      end
+
       def convert_categorical_vectors(names)
         names.filter_map do |n|
-          next unless self[n].category?
+          position = sort_vector_position(n)
+          vector = @data[position]
+          next unless vector.category?
 
-          old = [n, self[n]]
-          self[n] = DaruLite::Vector.new(self[n].to_ints)
+          old = [position, vector]
+          @data[position] = DaruLite::Vector.new(vector.to_ints)
           old
         end
       end
 
       def restore_categorical_vectors(old)
-        old.each { |name, vector| self[name] = vector }
+        old.each { |position, vector| @data[position] = vector }
       end
 
       def sort_build_row(vector_locs, by_blocks, ascending, handle_nils, r1, r2) # rubocop:disable  Metrics/ParameterLists
@@ -223,7 +231,7 @@ module DaruLite
         handle_nils = sort_coerce_boolean opts, :handle_nils, false, vector_order.size
 
         by_blocks = vector_order.map { |v| (opts[:by] || {})[v] }
-        vector_locs = vector_order.map { |v| @vectors[v] }
+        vector_locs = vector_order.map { |v| sort_vector_position(v) }
 
         lambda do |index1, index2|
           # Build left and right array to compare two rows

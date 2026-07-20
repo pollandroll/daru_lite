@@ -542,6 +542,45 @@ describe DaruLite::MultiIndex do
     # TODO: Add specs for IndexError
   end
 
+  context "#positions_for" do
+    let(:idx) do
+      described_class.from_tuples([
+        [:b, :one, :bar],
+        [:b, :two, :bar],
+        [:b, :two, :baz],
+        [:b, :one, :foo]
+      ])
+    end
+
+    it "returns all matching positions for a partial key" do
+      expect(idx.positions_for([:b, :one])).to eq([0, 3])
+    end
+
+    it "returns a single-element array for a full unique tuple" do
+      expect(idx.positions_for([:b, :one, :bar])).to eq([0])
+    end
+
+    it "returns every position for duplicate tuples" do
+      dup_idx = described_class.from_tuples([
+        [:weighted_count, 'Wave'],
+        [:weighted_count, 'Wave'],
+        [:percentage, 'Wave'],
+        [:percentage, 'Wave']
+      ])
+
+      expect(dup_idx.positions_for([:weighted_count, 'Wave'])).to eq([0, 1])
+      expect(dup_idx.positions_for([:weighted_count])).to eq([0, 1])
+    end
+
+    it "raises IndexError for a non-existent key" do
+      expect { idx.positions_for([:z]) }.to raise_error(IndexError)
+    end
+
+    it "raises IndexError (not NoMethodError) for a key longer than the levels" do
+      expect { idx.positions_for([:b, :one, :bar, :extra]) }.to raise_error(IndexError)
+    end
+  end
+
   context "#subset" do
     let(:idx) do
       described_class.from_tuples([

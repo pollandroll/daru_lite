@@ -20,6 +20,19 @@ describe DaruLite::DataFrame do
     it "calculates mean of multi level numeric only vectors and returns values in a DataFrame" do
       # TODO - pending
     end
+
+    it "calculates mean of a MultiIndex with duplicate tuples without raising" do
+      dup_df = DaruLite::DataFrame.new(
+        [[1, 3], [2, 4], [5, 7], [6, 8]],
+        order: DaruLite::MultiIndex.from_tuples([
+          [:weighted_count, 'Wave'], [:weighted_count, 'Wave'],
+          [:percentage, 'Wave'], [:percentage, 'Wave']
+        ]),
+        index: %w[Yes No]
+      )
+
+      expect(dup_df.mean.to_a).to eq([2.0, 3.0, 6.0, 7.0])
+    end
   end
 
   context "#variance_sample" do

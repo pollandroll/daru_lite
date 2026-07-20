@@ -148,6 +148,18 @@ describe DaruLite::DataFrame do
         expect(df.a)      .to eq(DaruLite::Vector.new([2]*5))
       end
 
+      it "names the reindexed vectors after their order labels when indexes differ" do
+        df = DaruLite::DataFrame.new(
+          [
+            DaruLite::Vector.new([1, 2], index: [:one, :two]),
+            DaruLite::Vector.new([3, 4], index: [:two, :three])
+          ],
+          order: [:b, :a]
+        )
+
+        expect(df.data.map(&:name)).to eq([:b, :a])
+      end
+
       it "accepts Index objects for row/col" do
         rows = DaruLite::Index.new [:one, :two, :three, :four, :five]
         cols = DaruLite::Index.new [:a, :b]
@@ -863,6 +875,30 @@ describe DaruLite::DataFrame do
         expect(df).to eq(DaruLite::DataFrame.new({b: [11,12,13,14,15],
                 c: [11,22,33,44,55]}, order: [:b, :c],
                 index: [:one, :two, :three, :four, :five]))
+      end
+    end
+
+    context "with duplicate tuples in a MultiIndex" do
+      let(:dup_df) do
+        DaruLite::DataFrame.new(
+          [[1, 2], [3, 4], [5, 6], [7, 8]],
+          order: DaruLite::MultiIndex.from_tuples([
+            [:weighted_count, 'Wave'], [:weighted_count, 'Wave'],
+            [:percentage, 'Wave'], [:percentage, 'Wave']
+          ]),
+          index: %w[Yes No]
+        )
+      end
+
+      it "deletes the first matching column, leaving the other in place" do
+        dup_df.delete_vector([:weighted_count, 'Wave'])
+
+        expect(dup_df.ncols).to eq(3)
+        expect(dup_df.vectors).to be_a(DaruLite::MultiIndex)
+        expect(dup_df.vectors.to_a).to eq([
+          [:weighted_count, 'Wave'], [:percentage, 'Wave'], [:percentage, 'Wave']
+        ])
+        expect(dup_df.data.map(&:to_a)).to eq([[3, 4], [5, 6], [7, 8]])
       end
     end
   end

@@ -23,6 +23,29 @@ shared_examples_for 'a duplicatable DataFrame' do
         expect(subject.vectors.object_id).not_to eq(df_mi.vectors.object_id)
         expect(subject.index.object_id).not_to eq(df_mi.index.object_id)
       end
+
+      context "with duplicate tuples" do
+        let(:dup_df) do
+          DaruLite::DataFrame.new(
+            [[1, 2], [3, 4], [5, 6], [7, 8]],
+            order: DaruLite::MultiIndex.from_tuples([
+              [:weighted_count, 'Wave'], [:weighted_count, 'Wave'],
+              [:percentage, 'Wave'], [:percentage, 'Wave']
+            ]),
+            index: %w[Yes No]
+          )
+        end
+
+        it "dups without corrupting the columns and preserves the MultiIndex" do
+          copy = dup_df.dup
+
+          expect(copy).to eq(dup_df)
+          expect(copy.vectors).to be_a(DaruLite::MultiIndex)
+          expect(copy.vectors).to eq(dup_df.vectors)
+          expect(copy.data.map(&:to_a)).to eq([[1, 2], [3, 4], [5, 6], [7, 8]])
+          expect(copy.vectors.object_id).not_to eq(dup_df.vectors.object_id)
+        end
+      end
     end
   end
 

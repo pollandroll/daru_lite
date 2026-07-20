@@ -227,22 +227,40 @@ module DaruLite
       collection.one? ? collection.first : collection
     end
 
-    def retrieve_from_tuple(key)
+    # Return every integer position whose tuple matches the (possibly partial) key.
+    # Unlike #retrieve_from_tuple, the return type is always an Array of positions,
+    # even when a full tuple is duplicated across several positions.
+    #
+    # @param key [Array] a full or left-anchored partial tuple
+    # @return [Array<Integer>] matching positions, in ascending order
+    def positions_for(key)
       chosen = []
 
       key.each_with_index do |k, depth|
-        level_index = @levels[depth][k]
+        # An over-long key runs past the defined levels; guard explicitly rather than letting
+        # nil[k] raise NoMethodError.
+        level = @levels[depth]
+        raise IndexError, "Specified index #{key.inspect} do not exist" if level.nil?
+
+        level_index = level[k]
         raise IndexError, "Specified index #{key.inspect} do not exist" if level_index.nil?
 
-        label = @labels[depth]
-        chosen = find_all_indexes label, level_index, chosen
+        chosen = find_all_indexes(@labels[depth], level_index, chosen)
       end
+
+      chosen
+    end
+
+    def retrieve_from_tuple(key)
+      chosen = positions_for(key)
+
+      # Every level component existed individually but no tuple matches the full combination
+      # (e.g. [:a, :two, :foo] when that triple was never indexed together).
+      raise IndexError, "Specified index #{key.inspect} do not exist" if chosen.empty?
 
       return chosen[0] if chosen.size == 1 && key.size == @levels.size
 
       multi_index_from_multiple_selections(chosen)
-    rescue NoMethodError
-      raise IndexError, "Specified index #{key.inspect} do not exist"
     end
 
     def multi_index_from_multiple_selections(chosen)

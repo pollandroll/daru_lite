@@ -25,6 +25,22 @@ shared_examples_for 'an iterable DataFrame' do
 
       expect(ret).to eq(df)
     end
+
+    it "iterates over vectors of a MultiIndex with duplicate tuples" do
+      order = DaruLite::MultiIndex.from_tuples([
+        [:weighted_count, 'Wave'], [:weighted_count, 'Wave'],
+        [:percentage, 'Wave'], [:percentage, 'Wave']
+      ])
+      dup_df = DaruLite::DataFrame.new([[1, 2], [3, 4], [5, 6], [7, 8]], order: order, index: %w[Yes No])
+
+      tuples = []
+      dup_df.each_vector_with_index do |vector, index|
+        tuples << index
+        expect(vector).to be_a(DaruLite::Vector)
+      end
+
+      expect(tuples).to eq(order.to_a)
+    end
   end
 
   describe "#each_row_with_index" do
