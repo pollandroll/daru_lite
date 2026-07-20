@@ -1,17 +1,15 @@
 # coding: utf-8
-$:.unshift File.expand_path("../lib", __FILE__)
+require_relative 'lib/daru_lite/version'
 
-require 'daru_lite/version.rb'
+description = <<~MSG
+  Daru (Data Analysis in RUby) is a library for analysis, manipulation and visualization
+  of data. Daru works seamlessly accross interpreters and leverages interpreter-specific
+  optimizations whenever they are available.
 
-DaruLite::DESCRIPTION = <<MSG
-Daru (Data Analysis in RUby) is a library for analysis, manipulation and visualization
-of data. Daru works seamlessly accross interpreters and leverages interpreter-specific
-optimizations whenever they are available.
+  It is the default data storage gem for all the statsample gems (glm, timeseries, etc.)
+  and can be used with many others like mixed_models, gnuplotrb and iruby.
 
-It is the default data storage gem for all the statsample gems (glm, timeseries, etc.)
-and can be used with many others like mixed_models, gnuplotrb and iruby.
-
-Daru Lite is a fork of Daru that aims to focus on data manipulation and stability.
+  Daru Lite is a fork of Daru that aims to focus on data manipulation and stability.
 MSG
 
 Gem::Specification.new do |spec|
@@ -19,8 +17,8 @@ Gem::Specification.new do |spec|
   spec.version       = DaruLite::VERSION
   spec.authors       = ['Thomas Naude-Filonnière', 'Maxime Lasserre', 'Julie Thomas', 'Amar Slaoua', 'Mourtada Belhantri']
   spec.summary       = %q{Data Analysis in RUby, stripped down}
-  spec.description   = DaruLite::DESCRIPTION
-  spec.homepage      = "https://github.com/pollandroll/daru"
+  spec.description   = description
+  spec.homepage      = "https://github.com/pollandroll/daru_lite"
   spec.license       = 'BSD-2-Clause'
 
   spec.files         = `git ls-files -z`.split("\x0")
