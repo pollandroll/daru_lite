@@ -846,10 +846,26 @@ module DaruLite
 
       @index = deduce_index index, source, vectors_have_same_index
 
+      missing = @vectors.to_a.reject { |name| source.key?(name) }
+      unless missing.empty?
+        raise ArgumentError, ":order includes vectors not present in the source: #{missing.join(', ')}"
+      end
+
       if clone
         @data = clone_vectors source, vectors_have_same_index
+
+        # Keep each cloned column vector's name in sync with its column key so
+        # that extraction (df[:b]) always returns a vector named after its
+        # column. Skipped for MultiIndex columns, whose tuple names come from a
+        # separate extraction path. Only cloned vectors are renamed — for
+        # clone: false the DataFrame is a view and must not mutate the caller's
+        # vectors.
+        @data.zip(@vectors.to_a).each { |vect, name| vect.name = name } unless @vectors.is_a?(MultiIndex)
       else
-        @data.concat source.values
+        # Order the shared vectors by column key (not source-hash order) so
+        # @data stays parallel to @vectors — otherwise an explicit :order that
+        # differs from the hash key order would misalign columns with labels.
+        @data.concat(@vectors.to_a.map { |name| source[name] })
       end
     end
 
