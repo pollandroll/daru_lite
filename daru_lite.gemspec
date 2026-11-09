@@ -48,5 +48,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'sqlite3', '~> 2.6.0'
   # issue : https://github.com/SciRuby/daru/issues/493 occured
   # with latest version of sqlite3
-  spec.add_development_dependency 'webmock', '~> 3.25.0'
+  spec.add_development_dependency 'webmock', '~> 3.34.0'
 end
