@@ -67,11 +67,11 @@ module DaruLite
 
       # Just sort the data and get an Array in return using Enumerable#sort.
       # Non-destructive.
-      # :nocov:
+      # simplecov:disable
       def sorted_data(&)
         @data.to_a.sort(&)
       end
-      # :nocov:
+      # simplecov:enable
 
       # Reorder the vector with given positions
       # @note Unlike #reindex! which takes index as input, it takes

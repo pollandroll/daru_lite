@@ -307,7 +307,7 @@ module DaruLite
       # Generate a matrix, based on vector names of the DataFrame.
       #
       # @return {::Matrix}
-      # :nocov:
+      # simplecov:disable
       # FIXME: Even not trying to cover this: I can't get, how it is expected
       # to work.... -- zverok
       def collect_matrix
@@ -322,7 +322,7 @@ module DaruLite
 
         Matrix.rows(rows)
       end
-      # :nocov:
+      # simplecov:enable
 
       private
 

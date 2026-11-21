@@ -47,9 +47,9 @@ module DaruLite
             require library.to_s
             class_variable_set(cv, true)
           rescue LoadError
-            # :nocov:
+            # simplecov:disable
             class_variable_set(cv, false)
-            # :nocov:
+            # simplecov:enable
           end
         end
         class_variable_get(cv)

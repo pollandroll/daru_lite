@@ -17,8 +17,8 @@ RSpec::Expectations.configuration.warn_about_potential_false_positives = false
 
 require 'simplecov'
 SimpleCov.start do
-  add_filter 'vendor'
-  add_filter 'spec'
+  skip 'vendor'
+  skip 'spec'
   # A partial run (single file, --only-failures) never reaches the threshold
   minimum_coverage 96 if ENV['CI']
 end
