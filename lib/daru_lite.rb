@@ -1,9 +1,3 @@
-# :nocov:
-def jruby?
-  RUBY_ENGINE == 'jruby'
-end
-# :nocov:
-
 module DaruLite
   DAYS_OF_WEEK = {
     'SUN' => 0,
@@ -65,6 +59,11 @@ module DaruLite
     def error(msg)
       error_stream&.puts msg
     end
+
+    # Emits a warning of the :deprecated category, attributed to the caller of the deprecated method.
+    def deprecation_warning(message)
+      warn "[DaruLite] DEPRECATION: #{message}", uplevel: 2, category: :deprecated
+    end
   end
 end
 
@@ -93,9 +92,7 @@ require 'daru_lite/exceptions'
 
 require 'daru_lite/monkeys/array'
 require 'daru_lite/monkeys/hash'
-require 'daru_lite/monkeys/m_d_array'
 require 'daru_lite/monkeys/matrix'
-require 'daru_lite/monkeys/object'
 require 'daru_lite/monkeys/range'
 
 require 'daru_lite/core/group_by'

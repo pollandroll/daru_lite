@@ -5,8 +5,6 @@ module DaruLite
     # the computationally intensive tasks.
     module Statistics
       module Vector # rubocop:disable Metrics/ModuleLength
-        extend Gem::Deprecate
-
         def mean
           @data.mean
         end
@@ -368,9 +366,6 @@ module DaruLite
             end
           )
         end
-
-        alias freqs frequencies
-        deprecate :freqs, :frequencies, 2016, 10
 
         def proportions
           len = size - count_values(*DaruLite::MISSING_VALUES)

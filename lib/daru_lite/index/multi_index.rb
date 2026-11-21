@@ -95,8 +95,6 @@ module DaruLite
     end
 
     def incorrect_fields?(_labels, levels)
-      levels[0].size # FIXME: without this exact call some specs are failing
-
       levels.any? { |e| e.uniq.size != e.size }
     end
 

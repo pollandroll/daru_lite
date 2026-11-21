@@ -23,11 +23,6 @@ describe DateTimeIndex do
         DateTime.new(2012,1,4), DateTime.new(2012,1,5)], freq: :infer)
       expect(index.frequency).to eq('D')
     end
-
-    it "lets setting of string time format" do
-      pending
-      DaruLite::DateTimeIndex.format = 'some-date-time-format'
-    end
   end
 
   context '.try_create' do
@@ -489,25 +484,6 @@ describe DateTimeIndex do
     it "returns the size of the DateTimeIndex" do
       index = DateTimeIndex.date_range start: DateTime.new(2014,5,3), periods: 100
       expect(index.size).to eq(100)
-    end
-  end
-
-  context "#add" do
-    before { skip }
-    let(:idx) { DaruLite::Index.new [:a, :b, :c] }
-
-    context "single index" do
-      subject { idx }
-      before { idx.add :d }
-
-      its(:to_a) { is_expected.to eq [:a, :b, :c, :d] }
-    end
-
-    context "mulitple indexes" do
-      subject { idx }
-      before { idx.add :d, :e }
-
-      its(:to_a) { is_expected.to eq [:a, :b, :c, :d, :e] }
     end
   end
 

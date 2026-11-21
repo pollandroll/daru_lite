@@ -445,10 +445,6 @@ describe DaruLite::Core::GroupBy do
     end
   end
 
-  context "#[]" do
-    pending
-  end
-
   context "#reduce" do
     it "returns a vector that concatenates strings in a group" do
       string_concat = lambda { |result, row| result += row[:b] }

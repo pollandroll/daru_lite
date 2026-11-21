@@ -205,9 +205,10 @@ shared_examples_for 'a sortable DataFrame' do
     end
 
     context DaruLite::MultiIndex do
-      pending
       it "sorts the DataFrame when specified full tuple" do
-        df_mi.sort([[:a,:one,:bar]])
+        sorted = df_mi.sort([[:a,:one,:bar]])
+
+        expect(sorted[[:a,:one,:bar]].to_a).to eq(df_mi[[:a,:one,:bar]].to_a.sort)
       end
     end
   end

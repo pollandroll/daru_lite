@@ -354,7 +354,7 @@ describe DaruLite::DataFrame do
       end
 
       it "aligns MultiIndexes properly" do
-        pending
+        pending 'DataFrame.new does not align vectors indexed by differently ordered MultiIndexes'
         mi_a = order_mi
         mi_b = DaruLite::MultiIndex.from_tuples([
           [:b,:one,:foo],

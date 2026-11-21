@@ -32,7 +32,7 @@ describe "which DSL" do
 
   it "accepts vector methods" do
     # expect( @df.which{ `number` == `number`.only_valid.max } ).to eq(@df.row_at(5)) # row_at(5) return a Vector object!?
-    expect( @df.which{ `number` <= `number`.only_valid.max } ).to eq(@df.row_at(0..5))
+    expect( @df.which{ `number` <= `number`.reject_values(nil).max } ).to eq(@df.row_at(0..5))
   end
 
 end

@@ -1,5 +1,6 @@
 class Matrix
   def elementwise_division(other)
+    DaruLite.deprecation_warning('Matrix#elementwise_division will be removed in 1.0, use Matrix#combine instead')
     map.with_index do |e, index|
       e / other.to_a.flatten[index]
     end

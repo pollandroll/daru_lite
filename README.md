@@ -115,6 +115,13 @@ data_frame.where(
 ```
 ![con1](images/con1.png)
 
+## Security
+
+A few methods are not meant to receive untrusted input:
+- `DataFrame#compute` with a String evaluates it as Ruby code. This form is deprecated, pass a block instead.
+- `DaruLite::IO.load`, `DataFrame._load` and `Vector._load` rely on `Marshal.load`, which can execute arbitrary code when the data is forged.
+- `DataFrame.from_csv` opens any local path or HTTP(S) URL it is given.
+
 ## Documentation
 
 Docs can be found [here](http://www.rubydoc.info/gems/daru_lite).

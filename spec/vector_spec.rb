@@ -299,7 +299,7 @@ describe DaruLite::Vector do
           end
 
           it "deletes element of specified integer index" do
-            pending
+            pending 'Vector#delete_at does not fall back to positions, use #delete_at_position'
             @dv.delete_at 2
 
             expect(@dv).to eq(DaruLite::Vector.new [1,2,4,5], name: :a,
@@ -578,10 +578,6 @@ describe DaruLite::Vector do
   end
 
   context 'on wrong dtypes' do
-    it 'should not accept mdarray' do
-      expect { DaruLite::Vector.new([], dtype: :mdarray) }.to raise_error(NotImplementedError)
-    end
-
     it 'should not accept anything else' do
       expect { DaruLite::Vector.new([], dtype: :kittens) }.to raise_error(ArgumentError)
     end

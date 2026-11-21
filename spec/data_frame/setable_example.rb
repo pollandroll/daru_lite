@@ -456,11 +456,6 @@ shared_examples_for 'a setable DataFrame' do
       end
     end
 
-    context DaruLite::MultiIndex do
-      pending
-      # TO DO
-    end
-
     context DaruLite::CategoricalIndex do
       let(:idx) { DaruLite::CategoricalIndex.new [:a, 1, :a, 1, :c] }
       let(:df) do

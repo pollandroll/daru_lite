@@ -73,21 +73,26 @@ module DaruLite
         end
       end
 
-      # Returns a vector, based on a string with a calculation based
-      # on vector.
+      # Returns a vector, based on a calculation on the vectors of the dataframe.
       #
-      # The calculation will be eval'ed, so you can put any variable
-      # or expression valid on ruby.
+      # The block is evaluated in the context of the dataframe, so vectors
+      # can be referred to by name.
       #
       # For example:
       #   a = DaruLite::Vector.new [1,2]
       #   b = DaruLite::Vector.new [3,4]
       #   ds = DaruLite::DataFrame.new({:a => a,:b => b})
-      #   ds.compute("a+b")
+      #   ds.compute { a + b }
       #   => Vector [4,6]
-      def compute(text, &block)
+      #
+      # Passing the calculation as a String is deprecated: the String is
+      # eval'ed, which executes arbitrary code when it comes from user input.
+      def compute(text = nil, &block)
         return instance_eval(&block) if block
 
+        DaruLite.deprecation_warning(
+          'DataFrame#compute with a String will be removed in 1.0, pass a block instead'
+        )
         instance_eval(text)
       end
 
