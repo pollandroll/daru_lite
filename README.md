@@ -2,7 +2,7 @@
 
 Simple, straightforward DataFrames for Ruby
 
-[![Build Status](https://github.com/pollandroll/daru_lite/actions/workflows/build.yml/badge.svg)](https://github.com/pollandroll/daru_lite/actions)
+[![Build Status](https://github.com/pollandroll/daru_lite/actions/workflows/ci.yml/badge.svg)](https://github.com/pollandroll/daru_lite/actions)
 [![Gem Version](https://img.shields.io/gem/v/daru_lite.svg)](https://rubygems.org/gems/daru_lite)
 
 ## Introduction
