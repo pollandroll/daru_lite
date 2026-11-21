@@ -73,6 +73,7 @@ require 'matrix'
 require 'forwardable'
 require 'erb'
 require 'date'
+require 'json'
 
 require 'daru_lite/version'
 

@@ -8,3 +8,5 @@ profile/out/
 coverage/
 .ruby-version
 .byebug_history
+pkg/
+daru_lite_test*

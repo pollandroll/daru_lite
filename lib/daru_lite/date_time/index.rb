@@ -260,8 +260,8 @@ module DaruLite
       @offset =
         case opts[:freq]
         when :infer then Helper.infer_offset(data)
-        when  nil   then nil
-        else  Helper.offset_from_frequency(opts[:freq])
+        when nil then nil
+        else Helper.offset_from_frequency(opts[:freq])
         end
 
       @frequency = @offset&.freq_string

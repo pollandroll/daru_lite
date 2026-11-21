@@ -766,7 +766,7 @@ module DaruLite
       return if ordered?
 
       raise ArgumentError, "Can not apply #{operation} when vector is unordered. " \
-                           'To make the categorical data ordered, use #ordered = true' \
+                           'To make the categorical data ordered, use #ordered = true'
     end
 
     def dummy_coding(full)
