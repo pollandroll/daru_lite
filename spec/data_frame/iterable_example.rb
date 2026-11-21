@@ -267,7 +267,6 @@ shared_examples_for 'an iterable DataFrame' do
       expect(ret).to eq(ans_rows)
     end
 
-
   end
 
   describe '#replace_values' do

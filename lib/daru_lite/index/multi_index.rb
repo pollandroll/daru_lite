@@ -356,6 +356,14 @@ module DaruLite
       @levels.size
     end
 
+    def _dump(*)
+      Marshal.dump(labels: @labels, levels: levels, name: @name)
+    end
+
+    def self._load(data)
+      new(**Marshal.load(data)) # rubocop:disable Security/MarshalLoad
+    end
+
     def ==(other)
       self.class == other.class  &&
         labels   == other.labels &&

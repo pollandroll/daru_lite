@@ -143,4 +143,48 @@ describe DaruLite::IO do
       end
     end
   end
+
+  describe DaruLite::MultiIndex do
+    context "Marshalling" do
+      let(:index) { DaruLite::MultiIndex.from_tuples([[:a, :one], [:a, :two], [:b, :one]]) }
+
+      it "round-trips the index" do
+        expect(Marshal.load(Marshal.dump(index))).to eq(index)
+      end
+
+      it "round-trips the index name" do
+        index.name = %w[letter number]
+
+        expect(Marshal.load(Marshal.dump(index)).name).to eq(%w[letter number])
+      end
+
+      it "round-trips a Vector built on it" do
+        vector = DaruLite::Vector.new([1, 2, 3], index: index)
+
+        expect(Marshal.load(Marshal.dump(vector))).to eq(vector)
+      end
+
+      it "round-trips a DataFrame built on it" do
+        dataframe = DaruLite::DataFrame.new({ x: [1, 2, 3] }, index: index)
+
+        expect(Marshal.load(Marshal.dump(dataframe))).to eq(dataframe)
+      end
+    end
+  end
+
+  describe DaruLite::CategoricalIndex do
+    context "Marshalling" do
+      let(:index) { DaruLite::CategoricalIndex.new([:a, :b, :a, :c]) }
+
+      it "round-trips the index" do
+        expect(Marshal.load(Marshal.dump(index))).to eq(index)
+      end
+
+      it "round-trips a Vector built on it" do
+        vector = DaruLite::Vector.new([1, 2, 3, 4], index: index)
+
+        expect(Marshal.load(Marshal.dump(vector))).to eq(vector)
+      end
+    end
+  end
 end
