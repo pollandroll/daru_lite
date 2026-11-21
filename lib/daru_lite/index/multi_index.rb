@@ -375,11 +375,6 @@ module DaruLite
         Formatters::Table.format([], headers: @name, row_headers: sparse_tuples, threshold: threshold)
     end
 
-    def to_html
-      path = File.expand_path('../iruby/templates/multi_index.html.erb', __dir__)
-      ERB.new(File.read(path).strip).result(binding)
-    end
-
     # Provide a MultiIndex for sub vector produced
     #
     # @param input_indexes [Array] the input by user to index the vector

@@ -29,7 +29,6 @@ module DaruLite
       source = args.first
 
       MultiIndex.try_from_tuples(source) ||
-        DateTimeIndex.try_create(source) ||
         allocate.tap { |i| i.send(:initialize, *args, &) }
     end
 

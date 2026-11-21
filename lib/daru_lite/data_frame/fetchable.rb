@@ -236,7 +236,7 @@ module DaruLite
       def access_vector_single_index(*names)
         if names.count < 2
           begin
-            pos = @vectors.is_a?(DaruLite::DateTimeIndex) ? @vectors[names.first] : @vectors.pos(names.first)
+            pos = @vectors.pos(names.first)
           rescue IndexError
             raise IndexError, "Specified vector #{names.first} does not exist"
           end

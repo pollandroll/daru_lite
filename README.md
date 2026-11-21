@@ -119,7 +119,7 @@ data_frame.where(
 
 A few methods are not meant to receive untrusted input:
 - `DataFrame#compute` with a String evaluates it as Ruby code. This form is deprecated, pass a block instead.
-- `DaruLite::IO.load` and `Marshal.load` on any dumped daru Lite object (`DataFrame`, `Vector`, `DateTimeIndex`) can execute arbitrary code when the data is forged.
+- `Marshal.load` on a dumped `DataFrame`, `Vector` or `Index` can execute arbitrary code when the data is forged, like any use of `Marshal.load`.
 - `DataFrame.from_csv` opens any local path or HTTP(S) URL it is given.
 
 ## Deprecations

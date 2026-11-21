@@ -229,9 +229,6 @@ shared_examples_for 'a fetchable Vector' do |dtype|
       let (:idx) { DaruLite::Index.new [1, 0, :c] }
       let (:dv) { DaruLite::Vector.new ['a', 'b', 'c'], index: idx }
 
-      let (:idx_dt) { DaruLite::DateTimeIndex.new(['2017-01-01', '2017-02-01', '2017-03-01']) }
-      let (:dv_dt) { DaruLite::Vector.new(['a', 'b', 'c'], index: idx_dt) }
-
       context "single position" do
         it { expect(dv.at 1).to eq 'b' }
       end
@@ -278,15 +275,6 @@ shared_examples_for 'a fetchable Vector' do |dtype|
         its(:size) { is_expected.to eq 1 }
         its(:to_a) { is_expected.to eq ['a'] }
         its(:'index.to_a') { is_expected.to eq [1] }
-      end
-
-      context "Splat .at on DateTime index" do
-        subject { dv_dt.at(*[1,2]) }
-
-        it { is_expected.to be_a DaruLite::Vector }
-        its(:size) { is_expected.to eq 2 }
-        its(:to_a) { is_expected.to eq ['b', 'c'] }
-        its(:'index.to_a') { is_expected.to eq ['2017-02-01', '2017-03-01'] }
       end
     end
 

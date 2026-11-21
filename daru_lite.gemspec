@@ -33,11 +33,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'csv', '>= 3.2.2'
   spec.add_dependency 'matrix', '>= 0.4'
 
-  spec.add_development_dependency 'activerecord', '~> 8.0'
   spec.add_development_dependency 'awesome_print', '~> 1.9'
   spec.add_development_dependency 'debug', '>= 1.0.0'
   spec.add_development_dependency 'distribution', '~> 0.8'
-  spec.add_development_dependency 'nokogiri', '~> 1.18'
   spec.add_development_dependency 'prime', '~> 0.1'
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.11'
@@ -48,7 +46,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'ruby-prof', '~> 2.0'
   spec.add_development_dependency 'simplecov', '~> 1.3'
   spec.add_development_dependency 'simplecov_json_formatter', '~> 0.1'
-  spec.add_development_dependency 'spreadsheet', '~> 1.3.0'
-  spec.add_development_dependency 'sqlite3', '~> 2.6'
   spec.add_development_dependency 'webmock', '~> 3.25'
 end

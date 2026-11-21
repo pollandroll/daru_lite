@@ -6,7 +6,6 @@ require 'awesome_print'
 require 'debug'
 require 'distribution'
 require 'tempfile'
-require 'nokogiri'
 require 'webmock/rspec'
 
 def mri?

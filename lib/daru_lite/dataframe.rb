@@ -454,7 +454,7 @@ module DaruLite
     def inspect(spacing = DaruLite.spacing, threshold = DaruLite.max_rows)
       name_part = @name ? ": #{@name} " : ''
       spacing = [
-        headers.to_a.map { |header| header.try(:length) || header.to_s.length }.max,
+        headers.to_a.map { |header| header.respond_to?(:length) ? header.length : header.to_s.length }.max,
         spacing
       ].max
 

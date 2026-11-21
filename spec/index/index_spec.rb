@@ -24,12 +24,11 @@ describe DaruLite::Index do
       expect(i.labels).to eq([[0,0,0,0],[0,1,1,0],[0,0,1,2]])
     end
 
-    it "creates DateTimeIndex if date-like objects specified" do
+    it "creates a plain Index if date-like objects specified" do
       i = DaruLite::Index.new([
         DateTime.new(2012,2,4), DateTime.new(2012,2,5), DateTime.new(2012,2,6)])
-      expect(i.class).to eq(DaruLite::DateTimeIndex)
+      expect(i.class).to eq(DaruLite::Index)
       expect(i.to_a).to eq([DateTime.new(2012,2,4), DateTime.new(2012,2,5), DateTime.new(2012,2,6)])
-      expect(i.frequency).to eq('D')
     end
 
     context "create an Index with name" do
