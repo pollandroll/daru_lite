@@ -24,7 +24,7 @@ While preparing your pull requests, don't forget to check your code with Rubocop
 2. Make your changes. Write tests covering every case how your feature will be used.
 3. Try out these changes with `bundle exec rake console`.
 4. Run the test suite with `bundle exec rake spec` and Rubocop with `bundle exec rake cop`.
-5. Commit the changes, add a line to `History.md` and submit a pull request.
+5. Commit the changes, add a line under the `# Unreleased` heading at the top of `History.md` (create it if it is missing) and submit a pull request.
 
 ## Testing
 

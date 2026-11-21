@@ -1,5 +1,6 @@
 # 0.3.5
 * Declared `csv` and `matrix` as runtime dependencies
+* Fixed `Vector#standardize`, `Vector#to_json` and `DataFrame#to_json` raising `NoMethodError` when ActiveSupport is not loaded
 * Required Ruby 3.4 or later
 * Stopped packaging specs, fixtures, benchmarks and images in the gem
 * CI now runs on Ruby 3.4 and 4.0

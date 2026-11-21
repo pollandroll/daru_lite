@@ -27,11 +27,11 @@ Gem::Specification.new do |spec|
     'rubygems_mfa_required' => 'true'
   }
 
-  spec.files         = Dir['lib/**/*', 'LICENSE', 'README.md', 'History.md'].select { |f| File.file?(f) }
+  spec.files         = `git ls-files -z -- lib LICENSE README.md History.md`.split("\x0")
   spec.require_paths = ["lib"]
 
-  spec.add_dependency 'csv', '~> 3.3'
-  spec.add_dependency 'matrix', '~> 0.4'
+  spec.add_dependency 'csv', '>= 3.2.2'
+  spec.add_dependency 'matrix', '>= 0.4'
 
   spec.add_development_dependency 'activerecord', '~> 8.0'
   spec.add_development_dependency 'awesome_print', '~> 1.9'
@@ -42,13 +42,13 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 13.0'
   spec.add_development_dependency 'rspec', '~> 3.11'
   spec.add_development_dependency 'rspec-its', '~> 2.0'
-  spec.add_development_dependency 'rubocop', '~> 1.86'
-  spec.add_development_dependency 'rubocop-performance', '~> 1.25'
-  spec.add_development_dependency 'rubocop-rspec', '~> 3.6'
+  spec.add_development_dependency 'rubocop', '~> 1.92.0'
+  spec.add_development_dependency 'rubocop-performance', '~> 1.27.0'
+  spec.add_development_dependency 'rubocop-rspec', '~> 3.10.0'
   spec.add_development_dependency 'ruby-prof', '~> 1.7'
   spec.add_development_dependency 'simplecov', '~> 0.22'
   spec.add_development_dependency 'simplecov_json_formatter', '~> 0.1'
-  spec.add_development_dependency 'spreadsheet', '~> 1.3'
+  spec.add_development_dependency 'spreadsheet', '~> 1.3.0'
   spec.add_development_dependency 'sqlite3', '~> 2.6'
   spec.add_development_dependency 'webmock', '~> 3.25'
 end

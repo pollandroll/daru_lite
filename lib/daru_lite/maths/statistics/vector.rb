@@ -554,7 +554,7 @@ module DaruLite
         def standardize(use_population = false)
           m ||= mean
           sd = use_population ? sdp : sds
-          return DaruLite::Vector.new([nil] * size) if m.nil? || sd.to_d == BigDecimal('0.0')
+          return DaruLite::Vector.new([nil] * size) if m.nil? || sd.nil? || sd.zero?
 
           vector_standardized_compute m, sd
         end
