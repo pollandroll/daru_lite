@@ -293,6 +293,92 @@ describe DaruLite::DataFrame do
         }.to raise_error(ArgumentError, /not present in the source/)
       end
 
+      it "inspects the missing labels in the unknown column error" do
+        va = DaruLite::Vector.new([1, 2, 3])
+        mi = DaruLite::MultiIndex.from_tuples([[:a, :one], [:a, :two]])
+
+        expect {
+          DaruLite::DataFrame.new({ [:a, :one] => va }, order: mi)
+        }.to raise_error(ArgumentError, ':order includes vectors not present in the source: [:a, :two]')
+        expect {
+          DaruLite::DataFrame.new({ a: va }, order: [:a, nil, 'a'])
+        }.to raise_error(ArgumentError, ':order includes vectors not present in the source: nil, "a"')
+      end
+
+      it "names cloned vectors after their MultiIndex column, like the array constructors" do
+        mi = DaruLite::MultiIndex.from_tuples([[:a, :one], [:a, :two]])
+        df = DaruLite::DataFrame.new(
+          {
+            [:a, :one] => DaruLite::Vector.new([1, 2], name: :wrong),
+            [:a, :two] => DaruLite::Vector.new([3, 4])
+          },
+          order: mi
+        )
+        from_arrays = DaruLite::DataFrame.new({ [:a, :one] => [1, 2], [:a, :two] => [3, 4] }, order: mi)
+
+        expect(df[:a, :one].name).to eq('aone')
+        expect(df[:a, :two].name).to eq('atwo')
+        expect(df.map(&:name)).to eq(from_arrays.map(&:name))
+      end
+
+      it "names cloned vectors after their column when the source indexes differ" do
+        df = DaruLite::DataFrame.new(
+          {
+            a: DaruLite::Vector.new([1, 2], name: :wrong, index: [:x, :y]),
+            b: DaruLite::Vector.new([3, 4], index: [:y, :z])
+          }
+        )
+
+        expect(df.map(&:name)).to eq([:a, :b])
+      end
+
+      it "keeps the names of vectors given as an Array" do
+        va = DaruLite::Vector.new([1, 2, 3], name: :x)
+        vb = DaruLite::Vector.new([4, 5, 6], name: :y)
+
+        expect(DaruLite::DataFrame.new([va, vb]).map(&:name)).to eq([:x, :y])
+        expect(DaruLite::DataFrame.new([va, vb], clone: false).map(&:name)).to eq([:x, :y])
+      end
+
+      it "does not relabel the vectors positionally when :order shares no label with the keys" do
+        va = DaruLite::Vector.new([1, 2, 3])
+        vb = DaruLite::Vector.new([4, 5, 6])
+        order = DaruLite::Index.new([:p, :q])
+
+        [true, false].each do |clone|
+          expect {
+            DaruLite::DataFrame.new({ a: va, b: vb }, order: order, clone: clone)
+          }.to raise_error(ArgumentError, ':order includes vectors not present in the source: :p, :q')
+        end
+      end
+
+      it "raises instead of sharing one vector between duplicate columns when clone: false" do
+        mi = DaruLite::MultiIndex.from_tuples([[:a, :one], [:a, :one], [:b, :two]])
+        source = { [:a, :one] => DaruLite::Vector.new([1, 2, 3]), [:b, :two] => DaruLite::Vector.new([7, 8, 9]) }
+
+        expect {
+          DaruLite::DataFrame.new(source, order: mi, clone: false)
+        }.to raise_error(ArgumentError, 'clone: false cannot share one vector between duplicate columns: [:a, :one]')
+      end
+
+      it "resolves the source vectors through the Hash default proc" do
+        source = Hash.new { |hash, key| hash.fetch(key.to_sym) }
+        source[:a] = DaruLite::Vector.new([1, 2, 3])
+        source[:b] = DaruLite::Vector.new([4, 5, 6])
+        df = DaruLite::DataFrame.new(source, order: DaruLite::Index.new(%w[a b]))
+
+        expect(df.vectors.to_a).to eq(%w[a b])
+        expect(df['b'].to_a).to eq([4, 5, 6])
+      end
+
+      it "computes the column labels once" do
+        mi = DaruLite::MultiIndex.from_tuples([[:a, :one], [:a, :two]])
+        source = { [:a, :one] => DaruLite::Vector.new([1, 2]), [:a, :two] => DaruLite::Vector.new([3, 4]) }
+        expect(mi).to receive(:to_a).once.and_call_original
+
+        DaruLite::DataFrame.new(source, order: mi, clone: false)
+      end
+
       it "allows creation of empty dataframe with only order" do
         df = DaruLite::DataFrame.new({}, order: [:a, :b, :c])
         df[:a] = DaruLite::Vector.new([1,2,3,4,5,6])
