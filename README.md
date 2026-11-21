@@ -115,6 +115,21 @@ data_frame.where(
 ```
 ![con1](images/con1.png)
 
+## Security
+
+A few methods are not meant to receive untrusted input:
+- `DataFrame#compute` with a String evaluates it as Ruby code. This form is deprecated, pass a block instead.
+- `DaruLite::IO.load` and `Marshal.load` on any dumped daru Lite object (`DataFrame`, `Vector`, `DateTimeIndex`) can execute arbitrary code when the data is forged.
+- `DataFrame.from_csv` opens any local path or HTTP(S) URL it is given.
+
+## Deprecations
+
+Deprecation warnings use Ruby's `:deprecated` category, which is silent by default. Turn them on before upgrading, with `ruby -w`, `RUBYOPT=-W:deprecated` or:
+
+``` ruby
+Warning[:deprecated] = true
+```
+
 ## Documentation
 
 Docs can be found [here](http://www.rubydoc.info/gems/daru_lite).

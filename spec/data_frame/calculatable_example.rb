@@ -59,6 +59,22 @@ shared_examples_for 'a calculatable DataFrame' do
       expect(df.compute("v1+v2+v3")).to eq(vsum)
       expect(df.compute("v1*v2")).to eq(vmult)
     end
+
+    it "performs a computation when supplied in a block" do
+      expect(df.compute { v1 + v2 + v3 }).to eq(vsum)
+    end
+
+    it "warns that supplying a string is deprecated", :deprecation_warnings do
+      expect { df.compute("v1*v2") }.to output(/DEPRECATION: DataFrame#compute with a String/).to_stderr
+    end
+
+    it "does not warn when supplied a block", :deprecation_warnings do
+      expect { df.compute { v1 * v2 } }.not_to output.to_stderr
+    end
+
+    it "raises when given neither a block nor a String" do
+      expect { df.compute }.to raise_error(ArgumentError, 'DataFrame#compute expects a block')
+    end
   end
 
   describe "#vector_by_calculation" do

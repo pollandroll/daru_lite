@@ -14,12 +14,6 @@ Layout/LineEndStringConcatenationIndentation:
   Exclude:
     - 'lib/daru_lite/data_frame/indexable.rb'
 
-# Offense count: 1
-# Configuration parameters: AllowComments.
-Lint/EmptyClass:
-  Exclude:
-    - 'lib/daru_lite/accessors/mdarray_wrapper.rb'
-
 # Offense count: 5
 # Configuration parameters: AllowedParentClasses.
 Lint/MissingSuper:
@@ -83,7 +77,6 @@ Naming/MethodParameterName:
 Naming/PredicatePrefix:
   Exclude:
     - 'spec/**/*'
-    - 'lib/daru_lite/data_frame/missable.rb'
     - 'lib/daru_lite/data_frame/queryable.rb'
     - 'lib/daru_lite/vector.rb'
 

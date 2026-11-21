@@ -1,8 +1,6 @@
 module DaruLite
   class DataFrame
     module Duplicatable
-      extend Gem::Deprecate
-
       # Duplicate the DataFrame entirely.
       #
       # == Arguments
@@ -53,18 +51,6 @@ module DaruLite
           clone
         end
       end
-
-      # Creates a new duplicate dataframe containing only rows
-      # without a single missing value.
-      def dup_only_valid(vecs = nil)
-        rows_with_nil = @data.map { |vec| vec.indexes(*DaruLite::MISSING_VALUES) }
-                             .inject(&:concat)
-                             .uniq
-
-        row_indexes = @index.to_a
-        (vecs.nil? ? self : dup(vecs)).row[*(row_indexes - rows_with_nil)]
-      end
-      deprecate :dup_only_valid, :reject_values, 2016, 10
     end
   end
 end

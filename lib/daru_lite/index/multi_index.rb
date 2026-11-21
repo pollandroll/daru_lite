@@ -82,6 +82,7 @@ module DaruLite
 
       raise ArgumentError, 'Must specify both labels and levels' unless labels && levels
       raise ArgumentError, 'Labels and levels should be same size' if labels.size != levels.size
+      raise ArgumentError, 'Must specify at least one level' if levels.empty?
       raise ArgumentError, 'Incorrect labels and levels' if incorrect_fields?(labels, levels)
 
       @labels = labels
@@ -95,8 +96,6 @@ module DaruLite
     end
 
     def incorrect_fields?(_labels, levels)
-      levels[0].size # FIXME: without this exact call some specs are failing
-
       levels.any? { |e| e.uniq.size != e.size }
     end
 

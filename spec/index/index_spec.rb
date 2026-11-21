@@ -410,6 +410,14 @@ describe DaruLite::Index do
     it { is_expected.to eq(described_class.new([:a, 1, 2])) }
   end
 
+  describe '#add' do
+    let(:index) { described_class.new([:a, :b, :c]) }
+
+    it { expect(index.add(:d)).to eq(described_class.new([:a, :b, :c, :d])) }
+    it { expect(index.add(:d, :e)).to eq(described_class.new([:a, :b, :c, :d, :e])) }
+    it { expect { index.add(:d) }.not_to(change(index, :to_a)) }
+  end
+
   context '#to_df' do
     let(:idx) do
       DaruLite::Index.new(['speaker', 'mic', 'guitar', 'amp'],

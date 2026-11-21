@@ -153,10 +153,8 @@ module DaruLite
         # Calculate the correlation between the numeric vectors.
         def correlation
           standard_deviation = std.to_matrix
-          corr_arry = cov
-                      .to_matrix
-                      .elementwise_division(standard_deviation.transpose *
-            standard_deviation).to_a
+          deviation_products = standard_deviation.transpose * standard_deviation
+          corr_arry = cov.to_matrix.combine(deviation_products) { |covariance, product| covariance / product }.to_a
 
           DaruLite::DataFrame.rows(corr_arry, index: numeric_vectors, order: numeric_vectors)
         end

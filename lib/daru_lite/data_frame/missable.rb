@@ -1,8 +1,6 @@
 module DaruLite
   class DataFrame
     module Missable
-      extend Gem::Deprecate
-
       # Rolling fillna
       # replace all Float::NAN and NIL values with the preceeding or following value
       #
@@ -63,13 +61,6 @@ module DaruLite
 
       # TODO: remove next version
       alias vector_missing_values missing_values_rows
-
-      def has_missing_data?
-        @data.any? { |vec| vec.include_values?(*DaruLite::MISSING_VALUES) }
-      end
-      alias flawed? has_missing_data?
-      deprecate :has_missing_data?, :include_values?, 2016, 10
-      deprecate :flawed?, :include_values?, 2016, 10
     end
   end
 end

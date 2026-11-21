@@ -13,26 +13,19 @@ def mri?
   RUBY_ENGINE == 'ruby'
 end
 
-def jruby?
-  RUBY_ENGINE == 'jruby'
-end
-
 RSpec::Expectations.configuration.warn_about_potential_false_positives = false
 
 require 'simplecov'
 SimpleCov.start do
   add_filter 'vendor'
   add_filter 'spec'
-  # minimum_coverage_by_file 95 -- too strict for now. Reconsider after specs redesign.
+  # A partial run (single file, --only-failures) never reaches the threshold
+  minimum_coverage 96 if ENV['CI']
 end
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'daru_lite'
-
-if jruby?
-  require 'mdarray'
-end
 
 ALL_DTYPES = [:array]
 
@@ -81,6 +74,16 @@ class String
     gsub(/\n\s+?\|/, "\n")    # for all lines looking like "<spaces>|" -- remove this.
     .gsub(/\|\n/, "\n")       # allow to write trailing space not removed by editor
     .gsub(/^\n|\n\s+$/, '')   # remove empty strings before and after
+  end
+end
+
+RSpec.configure do |config|
+  config.around(:each, :deprecation_warnings) do |example|
+    enabled = Warning[:deprecated]
+    Warning[:deprecated] = true
+    example.run
+  ensure
+    Warning[:deprecated] = enabled
   end
 end
 

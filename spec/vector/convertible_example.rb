@@ -42,23 +42,21 @@ shared_examples_for 'a convertible Vector' do |dtype|
     end
 
     context DaruLite::MultiIndex do
-      pending
-      # it "returns vector as a Hash" do
-      #   pending
-      #   mi = DaruLite::MultiIndex.from_tuples([
-      #     [:a,:two,:bar],
-      #     [:a,:two,:baz],
-      #     [:b,:one,:bar],
-      #     [:b,:two,:bar]
-      #   ])
-      #   vector = DaruLite::Vector.new([1,2,3,4], index: mi, dtype: dtype)
-      #   expect(vector.to_h).to eq({
-      #     [:a,:two,:bar] => 1,
-      #     [:a,:two,:baz] => 2,
-      #     [:b,:one,:bar] => 3,
-      #     [:b,:two,:bar] => 4
-      #   })
-      # end
+      it "returns vector as a Hash" do
+        mi = DaruLite::MultiIndex.from_tuples([
+          [:a,:two,:bar],
+          [:a,:two,:baz],
+          [:b,:one,:bar],
+          [:b,:two,:bar]
+        ])
+        vector = DaruLite::Vector.new([1,2,3,4], index: mi, dtype: dtype)
+        expect(vector.to_h).to eq({
+          [:a,:two,:bar] => 1,
+          [:a,:two,:baz] => 2,
+          [:b,:one,:bar] => 3,
+          [:b,:two,:bar] => 4
+        })
+      end
     end
   end
 

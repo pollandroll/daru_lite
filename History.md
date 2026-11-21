@@ -1,3 +1,21 @@
+# 0.4.0
+* [Breaking change] Removed the methods deprecated since 2016:
+  `Vector#has_missing_data?`, `#flawed?`, `#n_valid`, `#only_valid`, `#only_missing`, `#missing_positions` and `#freqs`,
+  `DataFrame#has_missing_data?`, `#flawed?` and `#dup_only_valid`. Use `#include_values?`, `#count_values`,
+  `#reject_values`, `#indexes` and `#frequencies` instead
+* [Breaking change] Removed `DaruLite::Core::GroupBy.get_positions_group_map_on`, deprecated since 2019.
+  Use `DaruLite::Core::GroupBy.group_by_index_to_positions` instead
+* [Breaking change] Removed the global `jruby?` method, the `MDArray` class (whose `#daru_lite_vector` and `#dv`
+  only raised `NotImplementedError`) and the `Object#itself` shim that daru Lite defined in every application
+  loading it
+* [Breaking change] `Vector.new(dtype: :mdarray)` raises `ArgumentError` instead of `NotImplementedError`
+* Deprecated `Array#daru_lite_vector`, `Array#dv`, `Array#to_index`, `Hash#daru_lite_vector`, `Hash#dv`,
+  `Range#daru_lite_vector`, `Range#dv`, `Range#to_index` and `Matrix#elementwise_division`.
+  They will be removed in a future release
+* Deprecated `DataFrame#compute` with a String, which is `eval`'ed: pass a block instead.
+  `DataFrame#compute` can now be called with a block only
+* Deprecation warnings use Ruby's `:deprecated` category: enable them with `Warning[:deprecated] = true` or `ruby -w`
+
 # 0.3.5
 * Declared `csv` and `matrix` as runtime dependencies
 * Fixed `Vector#standardize`, `Vector#to_json` and `DataFrame#to_json` raising `NoMethodError` when ActiveSupport is not loaded

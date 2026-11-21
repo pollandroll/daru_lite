@@ -40,9 +40,5 @@ shared_examples_for 'a duplicatable Vector' do
         )
       end
     end
-
-    context DaruLite::MultiIndex do
-      pending
-    end
   end
 end

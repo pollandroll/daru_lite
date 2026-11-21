@@ -42,8 +42,6 @@ module DaruLite
 
     attr_accessor(*Configuration::INSPECT_OPTIONS_KEYS)
 
-    extend Gem::Deprecate
-
     class << self
       # Create DataFrame by specifying rows as an Array of Arrays or Array of
       # DaruLite::Vector objects.

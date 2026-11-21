@@ -74,10 +74,6 @@ shared_examples_for 'a convertible DataFrame' do
           ])
       end
     end
-
-    context DaruLite::MultiIndex do
-      pending
-    end
   end
 
   describe '#to_json' do

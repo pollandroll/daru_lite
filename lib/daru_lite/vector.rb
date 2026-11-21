@@ -34,7 +34,6 @@ module DaruLite
     include DaruLite::Vector::Setable
     include DaruLite::Vector::Sortable
     include DaruLite::Vector::Queryable
-    extend Gem::Deprecate
 
     class << self
       # Create a new vector by specifying the size and an optional value
@@ -123,10 +122,6 @@ module DaruLite
     # The underlying dtype of the Vector. Can be :array.
     attr_reader :dtype
     attr_reader :nm_dtype
-    # An Array or the positions in the vector that are being treated as 'missing'.
-    attr_reader :missing_positions
-
-    deprecate :missing_positions, :indexes, 2016, 10
     # Store a hash of labels for values. Supplementary only. Recommend using index
     # for proper usage.
     attr_accessor :labels
@@ -659,8 +654,7 @@ module DaruLite
 
       new_vector =
         case dtype
-        when :array   then DaruLite::Accessors::ArrayWrapper.new(source, self)
-        when :mdarray then raise NotImplementedError, 'MDArray not yet supported.'
+        when :array then DaruLite::Accessors::ArrayWrapper.new(source, self)
         else raise ArgumentError, "Unknown dtype #{dtype}"
         end
 
