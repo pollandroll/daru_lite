@@ -19,7 +19,8 @@ require 'simplecov'
 SimpleCov.start do
   add_filter 'vendor'
   add_filter 'spec'
-  minimum_coverage 96
+  # A partial run (single file, --only-failures) never reaches the threshold
+  minimum_coverage 96 if ENV['CI']
 end
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))

@@ -86,6 +86,10 @@ describe DaruLite::MultiIndex do
   end
 
   context ".from_tuples" do
+    it "rejects an empty list of tuples" do
+      expect { DaruLite::MultiIndex.from_tuples([]) }.to raise_error(ArgumentError, 'Must specify at least one level')
+    end
+
     it "creates 2 layer MultiIndex from tuples" do
       tuples = [
         [:a, :one],

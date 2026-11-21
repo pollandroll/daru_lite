@@ -71,6 +71,10 @@ shared_examples_for 'a calculatable DataFrame' do
     it "does not warn when supplied a block", :deprecation_warnings do
       expect { df.compute { v1 * v2 } }.not_to output.to_stderr
     end
+
+    it "raises when given neither a block nor a String" do
+      expect { df.compute }.to raise_error(ArgumentError, 'DataFrame#compute expects a block')
+    end
   end
 
   describe "#vector_by_calculation" do
