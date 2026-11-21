@@ -110,11 +110,11 @@ module DaruLite
       end
 
       def row(lkey, rkey)
-        # :nocov:
+        # simplecov:disable
         # It's just an impossibility handler, can't be covered :)
         raise 'Unexpected condition met during merge' if !lkey && !rkey
 
-        # :nocov:
+        # simplecov:enable
         if lkey == rkey
           self.merge_key = lkey
           add_indicator(merge_matching_rows, :both)

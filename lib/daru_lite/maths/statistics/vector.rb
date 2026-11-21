@@ -554,7 +554,7 @@ module DaruLite
           vector_standardized_compute m, sd
         end
 
-        # :nocov:
+        # simplecov:disable
         def box_cox_transformation(lambda) # :nodoc:
           must_be_numeric!
 
@@ -568,7 +568,7 @@ module DaruLite
             end
           end
         end
-        # :nocov:
+        # simplecov:enable
 
         # Replace each non-nil value in the vector with its percentile.
         def vector_percentile

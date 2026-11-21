@@ -472,7 +472,7 @@ module DaruLite
       _shift(-distance)
     end
 
-    # :nocov:
+    # simplecov:disable
     def _dump(_depth)
       Marshal.dump(data: to_a, freq: @offset)
     end
@@ -482,7 +482,7 @@ module DaruLite
 
       DaruLite::DateTimeIndex.new(h[:data], freq: h[:freq])
     end
-    # :nocov:
+    # simplecov:enable
 
     # @!method year
     #   @return [Array<Integer>] Array containing year of each index.

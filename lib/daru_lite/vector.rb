@@ -538,11 +538,11 @@ module DaruLite
       )
     end
 
-    # :nocov:
+    # simplecov:disable
     def daru_lite_vector(*)
       self
     end
-    # :nocov:
+    # simplecov:enable
 
     alias dv daru_lite_vector
 
