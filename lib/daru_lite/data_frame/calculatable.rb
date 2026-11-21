@@ -92,7 +92,7 @@ module DaruLite
         raise ArgumentError, 'DataFrame#compute expects a block' if text.nil?
 
         DaruLite.deprecation_warning(
-          'DataFrame#compute with a String will be removed in 1.0, pass a block instead'
+          'DataFrame#compute with a String will be removed in a future release, pass a block instead'
         )
         instance_eval(text)
       end

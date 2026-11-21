@@ -11,7 +11,7 @@
 * [Breaking change] `Vector.new(dtype: :mdarray)` raises `ArgumentError` instead of `NotImplementedError`
 * Deprecated `Array#daru_lite_vector`, `Array#dv`, `Array#to_index`, `Hash#daru_lite_vector`, `Hash#dv`,
   `Range#daru_lite_vector`, `Range#dv`, `Range#to_index` and `Matrix#elementwise_division`.
-  They will be removed in 1.0
+  They will be removed in a future release
 * Deprecated `DataFrame#compute` with a String, which is `eval`'ed: pass a block instead.
   `DataFrame#compute` can now be called with a block only
 * Deprecation warnings use Ruby's `:deprecated` category: enable them with `Warning[:deprecated] = true` or `ruby -w`
