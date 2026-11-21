@@ -844,11 +844,36 @@ module DaruLite
 
       @index = deduce_index index, source, vectors_have_same_index
 
+      # MultiIndex#to_a is costly: compute the column labels once.
+      names = @vectors.to_a
+      columns = source_vectors_for(source, names)
+
       if clone
-        @data = clone_vectors source, vectors_have_same_index
+        @data = clone_vectors columns, names, vectors_have_same_index
       else
-        @data.concat source.values
+        # Shared vectors are stored as is (never renamed: they belong to the caller), ordered by
+        # column label so @data stays parallel to @vectors.
+        validate_no_shared_duplicates names
+        @data.concat columns
       end
+    end
+
+    def validate_no_shared_duplicates(names)
+      duplicates = names.tally.select { |_, count| count > 1 }.keys
+      return if duplicates.empty?
+
+      raise ArgumentError, 'clone: false cannot share one vector between duplicate columns: ' \
+                           "#{duplicates.map(&:inspect).join(', ')}"
+    end
+
+    # Looks each column label up in the source exactly once, so the presence check and the read
+    # cannot disagree (e.g. a Hash resolving keys through a default proc).
+    def source_vectors_for(source, names)
+      columns = names.map { |name| source[name] }
+      missing = names.reject.with_index { |_, position| columns[position] }
+      return columns if missing.empty?
+
+      raise ArgumentError, ":order includes vectors not present in the source: #{missing.map(&:inspect).join(', ')}"
     end
 
     def deduce_index(index, source, vectors_have_same_index)
@@ -862,16 +887,18 @@ module DaruLite
       end
     end
 
-    def clone_vectors(source, vectors_have_same_index)
-      @vectors.map do |vector|
+    # Each copy is named after its column label, so that extraction (df[:b], df[:a, :one]) returns
+    # a vector named after its column whatever the source vector was called.
+    def clone_vectors(columns, names, vectors_have_same_index)
+      columns.zip(names).map do |column, name|
         # avoids matching indexes of vectors if all the supplied vectors
         # have the same index.
         if vectors_have_same_index
-          source[vector].dup
+          column.dup.tap { |copy| copy.name = coerce_name(name) }
         else
-          DaruLite::Vector.new([], name: vector, index: @index).tap do |v|
+          DaruLite::Vector.new([], name: coerce_name(name), index: @index).tap do |v|
             @index.each do |idx|
-              v[idx] = source[vector].index.include?(idx) ? source[vector][idx] : nil
+              v[idx] = column.index.include?(idx) ? column[idx] : nil
             end
           end
         end

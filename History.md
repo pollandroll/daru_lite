@@ -9,6 +9,12 @@
   only raised `NotImplementedError`) and the `Object#itself` shim that daru Lite defined in every application
   loading it
 * [Breaking change] `Vector.new(dtype: :mdarray)` raises `ArgumentError` instead of `NotImplementedError`
+* [Breaking change] `DataFrame.new` given a Hash of vectors, an `:order` and `clone: false` raises `ArgumentError`
+  when `:order` names a vector missing from the Hash (it used to relabel the vectors positionally) or lists
+  the same vector twice (it used to raise `IndexError`)
+* Fixed vectors extracted from a DataFrame built from a Hash of vectors having the wrong name or no name:
+  they are now named after their column (#28)
+* Fixed `DataFrame.new` with `clone: false` and an `:order` misaligning columns with their labels
 * Deprecated `Array#daru_lite_vector`, `Array#dv`, `Array#to_index`, `Hash#daru_lite_vector`, `Hash#dv`,
   `Range#daru_lite_vector`, `Range#dv`, `Range#to_index` and `Matrix#elementwise_division`.
   They will be removed in a future release
