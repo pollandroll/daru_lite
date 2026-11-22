@@ -25,7 +25,7 @@ module DaruLite
         # is not a number.
         #
         # The division itself is #/: an Integer vector divided by an Integer
-        # truncates. Pass a Float divisor to get ratios.
+        # rounds down (floor division). Pass a Float divisor to get ratios.
         #
         # @param divisor [Numeric, nil] a scalar: unlike #/, a Vector is not accepted
         # @raise [ArgumentError] when +divisor+ is neither Numeric nor nil

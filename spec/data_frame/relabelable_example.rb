@@ -24,6 +24,17 @@ shared_examples_for 'a relabelable DataFrame' do
       end
 
       its(:vectors) { is_expected.to eq(DaruLite::MultiIndex.from_tuples([%i[a x], %i[b y]])) }
+
+      context 'when a tuple was already repeated' do
+        let(:df) do
+          DaruLite::DataFrame.new(
+            [[1, 2], [3, 4]],
+            order: DaruLite::MultiIndex.from_tuples([%w[a x], %w[a x]])
+          )
+        end
+
+        its('vectors.to_a') { is_expected.to eq([%i[a x], %i[a x]]) }
+      end
     end
 
     context 'when the vectors index is named' do
@@ -62,7 +73,7 @@ shared_examples_for 'a relabelable DataFrame' do
       expect(subject[:none].to_a).to eq([1, 2])
     end
 
-    ['', '  ', :'  ', false].each do |name|
+    ['', '  ', :'  ', "\u00A0", "\u3000", false].each do |name|
       context "with a vector named #{name.inspect}" do
         let(:blank_name) { name }
 

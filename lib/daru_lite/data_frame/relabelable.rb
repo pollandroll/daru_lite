@@ -5,7 +5,7 @@ module DaruLite
       # left as they are. With MultiIndex vectors, every level of each name is
       # converted.
       #
-      # @raise [ArgumentError] when two vectors would end up with the same name
+      # @raise [ArgumentError] when the conversion gives two vectors the same name
       # @return [DaruLite::DataFrame] self
       # @example
       #   df = DaruLite::DataFrame.new({ 'a' => [1, 2], 'b' => [3, 4] })
@@ -16,7 +16,7 @@ module DaruLite
         names = vectors.to_a.map do |name|
           multi_index ? name.map { |level| symbolize_label(level) } : symbolize_label(name)
         end
-        ensure_unique_labels!(names)
+        ensure_unique_labels!(names) if names.uniq.size < vectors.to_a.uniq.size
 
         symbolized = multi_index ? DaruLite::MultiIndex.from_tuples(names) : DaruLite::Index.new(names)
         symbolized.name = vectors.name if vectors.name
@@ -116,7 +116,7 @@ module DaruLite
 
       def blank_label?(label)
         return true if label.nil? || label == false
-        return label.to_s.strip.empty? if label.is_a?(String) || label.is_a?(Symbol)
+        return label.to_s.match?(/\A[[:space:]]*\z/) if label.is_a?(String) || label.is_a?(Symbol)
 
         label.respond_to?(:empty?) && label.empty?
       end

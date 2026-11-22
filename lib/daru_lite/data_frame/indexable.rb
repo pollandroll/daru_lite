@@ -144,16 +144,23 @@ module DaruLite
       # in the order given.
       #
       # @param names [Array, DaruLite::Index] vector names the result must contain
-      # @return [DaruLite::DataFrame] a new dataframe, or self when no vector is missing
+      # @return [DaruLite::DataFrame] a new dataframe
       # @example
       #   df = DaruLite::DataFrame.new({ a: [1, 2], b: [3, 4] })
       #   df.add_missing_vectors([:b, :c]).vectors.to_a #=> [:a, :b, :c]
       def add_missing_vectors(names)
-        all_vectors = @vectors | names
-        return self if all_vectors == @vectors
+        missing = names.to_a.uniq - @vectors.to_a
+        return dup if missing.empty?
 
+        # Built by position: a MultiIndex may repeat a tuple, which cannot be looked up by name.
+        all_names = @vectors.to_a + missing
+        all_vectors = @vectors.is_a?(MultiIndex) ? MultiIndex.from_tuples(all_names) : DaruLite::Index.new(all_names)
         all_vectors.name = @vectors.name if @vectors.name
-        reindex_vectors(all_vectors)
+        added = missing.map { |name| DaruLite::Vector.new(Array.new(nrows), index: @index.dup, name: name) }
+
+        DaruLite::DataFrame.new(
+          @data.map(&:dup) + added, order: all_vectors, index: @index.dup, name: @name, clone: true
+        )
       end
 
       # Reassign vectors with a new index of type DaruLite::Index or any of its subclasses.
