@@ -70,6 +70,12 @@ shared_examples_for 'a relabelable DataFrame' do
       end
     end
 
+    context 'when the vectors index is named' do
+      before { df.vectors.name = 'columns' }
+
+      its('vectors.name') { is_expected.to eq('columns') }
+    end
+
     ['', nil].each do |blank|
       context "when the label is #{blank.inspect}" do
         subject { df.rename_blank_vectors!(blank) }
@@ -107,9 +113,13 @@ shared_examples_for 'a relabelable DataFrame' do
     end
 
     context 'when a row already has the label' do
-      let(:index) { ['none', nil, 'x'] }
+      let(:index) { [nil, 'none', 'x'] }
 
-      its('index.to_a') { is_expected.to eq(['none', 'none (1)', 'x']) }
+      its('index.to_a') { is_expected.to eq(['none (1)', 'none', 'x']) }
+
+      it 'keeps that row under the label' do
+        expect(subject.row['none'].to_a).to eq([2])
+      end
     end
 
     ['', nil].each do |blank|

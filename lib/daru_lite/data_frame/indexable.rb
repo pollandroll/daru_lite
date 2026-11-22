@@ -152,6 +152,7 @@ module DaruLite
         all_vectors = @vectors | names
         return self if all_vectors == @vectors
 
+        all_vectors.name = @vectors.name if @vectors.name
         reindex_vectors(all_vectors)
       end
 

@@ -119,6 +119,13 @@ describe DaruLite::Vector do
       end
     end
 
+    context 'with a NaN element and a zero divisor' do
+      subject { described_class.new([1, Float::NAN]).divide_or_zero(0).to_a }
+
+      its(:first) { is_expected.to eq(0.0) }
+      its(:last) { is_expected.to be_nan }
+    end
+
     context 'with a category vector and a zero divisor' do
       subject { described_class.new([1, 2, 1], type: :category).divide_or_zero(0) }
 

@@ -210,6 +210,12 @@ shared_examples_for 'an indexable DataFrame' do
       expect(df.vectors.to_a).to eq(%i[a b])
     end
 
+    context 'when the vectors index is named' do
+      before { df.vectors.name = 'columns' }
+
+      its('vectors.name') { is_expected.to eq('columns') }
+    end
+
     context 'when given an Index' do
       let(:names) { DaruLite::Index.new(%i[c]) }
 

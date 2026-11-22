@@ -42,7 +42,9 @@ module DaruLite
       def rename_blank_vectors!(label)
         raise ArgumentError, 'label must not be blank' if blank_label?(label)
 
+        vectors_name = vectors.name
         vectors.to_a.each { |name| rename_vectors(name => label) if blank_label?(name) }
+        vectors.name = vectors_name if vectors_name
 
         self
       end
@@ -51,10 +53,10 @@ module DaruLite
       # empty or made of whitespace only).
       #
       # The first one is named +label+ and the following ones "label (1)",
-      # "label (2)"... skipping the numbers already taken by another row, so
-      # that index labels stay unique. A row already named +label+ takes part
-      # in the numbering. The index becomes a plain DaruLite::Index; nothing
-      # changes when no label is blank.
+      # "label (2)"... skipping the labels already taken by another row, so
+      # that index labels stay unique. Rows that are not blank keep their
+      # label, including one already named +label+. The index becomes a plain
+      # DaruLite::Index; nothing changes when no label is blank.
       #
       # @param label [String] the label given to blank rows, not blank itself
       # @raise [ArgumentError] when +label+ is blank, or when the other labels
@@ -70,11 +72,9 @@ module DaruLite
         labels = index.to_a
         return self if labels.none? { |row_label| blank_label?(row_label) }
 
-        renamed, kept = labels.partition { |row_label| blank_label?(row_label) || row_label == label }
+        renamed, kept = labels.partition { |row_label| blank_label?(row_label) }
         new_labels = numbered_labels(label, renamed.size, kept.to_set).each
-        labels = labels.map do |row_label|
-          blank_label?(row_label) || row_label == label ? new_labels.next : row_label
-        end
+        labels = labels.map { |row_label| blank_label?(row_label) ? new_labels.next : row_label }
         ensure_unique_labels!(labels)
 
         self.index = DaruLite::Index.new(labels, name: index.name)
