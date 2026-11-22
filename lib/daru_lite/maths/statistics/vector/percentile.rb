@@ -34,7 +34,7 @@ module DaruLite
 
             v = ((size - count_values(*DaruLite::MISSING_VALUES)) * q).quo(100)
             if v.to_i == v
-              (sorted[(v - 0.5).to_i].to_f + sorted[(v + 0.5).to_i]).quo(2)
+              (sorted[(v - 0.5).to_i].to_f + sorted[[(v + 0.5).to_i, sorted.size - 1].min]).quo(2)
             else
               sorted[v.to_i]
             end

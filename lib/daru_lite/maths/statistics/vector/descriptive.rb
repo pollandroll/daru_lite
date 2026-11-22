@@ -56,7 +56,7 @@ module DaruLite
 
           def sum_of_squared_deviation
             (
-              @data.inject(0) { |a, x| (x**2) + a } -
+              reject_values(*DaruLite::MISSING_VALUES).data.inject(0) { |a, x| (x**2) + a } -
               (sum**2).quo(size - count_values(*DaruLite::MISSING_VALUES)).to_f
             ).to_f
           end
@@ -115,7 +115,7 @@ module DaruLite
           end
 
           def proportion(value = 1)
-            frequencies[value].quo(size - count_values(*DaruLite::MISSING_VALUES)).to_f
+            frequencies.to_h.fetch(value, 0).quo(size - count_values(*DaruLite::MISSING_VALUES)).to_f
           end
 
           alias cov coefficient_of_variation

@@ -144,12 +144,16 @@ module DaruLite
             smoother = wilder ? 1.0 / n : 2.0 / (n + 1)
             # need to start everything from the first non-nil observation
             start = @data.index { |i| !i.nil? }
-            # first n - 1 observations are nil
-            base = [nil] * (start + n - 1)
+            return DaruLite::Vector.new([nil] * size, index: @index, name: @name) if start.nil?
+
             # nth observation is just a moving average
-            base << (@data[start...(start + n)].inject(0.0) { |s, a| a.nil? ? s : s + a } / n)
+            last = @data[start...(start + n)].inject(0.0) { |s, a| a.nil? ? s : s + a } / n
+            # first n - 1 observations are nil
+            base = ([nil] * (start + n - 1)) << last
+            # nil observations are skipped: they yield nil and leave the average as is
             (start + n).upto size - 1 do |i|
-              base << ((self[i] * smoother) + ((1 - smoother) * base.last))
+              x = self[i]
+              base << (x.nil? ? nil : last = (x * smoother) + ((1 - smoother) * last))
             end
 
             DaruLite::Vector.new(base, index: @index, name: @name)
@@ -174,25 +178,25 @@ module DaruLite
           #   ts.emv   # => [ ... nil, 0.073... , 0.082..., 0.080..., ...]
           #
           # @return [DaruLite::Vector] contains EMV
-          def emv(n = 10, wilder = false) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+          def emv(n = 10, wilder = false) # rubocop:disable Metrics/AbcSize
             smoother = wilder ? 1.0 / n : 2.0 / (n + 1)
             # need to start everything from the first non-nil observation
             start = @data.index { |i| !i.nil? }
-            # first n - 1 observations are nil
-            var_base = [nil] * (start + n - 1)
-            mean_base = [nil] * (start + n - 1)
-            mean_base << (@data[start...(start + n)].inject(0.0) { |s, a| a.nil? ? s : s + a } / n)
+            return DaruLite::Vector.new([nil] * size, index: @index, name: @name) if start.nil?
+
+            mean = @data[start...(start + n)].inject(0.0) { |s, a| a.nil? ? s : s + a } / n
             # nth observation is just a moving variance_population
-            squared_deviations = @data[start...(start + n)].inject(0.0) do |s, x|
-              x.nil? ? s : s + ((x - mean_base.last)**2)
-            end
-            var_base << (squared_deviations / n)
+            var = @data[start...(start + n)].inject(0.0) { |s, x| x.nil? ? s : s + ((x - mean)**2) } / n
+            # first n - 1 observations are nil
+            var_base = ([nil] * (start + n - 1)) << var
+            # nil observations are skipped: they yield nil and leave mean and variance as they are
             (start + n).upto size - 1 do |i|
-              last = mean_base.last
-              mean_base << ((self[i] * smoother) + ((1 - smoother) * last))
-              var_base << (
-                ((1 - smoother) * var_base.last) + (smoother * (self[i] - last) * (self[i] - mean_base.last))
-              )
+              x = self[i]
+              next var_base << nil if x.nil?
+
+              last = mean
+              mean = (x * smoother) + ((1 - smoother) * last)
+              var_base << (var = ((1 - smoother) * var) + (smoother * (x - last) * (x - mean)))
             end
             DaruLite::Vector.new(var_base, index: @index, name: @name)
           end
@@ -289,7 +293,7 @@ module DaruLite
           def acvf(demean = true, unbiased = true)
             demeaned_series = demean ? self - mean : self
 
-            n = (10 * Math.log10(size)).to_i + 1
+            n = [(10 * Math.log10(size)).to_i + 1, size].min
             m = mean
             d = if unbiased
                   Array.new(size, size)
@@ -298,7 +302,7 @@ module DaruLite
                 end
 
             0.upto(n - 1).map do |i|
-              (demeaned_series * (lag(i) - m)).sum / d[i]
+              (demeaned_series * (demean ? lag(i) - m : lag(i))).sum.fdiv(d[i])
             end
           end
 
