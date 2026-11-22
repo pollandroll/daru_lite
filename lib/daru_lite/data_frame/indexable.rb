@@ -139,6 +139,22 @@ module DaruLite
         end
       end
 
+      # Adds the vectors of +names+ that the dataframe does not have yet, filled
+      # with nil. Existing vectors keep their position, missing ones are appended
+      # in the order given.
+      #
+      # @param names [Array, DaruLite::Index] vector names the result must contain
+      # @return [DaruLite::DataFrame] a new dataframe, or self when no vector is missing
+      # @example
+      #   df = DaruLite::DataFrame.new({ a: [1, 2], b: [3, 4] })
+      #   df.add_missing_vectors([:b, :c]).vectors.to_a #=> [:a, :b, :c]
+      def add_missing_vectors(names)
+        all_vectors = @vectors | names
+        return self if all_vectors == @vectors
+
+        reindex_vectors(all_vectors)
+      end
+
       # Reassign vectors with a new index of type DaruLite::Index or any of its subclasses.
       #
       # @param new_index [DaruLite::Index] idx The new index object on which the vectors are to

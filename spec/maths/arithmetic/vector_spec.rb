@@ -97,6 +97,28 @@ describe DaruLite::Vector do
     end
   end
 
+  describe '#divide_or_zero' do
+    subject { with_md1.divide_or_zero(divisor) }
+
+    let(:divisor) { 2 }
+
+    it 'divides each element like #/' do
+      expect(subject).to eq(with_md1 / 2)
+    end
+
+    [0, 0.0, nil].each do |zero|
+      context "when the divisor is #{zero.inspect}" do
+        let(:divisor) { zero }
+
+        it 'returns 0.0 for each non-nil element' do
+          expect(subject).to eq(
+            DaruLite::Vector.new([0.0, 0.0, 0.0, nil, 0.0, nil], name: :missing, index: indexes_with_md1)
+          )
+        end
+      end
+    end
+  end
+
   describe "#%" do
     it "applies % to matching indexes of the other vector" do
       expect(dv1 % dv2).to eq(DaruLite::Vector.new([nil, 0, nil, 2, nil, nil], name: :boozy, index: indexes1_and_2))

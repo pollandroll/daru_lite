@@ -46,6 +46,50 @@ shared_examples_for 'a sortable DataFrame' do
     end
   end
 
+  describe '#reorder_rows' do
+    subject { df.reorder_rows(positions) }
+
+    let(:df) { DaruLite::DataFrame.new({ a: [1, 2, 3], b: %w[x y z] }, index:) }
+    let(:index) { %i[one two three] }
+    let(:positions) { [2, 0, 1] }
+
+    it 'moves the rows to the given positions and keeps the index order' do
+      expect(subject).to eq(DaruLite::DataFrame.new({ a: [3, 1, 2], b: %w[z x y] }, index:))
+    end
+
+    it 'does not change the receiver' do
+      subject
+
+      expect(df[:a].to_a).to eq([1, 2, 3])
+    end
+
+    context 'when a position is missing' do
+      let(:positions) { [2, 0] }
+
+      it { expect { subject }.to raise_error(ArgumentError, 'Invalid order') }
+    end
+
+    context 'when a position is repeated' do
+      let(:positions) { [2, 0, 0] }
+
+      it { expect { subject }.to raise_error(ArgumentError, 'Invalid order') }
+    end
+
+    context 'with a MultiIndex' do
+      let(:index) { DaruLite::MultiIndex.from_tuples([%i[a x], %i[a y], %i[b x]]) }
+
+      it 'moves the rows to the given positions and keeps the index order' do
+        expect(subject).to eq(DaruLite::DataFrame.new({ a: [3, 1, 2], b: %w[z x y] }, index:))
+      end
+    end
+
+    context 'with a CategoricalIndex' do
+      let(:index) { DaruLite::CategoricalIndex.new(%i[a b a]) }
+
+      it { expect { subject }.to raise_error(NotImplementedError) }
+    end
+  end
+
   describe "#rotate_vectors" do
     subject { df.rotate_vectors(-1) }
 
