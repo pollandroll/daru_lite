@@ -520,15 +520,6 @@ module DaruLite
       end
     end
 
-    # Save the vector to a file
-    #
-    # == Arguments
-    #
-    # * filename - Path of file where the vector is to be saved
-    def save(filename)
-      DaruLite::IO.save self, filename
-    end
-
     def _dump(*) # :nodoc:
       Marshal.dump(
         data: @data.to_a,

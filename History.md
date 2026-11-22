@@ -1,4 +1,21 @@
-# Unreleased
+# 0.5.0
+* [Breaking change] Removed `DateTimeIndex`, the date offsets and the `DaruLite::DAYS_OF_WEEK` and
+  `DaruLite::MONTH_DAYS` constants. `Index.new` given `DateTime` objects now returns a plain `Index`
+* [Breaking change] Removed the Excel, SQL, ActiveRecord and plain text readers and writers
+  (`from_excel`, `write_excel`, `from_sql`, `write_sql`, `from_activerecord`, `from_plaintext`)
+  and `DaruLite::IOHelpers.process_row`. CSV reading and writing is unchanged
+* [Breaking change] Removed `DataFrame#save`, `Vector#save` and `DaruLite::IO.load`.
+  `Marshal.dump` and `Marshal.load` still work on dataframes, vectors and indexes
+* [Breaking change] Removed `#to_html` on `DataFrame`, `Vector` and `MultiIndex` and the IRuby templates
+* [Breaking change] Removed the `which` DSL extension, which was never loaded by default
+* [Breaking change] `Vector#acvf`'s `unbiased` argument was inverted and now means what it says: `true` divides
+  lag k by n - k, `false` by n. Its default becomes `false`, so `acvf` without that argument returns the same values.
+  Swap the value wherever it is passed explicitly
+* Fixed `DataFrame#inspect` and `DataFrame#rotate_vectors` raising `NoMethodError` when ActiveSupport is not loaded
+* Fixed `Marshal.load` raising `NoMethodError` on a `MultiIndex`, a `CategoricalIndex`, and any `Vector` or `DataFrame`
+  built on one
+* Fixed `DataFrame#inspect` raising `ArgumentError` on a DataFrame without vectors, and truncating
+  `MultiIndex` vector names
 * Fixed `Vector#proportion` for a value absent from the vector and for Integer/Float mismatches
 * Fixed `Vector#percentile(100)` with the `:midpoint` strategy raising `TypeError`
 * Fixed `Vector#skew`, `#kurtosis` and `#sum_of_squared_deviation` raising on vectors with missing values

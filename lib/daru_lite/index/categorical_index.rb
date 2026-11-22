@@ -151,6 +151,14 @@ module DaruLite
     #   b = DaruLite::CategoricalIndex.new [:b, :a, :a]
     #   a == b
     #   # => false
+    def _dump(*)
+      Marshal.dump(to_a)
+    end
+
+    def self._load(data)
+      new(Marshal.load(data)) # rubocop:disable Security/MarshalLoad
+    end
+
     def ==(other)
       self.class == other.class &&
         size == other.size &&

@@ -453,10 +453,7 @@ module DaruLite
     # Pretty print in a nice table format for the command line (irb/pry/iruby)
     def inspect(spacing = DaruLite.spacing, threshold = DaruLite.max_rows)
       name_part = @name ? ": #{@name} " : ''
-      spacing = [
-        headers.to_a.map { |header| header.try(:length) || header.to_s.length }.max,
-        spacing
-      ].max
+      spacing = headers.to_a.map { |header| header.to_s.length }.push(spacing).max
 
       "#<#{self.class}#{name_part}(#{nrows}x#{ncols})>#{$INPUT_RECORD_SEPARATOR}" +
         Formatters::Table.format(

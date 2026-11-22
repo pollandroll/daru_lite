@@ -356,6 +356,14 @@ module DaruLite
       @levels.size
     end
 
+    def _dump(*)
+      Marshal.dump(labels: @labels, levels: levels, name: @name)
+    end
+
+    def self._load(data)
+      new(**Marshal.load(data)) # rubocop:disable Security/MarshalLoad
+    end
+
     def ==(other)
       self.class == other.class  &&
         labels   == other.labels &&
@@ -373,11 +381,6 @@ module DaruLite
     def inspect(threshold = 20)
       "#<DaruLite::MultiIndex(#{size}x#{width})>\n" +
         Formatters::Table.format([], headers: @name, row_headers: sparse_tuples, threshold: threshold)
-    end
-
-    def to_html
-      path = File.expand_path('../iruby/templates/multi_index.html.erb', __dir__)
-      ERB.new(File.read(path).strip).result(binding)
     end
 
     # Provide a MultiIndex for sub vector produced

@@ -1279,6 +1279,23 @@ describe DaruLite::DataFrame do
       }.unindent}
     end
 
+    context 'without vectors' do
+      let(:df) { DaruLite::DataFrame.new({}) }
+
+      it { is_expected.to start_with('#<DaruLite::DataFrame(0x0)>') }
+    end
+
+    context 'with MultiIndex vectors longer than the spacing' do
+      let(:df) do
+        DaruLite::DataFrame.new(
+          [[1, 2], [3, 4]],
+          order: DaruLite::MultiIndex.from_tuples([[:a_very_long_vector_name, :x], [:a_very_long_vector_name, :y]])
+        )
+      end
+
+      it { is_expected.to include('[:a_very_long_vector_name, :x] [:a_very_long_vector_name, :y]') }
+    end
+
     context 'simple' do
       let(:df) { DaruLite::DataFrame.new({a: [1,2,3], b: [3,4,5], c: [6,7,8]}, name: 'test')}
       it { should == %Q{

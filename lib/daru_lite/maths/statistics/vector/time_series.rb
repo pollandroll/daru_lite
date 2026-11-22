@@ -289,20 +289,21 @@ module DaruLite
           # == Options
           #
           # * *:demean* = true; optional. Supply false if series is not to be demeaned
-          # * *:unbiased* = true; optional. true/false for unbiased/biased form of autocovariance
+          # * *:unbiased* = false; optional. By default each lag k is divided by the size n of the
+          #   series (the biased form). Supply true to divide it by n - k (the unbiased form)
           #
           # == Returns
           #
           # Autocovariance value
-          def acvf(demean = true, unbiased = true)
+          def acvf(demean = true, unbiased = false)
             demeaned_series = demean ? self - mean : self
 
             n = [(10 * Math.log10(size)).to_i + 1, size].min
             m = mean
             d = if unbiased
-                  Array.new(size, size)
-                else
                   (1..size).to_a.reverse[0..n]
+                else
+                  Array.new(size, size)
                 end
 
             0.upto(n - 1).map do |i|

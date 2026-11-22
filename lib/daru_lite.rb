@@ -1,29 +1,4 @@
 module DaruLite
-  DAYS_OF_WEEK = {
-    'SUN' => 0,
-    'MON' => 1,
-    'TUE' => 2,
-    'WED' => 3,
-    'THU' => 4,
-    'FRI' => 5,
-    'SAT' => 6
-  }.freeze
-
-  MONTH_DAYS = {
-    1 => 31,
-    2 => 28,
-    3 => 31,
-    4 => 30,
-    5 => 31,
-    6 => 30,
-    7 => 31,
-    8 => 31,
-    9 => 30,
-    10 => 31,
-    11 => 30,
-    12 => 31
-  }.freeze
-
   MISSING_VALUES = [nil, Float::NAN].freeze
 
   @lazy_update = false
@@ -70,7 +45,6 @@ end
 autoload :CSV, 'csv'
 require 'matrix'
 require 'forwardable'
-require 'erb'
 require 'date'
 require 'json'
 
@@ -87,7 +61,6 @@ require 'daru_lite/configuration'
 require 'daru_lite/vector'
 require 'daru_lite/dataframe'
 require 'daru_lite/formatters/table'
-require 'daru_lite/iruby/helpers'
 require 'daru_lite/exceptions'
 
 require 'daru_lite/monkeys/array'
@@ -98,6 +71,3 @@ require 'daru_lite/monkeys/range'
 require 'daru_lite/core/group_by'
 require 'daru_lite/core/query'
 require 'daru_lite/core/merge'
-
-require 'daru_lite/date_time/offsets'
-require 'daru_lite/date_time/index'

@@ -66,39 +66,6 @@ module DaruLite
           .map { |vec_name, idx| [vec_name, @data[idx]] }.to_h
       end
 
-      # Convert to html for IRuby.
-      def to_html(threshold = DaruLite.max_rows)
-        table_thead = to_html_thead
-        table_tbody = to_html_tbody(threshold)
-        path = if index.is_a?(MultiIndex)
-                 File.expand_path('../iruby/templates/dataframe_mi.html.erb', __dir__)
-               else
-                 File.expand_path('../iruby/templates/dataframe.html.erb', __dir__)
-               end
-        ERB.new(File.read(path).strip).result(binding)
-      end
-
-      def to_html_thead
-        table_thead_path =
-          if index.is_a?(MultiIndex)
-            File.expand_path('../iruby/templates/dataframe_mi_thead.html.erb', __dir__)
-          else
-            File.expand_path('../iruby/templates/dataframe_thead.html.erb', __dir__)
-          end
-        ERB.new(File.read(table_thead_path).strip).result(binding)
-      end
-
-      def to_html_tbody(threshold = DaruLite.max_rows)
-        threshold ||= @size
-        table_tbody_path =
-          if index.is_a?(MultiIndex)
-            File.expand_path('../iruby/templates/dataframe_mi_tbody.html.erb', __dir__)
-          else
-            File.expand_path('../iruby/templates/dataframe_tbody.html.erb', __dir__)
-          end
-        ERB.new(File.read(table_tbody_path).strip).result(binding)
-      end
-
       def to_s
         "#<#{self.class}#{": #{@name}" if @name}(#{nrows}x#{ncols})>"
       end

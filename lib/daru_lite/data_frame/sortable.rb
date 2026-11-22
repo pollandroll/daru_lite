@@ -65,7 +65,7 @@ module DaruLite
       #   #   1   7     5   2
       #   #   2   9     6   3
       def rotate_vectors(count = -1)
-        return self unless vectors.many?
+        return self unless vectors.size > 1
 
         self.order = vectors.to_a.rotate(count)
         self

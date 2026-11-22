@@ -36,77 +36,6 @@ module DaruLite
           DaruLite::IO.from_csv(path, opts, &)
         end
 
-        # Read data from an Excel file into a DataFrame.
-        #
-        # == Arguments
-        #
-        # * path - Path of the file to be read.
-        #
-        # == Options
-        #
-        # *:worksheet_id - ID of the worksheet that is to be read.
-        def from_excel(path, opts = {}, &)
-          DaruLite::IO.from_excel(path, opts, &)
-        end
-
-        # Read a database query and returns a Dataset
-        #
-        # @param arh [ActiveRecord::ConnectionAdapters::AbstractAdapter, String] An ActiveRecord connection
-        # OR Path to a SQlite3 database.
-        # @param query [String] The query to be executed
-        #
-        # @return A dataframe containing the data resulting from the query
-        #
-        # USE:
-        #
-        #  ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: "path/to/sqlite.db")
-        #  arh = ActiveRecord::Base.connection
-        #  DaruLite::DataFrame.from_sql(dbh, "SELECT * FROM test")
-        #
-        #  #Alternatively
-        #
-        #  require 'active_record'
-        #  DaruLite::DataFrame.from_sql("path/to/sqlite.db", "SELECT * FROM test")
-        def from_sql(arh, query)
-          DaruLite::IO.from_sql arh, query
-        end
-
-        # Read a dataframe from AR::Relation
-        #
-        # @param relation [ActiveRecord::Relation] An AR::Relation object from which data is loaded
-        # @param fields [Array] Field names to be loaded (optional)
-        #
-        # @return A dataframe containing the data loaded from the relation
-        #
-        # USE:
-        #
-        #   # When Post model is defined as:
-        #   class Post < ActiveRecord::Base
-        #     scope :active, -> { where.not(published_at: nil) }
-        #   end
-        #
-        #   # You can load active posts into a dataframe by:
-        #   DaruLite::DataFrame.from_activerecord(Post.active, :title, :published_at)
-        def from_activerecord(relation, *fields)
-          DaruLite::IO.from_activerecord relation, *fields
-        end
-
-        # Read the database from a plaintext file. For this method to work,
-        # the data should be present in a plain text file in columns. See
-        # spec/fixtures/bank2.dat for an example.
-        #
-        # == Arguments
-        #
-        # * path - Path of the file to be read.
-        # * fields - Vector names of the resulting database.
-        #
-        # == Usage
-        #
-        #   df = DaruLite::DataFrame.from_plaintext 'spec/fixtures/bank2.dat', [:v1,:v2,:v3,:v4,:v5,:v6]
-        def from_plaintext(path, fields)
-          DaruLite::IO.from_plaintext path, fields
-        end
-
         def _load(data)
           h = Marshal.load data
           DaruLite::DataFrame.new(
@@ -136,37 +65,6 @@ module DaruLite
       # function.
       def write_csv(filename, opts = {})
         DaruLite::IO.dataframe_write_csv self, filename, opts
-      end
-
-      # Write this dataframe to an Excel Spreadsheet
-      #
-      # == Arguments
-      #
-      # * filename - The path of the file where the DataFrame should be written.
-      def write_excel(filename, opts = {})
-        DaruLite::IO.dataframe_write_excel self, filename, opts
-      end
-
-      # Insert each case of the Dataset on the selected table
-      #
-      # == Arguments
-      #
-      # * arh - ActiveRecord database connection object.
-      # * query - Query string.
-      #
-      # == Usage
-      #
-      #  ds = DaruLite::DataFrame.new({:id=>DaruLite::Vector.new([1,2,3]), :name=>DaruLite::Vector.new(["a","b","c"])})
-      #  ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: "path/to/sqlite.db")
-      #  arh = ActiveRecord::Base.connection
-      #  ds.write_sql(arh,"test")
-      def write_sql(arh, table)
-        DaruLite::IO.dataframe_write_sql self, arh, table
-      end
-
-      # Use marshalling to save dataframe to a file.
-      def save(filename)
-        DaruLite::IO.save self, filename
       end
 
       def _dump(_depth)

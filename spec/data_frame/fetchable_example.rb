@@ -349,13 +349,6 @@ shared_examples_for 'a fetchable DataFrame' do
     it 'has synonym' do
       expect(df.first(2)).to eq(df.head(2))
     end
-
-    it 'works on DateTime indexes' do
-      idx = DaruLite::DateTimeIndex.new(['2017-01-01', '2017-02-01', '2017-03-01'])
-      df = DaruLite::DataFrame.new({col1: ['a', 'b', 'c']}, index: idx)
-      first = DaruLite::DataFrame.new({col1: ['a']}, index: DaruLite::DateTimeIndex.new(['2017-01-01']))
-      expect(df.head(1)).to eq(first)
-    end
   end
 
   context "#last" do
