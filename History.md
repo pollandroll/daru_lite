@@ -1,4 +1,11 @@
 # Unreleased
+* Fixed `Vector#proportion` for a value absent from the vector and for Integer/Float mismatches
+* Fixed `Vector#percentile(100)` with the `:midpoint` strategy raising `TypeError`
+* Fixed `Vector#skew`, `#kurtosis` and `#sum_of_squared_deviation` raising on vectors with missing values
+* Fixed `Vector#index_of_max`, `#index_of_min` and their `_by` variants repeating an index for tied values
+* Fixed `Vector#ema`, `#emv`, `#emsd` and `#macd` on vectors with `nil`, shorter than the window or with a custom index.
+  A `nil` in the first window is now ignored instead of counting as 0
+* Fixed `Vector#acvf` raising on short vectors and subtracting the mean when `demean` is false
 * Added `DataFrame#reorder_rows`, which moves rows to given positions while keeping the index order
 * Added `DataFrame#add_missing_vectors`, which adds the vectors a dataframe lacks, filled with `nil`
 * Added `DataFrame#symbolize_vectors!`, `DataFrame#rename_blank_vectors!` and `DataFrame#rename_blank_rows!`

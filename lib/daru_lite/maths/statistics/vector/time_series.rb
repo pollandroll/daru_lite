@@ -144,15 +144,17 @@ module DaruLite
             smoother = wilder ? 1.0 / n : 2.0 / (n + 1)
             # need to start everything from the first non-nil observation
             start = @data.index { |i| !i.nil? }
-            return DaruLite::Vector.new([nil] * size, index: @index, name: @name) if start.nil?
+            # not enough observations to seed the average
+            return DaruLite::Vector.new([nil] * size, index: @index, name: @name) if start.nil? || start + n > size
 
-            # nth observation is just a moving average
-            last = @data[start...(start + n)].inject(0.0) { |s, a| a.nil? ? s : s + a } / n
+            # nth observation is just a moving average, of the non-nil observations
+            seed = @data[start...(start + n)].compact
+            last = seed_mean(seed)
             # first n - 1 observations are nil
             base = ([nil] * (start + n - 1)) << last
             # nil observations are skipped: they yield nil and leave the average as is
             (start + n).upto size - 1 do |i|
-              x = self[i]
+              x = @data[i]
               base << (x.nil? ? nil : last = (x * smoother) + ((1 - smoother) * last))
             end
 
@@ -182,16 +184,18 @@ module DaruLite
             smoother = wilder ? 1.0 / n : 2.0 / (n + 1)
             # need to start everything from the first non-nil observation
             start = @data.index { |i| !i.nil? }
-            return DaruLite::Vector.new([nil] * size, index: @index, name: @name) if start.nil?
+            # not enough observations to seed the average
+            return DaruLite::Vector.new([nil] * size, index: @index, name: @name) if start.nil? || start + n > size
 
-            mean = @data[start...(start + n)].inject(0.0) { |s, a| a.nil? ? s : s + a } / n
-            # nth observation is just a moving variance_population
-            var = @data[start...(start + n)].inject(0.0) { |s, x| x.nil? ? s : s + ((x - mean)**2) } / n
+            seed = @data[start...(start + n)].compact
+            mean = seed_mean(seed)
+            # nth observation is just a moving variance_population, of the non-nil observations
+            var = seed.inject(0.0) { |s, x| s + ((x - mean)**2) } / seed.size
             # first n - 1 observations are nil
             var_base = ([nil] * (start + n - 1)) << var
             # nil observations are skipped: they yield nil and leave mean and variance as they are
             (start + n).upto size - 1 do |i|
-              x = self[i]
+              x = @data[i]
               next var_base << nil if x.nil?
 
               last = mean
@@ -302,7 +306,9 @@ module DaruLite
                 end
 
             0.upto(n - 1).map do |i|
-              (demeaned_series * (demean ? lag(i) - m : lag(i))).sum.fdiv(d[i])
+              # nil when no pair of observations is left at that lag
+              total = (demeaned_series * (demean ? lag(i) - m : lag(i))).sum
+              total&.fdiv(d[i])
             end
           end
 
@@ -320,6 +326,14 @@ module DaruLite
             end
 
             DaruLite::Vector.new(result, index: @index)
+          end
+
+          private
+
+          # Plain left-to-right addition: Array#sum compensates rounding errors,
+          # which would change the results in the last decimals.
+          def seed_mean(seed)
+            seed.inject(0.0) { |sum, value| sum + value } / seed.size # rubocop:disable Performance/Sum
           end
         end
       end

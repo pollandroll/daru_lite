@@ -342,6 +342,14 @@ describe DaruLite::Vector do
       it "returns 0.0 for a value that does not occur in the vector" do
         expect(DaruLite::Vector.new([2, 3], dtype: dtype).proportion(1)).to eq(0.0)
       end
+
+      it "matches a Float value with an Integer argument" do
+        expect(DaruLite::Vector.new([1.0, 0.0, 1.0, 1.0], dtype: dtype).proportion).to eq(0.75)
+      end
+
+      it "matches an Integer value with a Float argument" do
+        expect(DaruLite::Vector.new([1, 0, 1, 1], dtype: dtype).proportion(1.0)).to eq(0.75)
+      end
     end
 
     context "#proportions" do
@@ -592,6 +600,10 @@ describe DaruLite::Vector do
     it "calculates the biased form of a short vector" do
       expect(vector.acvf(true, false)).to match([2.0, 1.0, be_within(1e-10).of(-1 / 3.0), -2.0, -4.0])
     end
+
+    it "returns nil for a lag without any pair of observations" do
+      expect(DaruLite::Vector.new([1, 2, 3, 4, nil]).acvf).to eq([1.0, 0.25, -0.3, -0.45, nil])
+    end
   end
 
   context "#percent_change" do
@@ -716,6 +728,19 @@ describe DaruLite::Vector do
       expect(DaruLite::Vector.new([nil] * 5).ema(2).to_a).to eq([nil] * 5)
     end
 
+    it "returns nils for a vector shorter than the loopback length" do
+      expect(DaruLite::Vector.new([1, 2, 3]).ema.to_a).to eq([nil] * 3)
+    end
+
+    it "ignores a nil inside the first window" do
+      expect(DaruLite::Vector.new([1, nil, 3, 5]).ema(2).to_a.first(2)).to eq([nil, 1.0])
+    end
+
+    it "reads the observations by position, whatever the index" do
+      vector = DaruLite::Vector.new([1, 2, 3, 4, 5], index: [4, 3, 2, 1, 0])
+      expect(vector.ema(2).to_a).to eq([nil, 1.5, 2.5, 3.5, 4.5])
+    end
+
     it "skips a nil that follows the first non-nil value" do
       result = DaruLite::Vector.new([1, 2, 3, nil, 5]).ema(2)
       without_nil = DaruLite::Vector.new([1, 2, 3, 5]).ema(2)
@@ -752,6 +777,19 @@ describe DaruLite::Vector do
       expect(DaruLite::Vector.new([nil] * 5).emv(2).to_a).to eq([nil] * 5)
     end
 
+    it "returns nils for a vector shorter than the loopback length" do
+      expect(DaruLite::Vector.new([1, 2, 3]).emv(5).to_a).to eq([nil] * 3)
+    end
+
+    it "ignores a nil inside the first window" do
+      expect(DaruLite::Vector.new([1, nil, 3, 5]).emv(2).to_a.first(2)).to eq([nil, 0.0])
+    end
+
+    it "reads the observations by position, whatever the index" do
+      vector = DaruLite::Vector.new([1, 2, 3, 4, 5], index: [4, 3, 2, 1, 0])
+      expect(vector.emv(2).to_a).to eq(DaruLite::Vector.new([1, 2, 3, 4, 5]).emv(2).to_a)
+    end
+
     it "skips a nil that follows the first non-nil value" do
       result = DaruLite::Vector.new([1, 2, 3, nil, 5]).emv(2)
       without_nil = DaruLite::Vector.new([1, 2, 3, 5]).emv(2)
@@ -786,6 +824,10 @@ describe DaruLite::Vector do
 
     it "returns nils for an all-nil vector" do
       expect(DaruLite::Vector.new([nil] * 5).emsd(2).to_a).to eq([nil] * 5)
+    end
+
+    it "returns nils for a vector shorter than the loopback length" do
+      expect(DaruLite::Vector.new([1, 2, 3]).emsd(5).to_a).to eq([nil] * 3)
     end
 
     it "skips a nil that follows the first non-nil value" do
