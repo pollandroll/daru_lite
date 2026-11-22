@@ -319,14 +319,23 @@ describe DaruLite::Vector do
       end
 
       context "#bootstrap" do
-        it "returns a vector with mean=mu and sd=se" do
-          rng = Distribution::Normal.rng(0, 1)
-          vector =DaruLite::Vector.new_with_size(100, dtype:) { rng.call}
+        # Resampling is random: fixed data and a fixed seed keep the estimates reproducible.
+        around do |example|
+          previous_seed = srand(42)
+          example.run
+          srand(previous_seed)
+        end
 
-          df = vector.bootstrap([:mean, :sd], 200)
-          se = 1 / Math.sqrt(vector.size)
-          expect(df[:mean].mean).to be_within(0.3).of(0)
-          expect(df[:mean].sd).to be_within(0.02).of(se)
+        let(:vector) { DaruLite::Vector.new((1..100).to_a, dtype:) }
+        let(:standard_error) { vector.sdp / Math.sqrt(vector.size) }
+        let(:resampled_means) { vector.bootstrap([:mean, :sd], 200)[:mean] }
+
+        it "returns resampled means centered on the vector mean" do
+          expect(resampled_means.mean).to be_within(1.0).of(vector.mean)
+        end
+
+        it "returns resampled means spread by the standard error" do
+          expect(resampled_means.sd).to be_within(0.6).of(standard_error)
         end
       end
 
