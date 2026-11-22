@@ -30,6 +30,8 @@ module DaruLite
           private
 
           def midpoint_percentile(q)
+            raise ArgumentError, "q must be between 0 and 100, got #{q}" unless q.between?(0, 100)
+
             sorted = reject_values(*DaruLite::MISSING_VALUES).to_a.sort
 
             v = ((size - count_values(*DaruLite::MISSING_VALUES)) * q).quo(100)

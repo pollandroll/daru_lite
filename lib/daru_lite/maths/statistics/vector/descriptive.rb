@@ -119,7 +119,10 @@ module DaruLite
               raise ArgumentError, 'Cannot calculate the proportion of a missing value'
             end
 
-            count { |element| element == value }.quo(size - count_values(*DaruLite::MISSING_VALUES)).to_f
+            present = size - count_values(*DaruLite::MISSING_VALUES)
+            raise ArgumentError, 'Cannot calculate a proportion without any non-missing value' if present.zero?
+
+            count { |element| element == value }.quo(present).to_f
           end
 
           alias cov coefficient_of_variation

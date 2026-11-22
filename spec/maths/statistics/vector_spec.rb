@@ -62,6 +62,10 @@ describe DaruLite::Vector do
         tied = DaruLite::Vector.new([5, nil, 1, 5], index: %i[a b c d])
         expect(tied.index_of_max(2)).to eq(%i[a d])
       end
+      it "labels an Integer and a Float that tie with their own index" do
+        tied = DaruLite::Vector.new([1, 1.0], index: %i[a b])
+        expect(tied.index_of_max(2)).to eq(%i[b a])
+      end
     end
 
     context "#index_of_max_by" do
@@ -351,6 +355,10 @@ describe DaruLite::Vector do
         expect { DaruLite::Vector.new([nil, nil, 1], dtype: dtype).proportion(nil) }.to raise_error(ArgumentError)
       end
 
+      it "raises for a vector without any non-missing value" do
+        expect { DaruLite::Vector.new([nil, nil], dtype: dtype).proportion }.to raise_error(ArgumentError, /non-missing/)
+      end
+
       it "matches an Integer value with a Float argument" do
         expect(DaruLite::Vector.new([1, 0, 1, 1], dtype: dtype).proportion(1.0)).to eq(0.75)
       end
@@ -407,6 +415,16 @@ describe DaruLite::Vector do
     it "returns the largest value for the 100th midpoint percentile" do
       values = DaruLite::Vector.new [102, 104, 105, nil, 107]
       expect(values.percentile(100)).to eq(107)
+    end
+
+    it "raises for a midpoint percentile above 100" do
+      values = DaruLite::Vector.new [102, 104, 105, 107]
+      expect { values.percentile(125) }.to raise_error(ArgumentError, /between 0 and 100/)
+    end
+
+    it "raises for a negative midpoint percentile" do
+      values = DaruLite::Vector.new [102, 104, 105, 107]
+      expect { values.percentile(-25) }.to raise_error(ArgumentError, /between 0 and 100/)
     end
   end
 

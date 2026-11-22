@@ -150,7 +150,7 @@ module DaruLite
             # nth observation is just a moving average, of the non-nil observations
             seed = @data[start...(start + n)].compact
             last = seed_mean(seed)
-            # first n - 1 observations are nil
+            # first n - 1 observations are nil; the nth always carries the seed, even when it is nil itself
             base = ([nil] * (start + n - 1)) << last
             # nil observations are skipped: they yield nil and leave the average as is
             (start + n).upto size - 1 do |i|
@@ -191,7 +191,7 @@ module DaruLite
             mean = seed_mean(seed)
             # nth observation is just a moving variance_population, of the non-nil observations
             var = seed.inject(0.0) { |s, x| s + ((x - mean)**2) } / seed.size
-            # first n - 1 observations are nil
+            # first n - 1 observations are nil; the nth always carries the seed, even when it is nil itself
             var_base = ([nil] * (start + n - 1)) << var
             # nil observations are skipped: they yield nil and leave mean and variance as they are
             (start + n).upto size - 1 do |i|

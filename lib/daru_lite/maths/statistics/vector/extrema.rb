@@ -198,13 +198,17 @@ module DaruLite
           private
 
           # Map each value to the index of a distinct non-missing element, so tied
-          # values get different indexes.
+          # values get different indexes. An element of the same class is preferred,
+          # so that 1 and 1.0 each get their own index.
           def indexes_of_values(vals)
             dv = reject_values(*DaruLite::MISSING_VALUES)
             return dv.index_of(vals) unless vals.is_a?(Array)
 
             remaining = dv.index.to_a.zip(dv.to_a)
-            vals.map { |val| remaining.delete_at(remaining.index { |_, v| v == val }).first }
+            vals.map do |val|
+              position = remaining.index { |_, v| v.eql?(val) } || remaining.index { |_, v| v == val }
+              remaining.delete_at(position).first
+            end
           end
         end
       end
