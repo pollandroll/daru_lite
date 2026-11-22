@@ -619,8 +619,12 @@ describe DaruLite::Vector do
       expect(vector.acvf(false)).to eq([11.0, 8.0, 5.2, 2.8, 1.0])
     end
 
-    it "calculates the form dividing each lag by its number of pairs" do
-      expect(vector.acvf(true, false)).to match([2.0, 1.0, be_within(1e-10).of(-1 / 3.0), -2.0, -4.0])
+    it "divides each lag by its number of pairs when unbiased" do
+      expect(vector.acvf(true, true)).to match([2.0, 1.0, be_within(1e-10).of(-1 / 3.0), -2.0, -4.0])
+    end
+
+    it "divides each lag by the size of the series when unbiased is false, the default" do
+      expect(vector.acvf(true, false)).to eq([2.0, 0.8, -0.2, -0.8, -0.8])
     end
 
     it "returns nil for a lag without any pair of observations" do
@@ -918,4 +922,5 @@ describe DaruLite::Vector do
         DaruLite::Vector.new([1,3,nil,6,nil,10,15]))
     end
   end
+
 end

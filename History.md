@@ -8,6 +8,9 @@
   `Marshal.dump` and `Marshal.load` still work on dataframes, vectors and indexes
 * [Breaking change] Removed `#to_html` on `DataFrame`, `Vector` and `MultiIndex` and the IRuby templates
 * [Breaking change] Removed the `which` DSL extension, which was never loaded by default
+* [Breaking change] `Vector#acvf`'s `unbiased` argument was inverted and now means what it says: `true` divides
+  lag k by n - k, `false` by n. Its default becomes `false`, so `acvf` without that argument returns the same values.
+  Swap the value wherever it is passed explicitly
 * Fixed `DataFrame#inspect` and `DataFrame#rotate_vectors` raising `NoMethodError` when ActiveSupport is not loaded
 * Fixed `Marshal.load` raising `NoMethodError` on a `MultiIndex`, a `CategoricalIndex`, and any `Vector` or `DataFrame`
   built on one
