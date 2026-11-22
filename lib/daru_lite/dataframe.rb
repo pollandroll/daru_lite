@@ -11,6 +11,7 @@ require 'daru_lite/data_frame/iterable'
 require 'daru_lite/data_frame/joinable'
 require 'daru_lite/data_frame/missable'
 require 'daru_lite/data_frame/pivotable'
+require 'daru_lite/data_frame/relabelable'
 require 'daru_lite/data_frame/setable'
 require 'daru_lite/data_frame/sortable'
 require 'daru_lite/data_frame/queryable'
@@ -32,6 +33,7 @@ module DaruLite
     include DaruLite::DataFrame::Joinable
     include DaruLite::DataFrame::Missable
     include DaruLite::DataFrame::Pivotable
+    include DaruLite::DataFrame::Relabelable
     include DaruLite::DataFrame::Setable
     include DaruLite::DataFrame::Sortable
     include DaruLite::DataFrame::Queryable

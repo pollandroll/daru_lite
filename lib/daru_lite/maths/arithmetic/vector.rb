@@ -18,6 +18,33 @@ module DaruLite
           binary_op :/, other
         end
 
+        # Divides by +divisor+, or returns 0.0 (a Float, whatever the values)
+        # for every number when +divisor+ is zero, NaN or nil, where #/ would
+        # raise or return Infinity or NaN. Missing values (nil and NaN) stay as
+        # they are in both cases; with such a divisor, so does anything that
+        # is not a number.
+        #
+        # The division itself is #/: an Integer vector divided by an Integer
+        # rounds down (floor division). Pass a Float divisor to get ratios.
+        #
+        # @param divisor [Numeric, nil] a scalar: unlike #/, a Vector is not accepted
+        # @raise [ArgumentError] when +divisor+ is neither Numeric nor nil
+        # @return [DaruLite::Vector]
+        # @example
+        #   vector = DaruLite::Vector.new([1, nil, 3])
+        #   vector.divide_or_zero(2).to_a   #=> [0, nil, 1]
+        #   vector.divide_or_zero(2.0).to_a #=> [0.5, nil, 1.5]
+        #   vector.divide_or_zero(0).to_a #=> [0.0, nil, 0.0]
+        def divide_or_zero(divisor)
+          unless divisor.nil? || divisor.is_a?(Numeric)
+            raise ArgumentError, "divisor must be Numeric or nil, not #{divisor.class}"
+          end
+          return self / divisor unless divisor.nil? || divisor.zero? || not_a_number?(divisor)
+
+          zeroed = map { |value| value.is_a?(Numeric) && !not_a_number?(value) ? 0.0 : value }
+          DaruLite::Vector.new(zeroed, name: @name, index: @index)
+        end
+
         def %(other)
           binary_op :%, other
         end
@@ -71,6 +98,10 @@ module DaruLite
         end
 
         private
+
+        def not_a_number?(value)
+          value.respond_to?(:nan?) && value.nan?
+        end
 
         def math_unary_op(operation)
           recode { |e| Math.send(operation, e) unless e.nil? }

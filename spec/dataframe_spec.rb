@@ -11,6 +11,7 @@ require 'data_frame/joinable_example'
 require 'data_frame/missable_example'
 require 'data_frame/pivotable_example'
 require 'data_frame/queryable_example'
+require 'data_frame/relabelable_example'
 require 'data_frame/setable_example'
 require 'data_frame/sortable_example'
 
@@ -72,6 +73,7 @@ describe DaruLite::DataFrame do
   it_behaves_like 'a missable DataFrame'
   it_behaves_like 'a pivotable DataFrame'
   it_behaves_like 'a queryable DataFrame'
+  it_behaves_like 'a relabelable DataFrame'
   it_behaves_like 'a setable DataFrame'
   it_behaves_like 'a sortable DataFrame'
 

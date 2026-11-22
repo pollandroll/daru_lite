@@ -1,3 +1,9 @@
+# Unreleased
+* Added `DataFrame#reorder_rows`, which moves rows to given positions while keeping the index order
+* Added `DataFrame#add_missing_vectors`, which adds the vectors a dataframe lacks, filled with `nil`
+* Added `DataFrame#symbolize_vectors!`, `DataFrame#rename_blank_vectors!` and `DataFrame#rename_blank_rows!`
+* Added `Vector#divide_or_zero`, a division returning `0.0` instead of failing when the divisor is zero or `nil`
+
 # 0.4.0
 * [Breaking change] Removed the methods deprecated since 2016:
   `Vector#has_missing_data?`, `#flawed?`, `#n_valid`, `#only_valid`, `#only_missing`, `#missing_positions` and `#freqs`,

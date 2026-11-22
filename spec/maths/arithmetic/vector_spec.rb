@@ -97,6 +97,66 @@ describe DaruLite::Vector do
     end
   end
 
+  describe '#divide_or_zero' do
+    subject { with_md1.divide_or_zero(divisor) }
+
+    let(:divisor) { 2 }
+
+    it 'divides each element like #/' do
+      expect(subject).to eq(with_md1 / 2)
+    end
+
+    context 'when the divisor is a NaN that is not a Float' do
+      let(:divisor) do
+        Class.new(Numeric) do
+          def zero? = false
+          def nan? = true
+        end.new
+      end
+
+      it 'returns 0.0 for each non-nil element' do
+        expect(subject.to_a).to eq([0.0, 0.0, 0.0, nil, 0.0, nil])
+      end
+    end
+
+    context 'with a NaN element and a zero divisor' do
+      subject { described_class.new([1, Float::NAN]).divide_or_zero(0).to_a }
+
+      its(:first) { is_expected.to eq(0.0) }
+      its(:last) { is_expected.to be_nan }
+    end
+
+    context 'with a value that is not a number and a zero divisor' do
+      subject { described_class.new(['a', 1]).divide_or_zero(0) }
+
+      its(:to_a) { is_expected.to eq(['a', 0.0]) }
+    end
+
+    context 'with a category vector and a zero divisor' do
+      subject { described_class.new([1, 2, 1], type: :category).divide_or_zero(0) }
+
+      its(:to_a) { is_expected.to eq([0.0, 0.0, 0.0]) }
+    end
+
+    context 'when the divisor is a Vector' do
+      let(:divisor) { dv1 }
+
+      it { expect { subject }.to raise_error(ArgumentError, 'divisor must be Numeric or nil, not DaruLite::Vector') }
+    end
+
+    [0, 0.0, Float::NAN, nil].each do |zero|
+      context "when the divisor is #{zero.inspect}" do
+        let(:divisor) { zero }
+
+        it 'returns 0.0 for each non-nil element' do
+          expect(subject).to eq(
+            DaruLite::Vector.new([0.0, 0.0, 0.0, nil, 0.0, nil], name: :missing, index: indexes_with_md1)
+          )
+        end
+      end
+    end
+  end
+
   describe "#%" do
     it "applies % to matching indexes of the other vector" do
       expect(dv1 % dv2).to eq(DaruLite::Vector.new([nil, 0, nil, 2, nil, nil], name: :boozy, index: indexes1_and_2))

@@ -46,6 +46,87 @@ shared_examples_for 'a sortable DataFrame' do
     end
   end
 
+  describe '#reorder_rows' do
+    subject { df.reorder_rows(positions) }
+
+    let(:df) { DaruLite::DataFrame.new({ a: [1, 2, 3], b: %w[x y z] }, index:) }
+    let(:index) { %i[one two three] }
+    let(:positions) { [2, 0, 1] }
+
+    it 'moves the rows to the given positions and keeps the index order' do
+      expect(subject).to eq(DaruLite::DataFrame.new({ a: [3, 1, 2], b: %w[z x y] }, index:))
+    end
+
+    it 'does not change the receiver' do
+      subject
+
+      expect(df[:a].to_a).to eq([1, 2, 3])
+    end
+
+    it 'does not share its index with the receiver' do
+      expect(subject.index).not_to equal(df.index)
+    end
+
+    context 'with a category vector' do
+      let(:df) do
+        DaruLite::DataFrame.new(
+          [DaruLite::Vector.new(%w[x y x], type: :category), DaruLite::Vector.new([1, 2, 3])],
+          order: %i[a b], index:
+        )
+      end
+
+      it 'keeps the vector a category' do
+        expect(subject[:a].type).to eq(:category)
+      end
+
+      it 'moves its values' do
+        expect(subject[:a].to_a).to eq(%w[x x y])
+      end
+    end
+
+    context 'with a single row' do
+      let(:df) { DaruLite::DataFrame.new({ a: [1], b: %w[x] }, index: %i[one]) }
+      let(:positions) { [0] }
+
+      it { is_expected.to eq(df) }
+      it { is_expected.not_to equal(df) }
+    end
+
+    context 'when a position is missing' do
+      let(:positions) { [2, 0] }
+
+      it { expect { subject }.to raise_error(ArgumentError, 'Invalid order') }
+    end
+
+    context 'when a position is repeated' do
+      let(:positions) { [2, 0, 0] }
+
+      it { expect { subject }.to raise_error(ArgumentError, 'Invalid order') }
+    end
+
+    context 'with a MultiIndex' do
+      let(:index) { DaruLite::MultiIndex.from_tuples([%i[a x], %i[a y], %i[b x]]) }
+
+      it 'moves the rows to the given positions and keeps the index order' do
+        expect(subject).to eq(DaruLite::DataFrame.new({ a: [3, 1, 2], b: %w[z x y] }, index:))
+      end
+
+      it 'does not rebuild the index for each vector' do
+        df
+        allow(DaruLite::MultiIndex).to receive(:from_tuples).and_call_original
+        subject
+
+        expect(DaruLite::MultiIndex).not_to have_received(:from_tuples)
+      end
+    end
+
+    context 'with a CategoricalIndex' do
+      let(:index) { DaruLite::CategoricalIndex.new(%i[a b a]) }
+
+      it { expect { subject }.to raise_error(NotImplementedError) }
+    end
+  end
+
   describe "#rotate_vectors" do
     subject { df.rotate_vectors(-1) }
 

@@ -187,6 +187,84 @@ shared_examples_for 'an indexable DataFrame' do
     end
   end
 
+  describe '#add_missing_vectors' do
+    subject { df.add_missing_vectors(names) }
+
+    let(:df) { DaruLite::DataFrame.new({ a: [1, 2], b: [3, 4] }, index: %i[x y]) }
+    let(:names) { %i[b c d] }
+
+    its('vectors.to_a') { is_expected.to eq(%i[a b c d]) }
+    its(:index) { is_expected.to eq(df.index) }
+
+    it 'fills the added vectors with nil' do
+      expect(subject[:c].to_a).to eq([nil, nil])
+    end
+
+    it 'keeps the existing vectors' do
+      expect(subject[:b].to_a).to eq([3, 4])
+    end
+
+    it 'does not change the receiver' do
+      subject
+
+      expect(df.vectors.to_a).to eq(%i[a b])
+    end
+
+    context 'when the vectors index is named' do
+      before { df.vectors.name = 'columns' }
+
+      its('vectors.name') { is_expected.to eq('columns') }
+    end
+
+    context 'when given an Index' do
+      let(:names) { DaruLite::Index.new(%i[c]) }
+
+      its('vectors.to_a') { is_expected.to eq(%i[a b c]) }
+    end
+
+    it 'names the added vectors' do
+      expect(subject[:c].name).to eq(:c)
+    end
+
+    context 'when a missing name is given twice' do
+      let(:names) { %i[c c] }
+
+      its('vectors.to_a') { is_expected.to eq(%i[a b c]) }
+    end
+
+    context 'when no vector is missing' do
+      let(:names) { %i[b a] }
+
+      it { is_expected.to eq(df) }
+      it { is_expected.not_to equal(df) }
+    end
+
+    context 'with MultiIndex vectors' do
+      let(:df) do
+        DaruLite::DataFrame.new([[1, 2], [3, 4]], order: DaruLite::MultiIndex.from_tuples([%i[a x], %i[a y]]))
+      end
+      let(:names) { [%i[a y], %i[b x]] }
+
+      its('vectors.to_a') { is_expected.to eq([%i[a x], %i[a y], %i[b x]]) }
+
+      context 'when a tuple is repeated' do
+        let(:df) do
+          DaruLite::DataFrame.new(
+            [[1, 2], [3, 4], [5, 6]],
+            order: DaruLite::MultiIndex.from_tuples([%i[a x], %i[a x], %i[b y]])
+          )
+        end
+        let(:names) { [%i[b y], %i[c z]] }
+
+        its('vectors.to_a') { is_expected.to eq([%i[a x], %i[a x], %i[b y], %i[c z]]) }
+
+        it 'keeps every vector, by position' do
+          expect(subject.data.map(&:to_a)).to eq([[1, 2], [3, 4], [5, 6], [nil, nil]])
+        end
+      end
+    end
+  end
+
   describe "#vectors=" do
     let(:df) do
       DaruLite::DataFrame.new({

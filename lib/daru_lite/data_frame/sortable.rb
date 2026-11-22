@@ -21,6 +21,32 @@ module DaruLite
         initialize(to_h, order: order_array)
       end
 
+      # Returns a dataframe whose rows are those found at +positions+, in that
+      # order. Only the values move: the index keeps its original order. Use
+      # #row_at to move the index labels along with their rows.
+      #
+      # @param positions [Array<Integer>] every row position, once, in the wanted order
+      # @return [DaruLite::DataFrame]
+      # @example
+      #   df = DaruLite::DataFrame.new({ a: [1, 2, 3], b: %w[x y z] })
+      #   df.reorder_rows([2, 0, 1])
+      #   # => #<DaruLite::DataFrame(3x2)>
+      #   #       a   b
+      #   #   0   3   z
+      #   #   1   1   x
+      #   #   2   2   y
+      def reorder_rows(positions)
+        raise NotImplementedError, 'Cannot reorder rows under a CategoricalIndex' if index.is_a?(CategoricalIndex)
+        raise ArgumentError, 'Invalid order' unless positions.sort == (0...nrows).to_a
+
+        dup.tap do |reordered|
+          # Vector#reorder! also reorders the vector's index: give it a cheap one to work on.
+          reordered.index = DaruLite::Index.new(nrows)
+          reordered.data.each { |vector| vector.reorder!(positions) }
+          reordered.index = index.dup
+        end
+      end
+
       # Return the dataframe with rotate vectors positions, the vector at position count is now
       # the first vector of the dataframe.
       # If only one vector in the dataframe, the dataframe is return without any change.
