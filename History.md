@@ -1,3 +1,13 @@
+# Unreleased
+* Faster `MultiIndex` lookups: `#[]`, `#pos` and `#positions_for` memoize their results, `.from_tuples` and
+  `.from_arrays` find labels through a hash instead of scanning each level, and `#to_a` and `#key` no longer rebuild
+  every level's keys on each call
+* Faster single-row reads (`DataFrame#row[]`, `#row_at`, `#each_row` and their variants), which no longer go
+  through `Vector#at`'s coercion and validation for each column
+* `Vector#category?` no longer scans the vector's data
+* Fixed `MultiIndex.from_arrays` and `.from_tuples` mapping a value to another one it is `==` but not `eql?` to,
+  e.g. `1.0` to `1`
+
 # 0.5.0
 * [Breaking change] Removed `DateTimeIndex`, the date offsets and the `DaruLite::DAYS_OF_WEEK` and
   `DaruLite::MONTH_DAYS` constants. `Index.new` given `DateTime` objects now returns a plain `Index`

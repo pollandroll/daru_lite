@@ -105,8 +105,8 @@ module DaruLite
       levels = arrays.map { |e| e.uniq.sort_by(&:to_s) }
 
       labels = arrays.each_with_index.map do |arry, level_index|
-        level = levels[level_index]
-        arry.map { |lvl| level.index(lvl) }
+        positions = levels[level_index].each_with_index.to_h
+        arry.map { |lvl| positions[lvl] }
       end
 
       MultiIndex.new labels: labels, levels: levels
@@ -233,6 +233,15 @@ module DaruLite
     # @param key [Array] a full or left-anchored partial tuple
     # @return [Array<Integer>] matching positions, in ascending order
     def positions_for(key)
+      cached = positions_cache[key]
+      return cached.dup if cached
+
+      positions = compute_positions_for(key)
+      positions_cache[cache_key_for(key)] = positions.dup.freeze
+      positions
+    end
+
+    def compute_positions_for(key)
       chosen = []
 
       key.each_with_index do |k, depth|
@@ -279,8 +288,29 @@ module DaruLite
       @levels.delete_at(layer_index)
       @labels.delete_at(layer_index)
       @name&.delete_at(layer_index)
+      reset_caches
 
       coerce_index
+    end
+
+    # Lookups are memoized because the index never changes after construction, except through
+    # #remove_layer, which resets them.
+    def positions_cache
+      @positions_cache ||= {}
+    end
+
+    def level_keys
+      @level_keys ||= @levels.map(&:keys)
+    end
+
+    def reset_caches
+      @positions_cache = nil
+      @level_keys = nil
+    end
+
+    # Freeze the stored key and its strings so a caller mutating its own key cannot corrupt the cache.
+    def cache_key_for(key)
+      key.map { |k| k.is_a?(String) && !k.frozen? ? k.dup.freeze : k }.freeze
     end
 
     def coerce_index
@@ -310,14 +340,14 @@ module DaruLite
     end
 
     private :find_all_indexes, :multi_index_from_multiple_selections, :retrieve_from_range,
-            :retrieve_from_tuples, :retrieve_from_tuple, :validate_name
+            :retrieve_from_tuples, :retrieve_from_tuple, :validate_name, :compute_positions_for,
+            :positions_cache, :level_keys, :reset_caches, :cache_key_for
 
     def key(index)
       raise ArgumentError, "Key #{index} is too large" if index >= @labels[0].size
 
-      @labels
-        .each_with_index
-        .map { |label, i| @levels[i].keys[label[index]] }
+      keys = level_keys
+      @labels.each_with_index.map { |label, i| keys[i][label[index]] }
     end
 
     def dup
@@ -371,7 +401,9 @@ module DaruLite
     end
 
     def to_a
-      (0...size).map { |e| key(e) }
+      keys = level_keys
+      columns = @labels.each_with_index.map { |label, i| label.map { |position| keys[i][position] } }
+      columns.first.zip(*columns.drop(1))
     end
 
     def values
