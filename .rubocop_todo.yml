@@ -122,7 +122,9 @@ Style/MultilineBlockChain:
 Style/OptionalBooleanParameter:
   Exclude:
     - 'lib/daru_lite/data_frame/convertible.rb'
-    - 'lib/daru_lite/maths/statistics/vector.rb'
+    - 'lib/daru_lite/maths/statistics/vector/descriptive.rb'
+    - 'lib/daru_lite/maths/statistics/vector/normalization.rb'
+    - 'lib/daru_lite/maths/statistics/vector/time_series.rb'
     - 'lib/daru_lite/vector.rb'
 
 # Offense count: 1
