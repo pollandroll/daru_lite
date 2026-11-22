@@ -253,9 +253,9 @@ module DaruLite
           #   returned as an array of three DaruLite::Vectors
           #
           def macd(fast = 12, slow = 26, signal = 9)
-            macdseries = ema(fast) - ema(slow)
+            macdseries = positional_difference(ema(fast), ema(slow))
             macdsignal = macdseries.ema(signal)
-            macdhist = macdseries - macdsignal
+            macdhist = positional_difference(macdseries, macdsignal)
             [macdseries, macdsignal, macdhist]
           end
 
@@ -329,6 +329,13 @@ module DaruLite
           end
 
           private
+
+          # Vector#- aligns both vectors on their index and sorts it, which would
+          # change the order of the observations: subtract by position instead.
+          def positional_difference(minuend, subtrahend)
+            differences = minuend.to_a.zip(subtrahend.to_a).map { |a, b| a && b && (a - b) }
+            DaruLite::Vector.new(differences, index: @index, name: @name)
+          end
 
           # Plain left-to-right addition: Array#sum compensates rounding errors,
           # which would change the results in the last decimals.

@@ -347,6 +347,10 @@ describe DaruLite::Vector do
         expect(DaruLite::Vector.new([1.0, 0.0, 1.0, 1.0], dtype: dtype).proportion).to eq(0.75)
       end
 
+      it "raises for a missing value" do
+        expect { DaruLite::Vector.new([nil, nil, 1], dtype: dtype).proportion(nil) }.to raise_error(ArgumentError)
+      end
+
       it "matches an Integer value with a Float argument" do
         expect(DaruLite::Vector.new([1, 0, 1, 1], dtype: dtype).proportion(1.0)).to eq(0.75)
       end
@@ -597,7 +601,7 @@ describe DaruLite::Vector do
       expect(vector.acvf(false)).to eq([11.0, 8.0, 5.2, 2.8, 1.0])
     end
 
-    it "calculates the biased form of a short vector" do
+    it "calculates the form dividing each lag by its number of pairs" do
       expect(vector.acvf(true, false)).to match([2.0, 1.0, be_within(1e-10).of(-1 / 3.0), -2.0, -4.0])
     end
 
@@ -860,6 +864,19 @@ describe DaruLite::Vector do
   end
 
   describe '#macd' do
+    context 'with an index that is not ascending' do
+      let(:values) { (1..12).map { |i| i * i * 1.0 } }
+      let(:vector) { DaruLite::Vector.new(values, index: (0...12).to_a.reverse) }
+
+      it 'calculates by position, like on the default index' do
+        expect(vector.macd(2, 4, 3).map(&:to_a)).to eq(DaruLite::Vector.new(values).macd(2, 4, 3).map(&:to_a))
+      end
+
+      it 'keeps the index' do
+        expect(vector.macd(2, 4, 3).map { |result| result.index.to_a }).to all(eq((0...12).to_a.reverse))
+      end
+    end
+
     context 'by default' do
       it_should_behave_like 'correct macd'
     end

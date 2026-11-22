@@ -115,6 +115,10 @@ module DaruLite
           end
 
           def proportion(value = 1)
+            if include_with_nan?(DaruLite::MISSING_VALUES, value)
+              raise ArgumentError, 'Cannot calculate the proportion of a missing value'
+            end
+
             count { |element| element == value }.quo(size - count_values(*DaruLite::MISSING_VALUES)).to_f
           end
 
