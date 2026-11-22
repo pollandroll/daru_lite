@@ -106,6 +106,25 @@ describe DaruLite::Vector do
       expect(subject).to eq(with_md1 / 2)
     end
 
+    context 'when the divisor is a NaN that is not a Float' do
+      let(:divisor) do
+        Class.new(Numeric) do
+          def zero? = false
+          def nan? = true
+        end.new
+      end
+
+      it 'returns 0.0 for each non-nil element' do
+        expect(subject.to_a).to eq([0.0, 0.0, 0.0, nil, 0.0, nil])
+      end
+    end
+
+    context 'with a category vector and a zero divisor' do
+      subject { described_class.new([1, 2, 1], type: :category).divide_or_zero(0) }
+
+      its(:to_a) { is_expected.to eq([0.0, 0.0, 0.0]) }
+    end
+
     context 'when the divisor is a Vector' do
       let(:divisor) { dv1 }
 

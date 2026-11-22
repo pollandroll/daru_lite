@@ -18,7 +18,9 @@ module DaruLite
         end
         ensure_unique_labels!(names)
 
-        self.vectors = multi_index ? DaruLite::MultiIndex.from_tuples(names) : DaruLite::Index.new(names)
+        symbolized = multi_index ? DaruLite::MultiIndex.from_tuples(names) : DaruLite::Index.new(names)
+        symbolized.name = vectors.name if vectors.name
+        self.vectors = symbolized
 
         self
       end
@@ -30,13 +32,16 @@ module DaruLite
       # and so is each blank vector by the next one: give blank vectors
       # distinct names first when several must be kept.
       #
-      # @param label [Object] the name given to blank vectors
+      # @param label [Object] the name given to blank vectors, not blank itself
+      # @raise [ArgumentError] when +label+ is blank
       # @return [DaruLite::DataFrame] self
       # @example
       #   df = DaruLite::DataFrame.new({ nil => [1, 2], b: [3, 4] })
       #   df.rename_blank_vectors!(:none)
       #   df.vectors.to_a #=> [:none, :b]
       def rename_blank_vectors!(label)
+        raise ArgumentError, 'label must not be blank' if blank_label?(label)
+
         vectors.to_a.each { |name| rename_vectors(name => label) if blank_label?(name) }
 
         self
@@ -51,24 +56,28 @@ module DaruLite
       # in the numbering. The index becomes a plain DaruLite::Index; nothing
       # changes when no label is blank.
       #
-      # @param label [String] the label given to blank rows
-      # @raise [ArgumentError] when the other labels are not unique, as a
-      #   CategoricalIndex allows
+      # @param label [String] the label given to blank rows, not blank itself
+      # @raise [ArgumentError] when +label+ is blank, or when the other labels
+      #   are not unique, as a CategoricalIndex allows
       # @return [DaruLite::DataFrame] self
       # @example
       #   df = DaruLite::DataFrame.new({ a: [1, 2, 3] }, index: [nil, '', 'x'])
       #   df.rename_blank_rows!('none')
       #   df.index.to_a #=> ['none', 'none (1)', 'x']
       def rename_blank_rows!(label)
+        raise ArgumentError, 'label must not be blank' if blank_label?(label)
+
         labels = index.to_a
         return self if labels.none? { |row_label| blank_label?(row_label) }
 
-        kept, renamed = labels.partition { |row_label| !blank_label?(row_label) && row_label != label }
-        new_labels = numbered_labels(label, renamed.size, kept).each
-        labels = labels.map { |row_label| kept.include?(row_label) ? row_label : new_labels.next }
+        renamed, kept = labels.partition { |row_label| blank_label?(row_label) || row_label == label }
+        new_labels = numbered_labels(label, renamed.size, kept.to_set).each
+        labels = labels.map do |row_label|
+          blank_label?(row_label) || row_label == label ? new_labels.next : row_label
+        end
         ensure_unique_labels!(labels)
 
-        self.index = DaruLite::Index.new(labels)
+        self.index = DaruLite::Index.new(labels, name: index.name)
 
         self
       end

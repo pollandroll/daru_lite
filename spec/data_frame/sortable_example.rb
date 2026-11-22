@@ -63,6 +63,27 @@ shared_examples_for 'a sortable DataFrame' do
       expect(df[:a].to_a).to eq([1, 2, 3])
     end
 
+    it 'does not share its index with the receiver' do
+      expect(subject.index).not_to equal(df.index)
+    end
+
+    context 'with a category vector' do
+      let(:df) do
+        DaruLite::DataFrame.new(
+          [DaruLite::Vector.new(%w[x y x], type: :category), DaruLite::Vector.new([1, 2, 3])],
+          order: %i[a b], index:
+        )
+      end
+
+      it 'keeps the vector a category' do
+        expect(subject[:a].type).to eq(:category)
+      end
+
+      it 'moves its values' do
+        expect(subject[:a].to_a).to eq(%w[x x y])
+      end
+    end
+
     context 'with a single row' do
       let(:df) { DaruLite::DataFrame.new({ a: [1], b: %w[x] }, index: %i[one]) }
       let(:positions) { [0] }

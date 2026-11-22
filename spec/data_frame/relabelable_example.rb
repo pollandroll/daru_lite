@@ -26,6 +26,12 @@ shared_examples_for 'a relabelable DataFrame' do
       its(:vectors) { is_expected.to eq(DaruLite::MultiIndex.from_tuples([%i[a x], %i[b y]])) }
     end
 
+    context 'when the vectors index is named' do
+      before { df.vectors.name = 'columns' }
+
+      its('vectors.name') { is_expected.to eq('columns') }
+    end
+
     context 'with vector names that are not Strings' do
       let(:df) { DaruLite::DataFrame.new({ 0 => [1, 2], nil => [3, 4], 'c' => [5, 6] }) }
 
@@ -64,6 +70,14 @@ shared_examples_for 'a relabelable DataFrame' do
       end
     end
 
+    ['', nil].each do |blank|
+      context "when the label is #{blank.inspect}" do
+        subject { df.rename_blank_vectors!(blank) }
+
+        it { expect { subject }.to raise_error(ArgumentError, 'label must not be blank') }
+      end
+    end
+
     context 'without blank vector names' do
       let(:blank_name) { :a }
 
@@ -96,6 +110,20 @@ shared_examples_for 'a relabelable DataFrame' do
       let(:index) { ['none', nil, 'x'] }
 
       its('index.to_a') { is_expected.to eq(['none', 'none (1)', 'x']) }
+    end
+
+    ['', nil].each do |blank|
+      context "when the label is #{blank.inspect}" do
+        subject { df.rename_blank_rows!(blank) }
+
+        it { expect { subject }.to raise_error(ArgumentError, 'label must not be blank') }
+      end
+    end
+
+    context 'when the index is named' do
+      let(:index) { DaruLite::Index.new([nil, 'x', 'y'], name: 'rows') }
+
+      its('index.name') { is_expected.to eq('rows') }
     end
 
     context 'when a numbered label is already taken' do
