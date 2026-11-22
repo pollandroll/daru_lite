@@ -344,7 +344,9 @@ module DaruLite
     #   dv.category?
     #   # => true
     def category?
-      type == :category
+      # Only DaruLite::Category#initialize_category sets this; reading it directly avoids the
+      # data scan #type can trigger on non-category vectors.
+      @type == :category
     end
 
     # Return an Array with the data splitted by a separator.

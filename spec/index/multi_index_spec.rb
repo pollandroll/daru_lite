@@ -583,6 +583,44 @@ describe DaruLite::MultiIndex do
     it "raises IndexError (not NoMethodError) for a key longer than the levels" do
       expect { idx.positions_for([:b, :one, :bar, :extra]) }.to raise_error(IndexError)
     end
+
+    it "returns the same positions on repeated lookups" do
+      expect(Array.new(3) { idx.positions_for([:b, :two]) }).to all(eq([1, 2]))
+    end
+
+    it "is not affected by a caller mutating a returned array" do
+      idx.positions_for([:b, :one]) << 99
+
+      expect(idx.positions_for([:b, :one])).to eq([0, 3])
+    end
+
+    it "is not affected by a caller mutating the key it looked up" do
+      idx = described_class.from_tuples([%w[a x], %w[b y]])
+      key = ['a']
+      idx.positions_for(key)
+      key[0] << 'zz'
+
+      expect(idx.positions_for(['a'])).to eq([0])
+      expect { idx.positions_for(['azz']) }.to raise_error(IndexError)
+    end
+
+    it "reflects a layer removed after a lookup" do
+      expect(idx.positions_for([:b, :one])).to eq([0, 3])
+
+      idx.remove_layer(0)
+
+      expect(idx.positions_for([:one])).to eq([0, 3])
+      expect { idx.positions_for([:b]) }.to raise_error(IndexError)
+      expect(idx.to_a).to eq([[:one, :bar], [:two, :bar], [:two, :baz], [:one, :foo]])
+    end
+  end
+
+  context ".from_arrays" do
+    it "keeps values that are == but not eql? apart" do
+      idx = described_class.from_arrays([[1, 1.0], [:a, :b]])
+
+      expect(idx.to_a.map { |tuple| tuple.first.class }).to eq([Integer, Float])
+    end
   end
 
   context "#subset" do

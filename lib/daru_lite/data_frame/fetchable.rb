@@ -270,6 +270,8 @@ module DaruLite
         raise unless keys.is_a?(Array)
 
         if by_position
+          return get_row_at(keys.first) if keys.size == 1 && keys.first.is_a?(Integer)
+
           pos = keys
           @data.map { |vector| vector.at(*pos) }
         else
@@ -279,6 +281,12 @@ module DaruLite
           indexes = keys
           @data.map { |vec| vec[*indexes] }
         end
+      end
+
+      # Fast path for a single row: skip Vector#at's per-call coercion and validation, which callers
+      # have already done. Category vectors store codes, so they still go through #at to decode them.
+      def get_row_at(position)
+        @data.map { |vector| vector.category? ? vector.at(position) : vector.data[position] }
       end
 
       # coerce ranges, integers and array in appropriate ways

@@ -334,6 +334,49 @@ shared_examples_for 'a fetchable DataFrame' do
     end
   end
 
+  describe "#row_at" do
+    let(:df) do
+      DaruLite::DataFrame.new(
+        {
+          a: [1, 2, 3],
+          b: DaruLite::Vector.new(%w[x y x], type: :category),
+          c: [nil, 22, 33]
+        },
+        order: %i[a b c],
+        index: %i[r1 r2 r3]
+      )
+    end
+
+    context "single position" do
+      subject { df.row_at(1) }
+
+      it { is_expected.to eq DaruLite::Vector.new([2, 'y', 22], index: %i[a b c]) }
+      its(:name) { is_expected.to eq :r2 }
+    end
+
+    context "single position on a category vector" do
+      subject { df.row_at(2)[:b] }
+
+      it { is_expected.to eq 'x' }
+    end
+
+    context "single negative position" do
+      subject { df.row_at(-1) }
+
+      it { is_expected.to eq DaruLite::Vector.new([3, 'x', 33], index: %i[a b c]) }
+    end
+
+    context "single invalid position" do
+      it { expect { df.row_at(3) }.to raise_error IndexError }
+    end
+
+    context "row accessed by label" do
+      subject { df.row[:r1] }
+
+      it { is_expected.to eq DaruLite::Vector.new([1, 'x', nil], index: %i[a b c]) }
+    end
+  end
+
   context "#first" do
     it 'works' do
       expect(df.first(2)).to eq(
