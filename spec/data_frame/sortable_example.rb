@@ -110,6 +110,14 @@ shared_examples_for 'a sortable DataFrame' do
       it 'moves the rows to the given positions and keeps the index order' do
         expect(subject).to eq(DaruLite::DataFrame.new({ a: [3, 1, 2], b: %w[z x y] }, index:))
       end
+
+      it 'does not rebuild the index for each vector' do
+        df
+        allow(DaruLite::MultiIndex).to receive(:from_tuples).and_call_original
+        subject
+
+        expect(DaruLite::MultiIndex).not_to have_received(:from_tuples)
+      end
     end
 
     context 'with a CategoricalIndex' do

@@ -18,9 +18,11 @@ module DaruLite
           binary_op :/, other
         end
 
-        # Divides by +divisor+, or returns 0.0 for every value when +divisor+
-        # is zero, NaN or nil, where #/ would raise or return Infinity or NaN.
-        # Missing values (nil and NaN) stay as they are in both cases.
+        # Divides by +divisor+, or returns 0.0 (a Float, whatever the values)
+        # for every number when +divisor+ is zero, NaN or nil, where #/ would
+        # raise or return Infinity or NaN. Missing values (nil and NaN) stay as
+        # they are in both cases; with such a divisor, so does anything that
+        # is not a number.
         #
         # The division itself is #/: an Integer vector divided by an Integer
         # truncates. Pass a Float divisor to get ratios.
@@ -39,7 +41,7 @@ module DaruLite
           end
           return self / divisor unless divisor.nil? || divisor.zero? || not_a_number?(divisor)
 
-          zeroed = map { |value| value.nil? || not_a_number?(value) ? value : 0.0 }
+          zeroed = map { |value| value.is_a?(Numeric) && !not_a_number?(value) ? 0.0 : value }
           DaruLite::Vector.new(zeroed, name: @name, index: @index)
         end
 

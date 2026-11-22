@@ -28,23 +28,25 @@ module DaruLite
       # Renames, in place, every vector whose name is blank (nil, false, empty
       # or made of whitespace only).
       #
-      # As with #rename_vectors, a vector already named +label+ is overwritten,
-      # and so is each blank vector by the next one: give blank vectors
-      # distinct names first when several must be kept.
+      # The first one is named +label+ and the following ones "label (1)",
+      # "label (2)"... skipping the names already taken by another vector, so
+      # that no vector is lost. Vectors that are not blank keep their name and
+      # every vector keeps its position.
       #
-      # @param label [Object] the name given to blank vectors, not blank itself
+      # @param label [String, Symbol] the name given to blank vectors, not blank itself
       # @raise [ArgumentError] when +label+ is blank
+      # @raise [NotImplementedError] with MultiIndex vectors
       # @return [DaruLite::DataFrame] self
       # @example
-      #   df = DaruLite::DataFrame.new({ nil => [1, 2], b: [3, 4] })
+      #   df = DaruLite::DataFrame.new({ nil => [1, 2], b: [3, 4], '' => [5, 6] })
       #   df.rename_blank_vectors!(:none)
-      #   df.vectors.to_a #=> [:none, :b]
+      #   df.vectors.to_a #=> [:none, :b, :"none (1)"]
       def rename_blank_vectors!(label)
         raise ArgumentError, 'label must not be blank' if blank_label?(label)
+        raise NotImplementedError, 'Cannot rename blank vectors under a MultiIndex' if vectors.is_a?(MultiIndex)
 
-        vectors_name = vectors.name
-        vectors.to_a.each { |name| rename_vectors(name => label) if blank_label?(name) }
-        vectors.name = vectors_name if vectors_name
+        names = replace_blank_labels(vectors.to_a, label)
+        self.vectors = DaruLite::Index.new(names, name: vectors.name) unless names == vectors.to_a
 
         self
       end
@@ -69,12 +71,9 @@ module DaruLite
       def rename_blank_rows!(label)
         raise ArgumentError, 'label must not be blank' if blank_label?(label)
 
-        labels = index.to_a
-        return self if labels.none? { |row_label| blank_label?(row_label) }
+        labels = replace_blank_labels(index.to_a, label)
+        return self if labels == index.to_a
 
-        renamed, kept = labels.partition { |row_label| blank_label?(row_label) }
-        new_labels = numbered_labels(label, renamed.size, kept.to_set).each
-        labels = labels.map { |row_label| blank_label?(row_label) ? new_labels.next : row_label }
         ensure_unique_labels!(labels)
 
         self.index = DaruLite::Index.new(labels, name: index.name)
@@ -84,10 +83,21 @@ module DaruLite
 
       private
 
-      # +label+, then "label (1)", "label (2)"... leaving out those in +taken+
+      def replace_blank_labels(labels, label)
+        blank, kept = labels.partition { |candidate| blank_label?(candidate) }
+        replacements = numbered_labels(label, blank.size, kept.to_set).each
+
+        labels.map { |candidate| blank_label?(candidate) ? replacements.next : candidate }
+      end
+
+      # +label+, then "label (1)", "label (2)"... leaving out those in +taken+.
+      # A Symbol label gives Symbols.
       def numbered_labels(label, size, taken)
         candidates = Enumerator.produce(0) { |count| count + 1 }.lazy.map do |count|
-          count.zero? ? label : "#{label} (#{count})"
+          next label if count.zero?
+
+          numbered = "#{label} (#{count})"
+          label.is_a?(Symbol) ? numbered.to_sym : numbered
         end
 
         candidates.reject { |candidate| taken.include?(candidate) }.first(size)
@@ -106,7 +116,7 @@ module DaruLite
 
       def blank_label?(label)
         return true if label.nil? || label == false
-        return label.strip.empty? if label.is_a?(String)
+        return label.to_s.strip.empty? if label.is_a?(String) || label.is_a?(Symbol)
 
         label.respond_to?(:empty?) && label.empty?
       end

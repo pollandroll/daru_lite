@@ -126,6 +126,12 @@ describe DaruLite::Vector do
       its(:last) { is_expected.to be_nan }
     end
 
+    context 'with a value that is not a number and a zero divisor' do
+      subject { described_class.new(['a', 1]).divide_or_zero(0) }
+
+      its(:to_a) { is_expected.to eq(['a', 0.0]) }
+    end
+
     context 'with a category vector and a zero divisor' do
       subject { described_class.new([1, 2, 1], type: :category).divide_or_zero(0) }
 

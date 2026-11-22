@@ -40,6 +40,8 @@ module DaruLite
         raise ArgumentError, 'Invalid order' unless positions.sort == (0...nrows).to_a
 
         dup.tap do |reordered|
+          # Vector#reorder! also reorders the vector's index: give it a cheap one to work on.
+          reordered.index = DaruLite::Index.new(nrows)
           reordered.data.each { |vector| vector.reorder!(positions) }
           reordered.index = index.dup
         end

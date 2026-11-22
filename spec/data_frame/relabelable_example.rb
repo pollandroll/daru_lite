@@ -62,7 +62,7 @@ shared_examples_for 'a relabelable DataFrame' do
       expect(subject[:none].to_a).to eq([1, 2])
     end
 
-    ['', '  ', false].each do |name|
+    ['', '  ', :'  ', false].each do |name|
       context "with a vector named #{name.inspect}" do
         let(:blank_name) { name }
 
@@ -90,12 +90,40 @@ shared_examples_for 'a relabelable DataFrame' do
       its('vectors.to_a') { is_expected.to eq(%i[a b]) }
     end
 
-    context 'when a vector already has the label' do
-      let(:df) { DaruLite::DataFrame.new({ none: [1, 2], nil => [3, 4] }) }
+    context 'with several blank vectors' do
+      let(:df) { DaruLite::DataFrame.new({ nil => [1, 2], b: [3, 4], '' => [5, 6] }) }
 
-      it 'overwrites it with the blank vector' do
+      its('vectors.to_a') { is_expected.to eq(%i[none b] + [:'none (1)']) }
+
+      it 'keeps the data of each renamed vector' do
+        expect(subject[:'none (1)'].to_a).to eq([5, 6])
+      end
+    end
+
+    context 'when a vector already has the label' do
+      let(:df) { DaruLite::DataFrame.new({ nil => [1, 2], none: [3, 4] }) }
+
+      its('vectors.to_a') { is_expected.to eq([:'none (1)', :none]) }
+
+      it 'keeps that vector under the label' do
         expect(subject[:none].to_a).to eq([3, 4])
       end
+    end
+
+    context 'with a String label' do
+      subject { df.rename_blank_vectors!('none') }
+
+      let(:df) { DaruLite::DataFrame.new({ nil => [1, 2], '' => [3, 4] }) }
+
+      its('vectors.to_a') { is_expected.to eq(['none', 'none (1)']) }
+    end
+
+    context 'with MultiIndex vectors' do
+      let(:df) do
+        DaruLite::DataFrame.new([[1, 2], [3, 4]], order: DaruLite::MultiIndex.from_tuples([['', :x], [:b, :y]]))
+      end
+
+      it { expect { subject }.to raise_error(NotImplementedError) }
     end
   end
 
