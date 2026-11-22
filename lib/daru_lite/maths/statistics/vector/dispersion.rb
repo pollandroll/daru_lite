@@ -67,7 +67,7 @@ module DaruLite
               @data.skew
             else
               m ||= mean
-              th  = @data.inject(0) { |memo, val| memo + ((val - m)**3) }
+              th  = reject_values(*DaruLite::MISSING_VALUES).data.inject(0) { |memo, val| memo + ((val - m)**3) }
               th.quo((size - indexes(*DaruLite::MISSING_VALUES).size) * (standard_deviation_sample(m)**3))
             end
           end
@@ -77,7 +77,7 @@ module DaruLite
               @data.kurtosis
             else
               m ||= mean
-              fo  = @data.inject(0) { |a, x| a + ((x - m)**4) }
+              fo  = reject_values(*DaruLite::MISSING_VALUES).data.inject(0) { |a, x| a + ((x - m)**4) }
               fo.quo((size - indexes(*DaruLite::MISSING_VALUES).size) * (standard_deviation_sample(m)**4)) - 3
             end
           end

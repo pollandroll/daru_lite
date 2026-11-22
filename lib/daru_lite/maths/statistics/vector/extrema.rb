@@ -116,8 +116,7 @@ module DaruLite
           #   #=> [:j, :d]
           def index_of_max(size = nil, &)
             vals = max(size, &)
-            dv   = reject_values(*DaruLite::MISSING_VALUES)
-            vals.is_a?(Array) ? vals.map { |x| dv.index_of(x) } : dv.index_of(vals)
+            indexes_of_values(vals)
           end
 
           # Returns the index of the maximum value(s) present in the vector, with a compulsory
@@ -139,8 +138,7 @@ module DaruLite
           #   #=> [:j, :d]
           def index_of_max_by(size = nil, &)
             vals = max_by(size, &)
-            dv   = reject_values(*DaruLite::MISSING_VALUES)
-            vals.is_a?(Array) ? vals.map { |x| dv.index_of(x) } : dv.index_of(vals)
+            indexes_of_values(vals)
           end
 
           # Returns the index of the minimum value(s) present in the vector, with an optional
@@ -165,8 +163,7 @@ module DaruLite
           #   #=> [:t, :d]
           def index_of_min(size = nil, &)
             vals = min(size, &)
-            dv   = reject_values(*DaruLite::MISSING_VALUES)
-            vals.is_a?(Array) ? vals.map { |x| dv.index_of(x) } : dv.index_of(vals)
+            indexes_of_values(vals)
           end
 
           # Returns the index of the minimum value(s) present in the vector, with a compulsory
@@ -188,8 +185,7 @@ module DaruLite
           #   #=> [:t, :d]
           def index_of_min_by(size = nil, &)
             vals = min_by(size, &)
-            dv   = reject_values(*DaruLite::MISSING_VALUES)
-            vals.is_a?(Array) ? vals.map { |x| dv.index_of(x) } : dv.index_of(vals)
+            indexes_of_values(vals)
           end
 
           # Return the maximum element present in the Vector, as a Vector.
@@ -197,6 +193,22 @@ module DaruLite
           def max_index
             max_value = @data.max
             DaruLite::Vector.new({ index_of(max_value) => max_value }, name: @name, dtype: @dtype)
+          end
+
+          private
+
+          # Map each value to the index of a distinct non-missing element, so tied
+          # values get different indexes. An element of the same class is preferred,
+          # so that 1 and 1.0 each get their own index.
+          def indexes_of_values(vals)
+            dv = reject_values(*DaruLite::MISSING_VALUES)
+            return dv.index_of(vals) unless vals.is_a?(Array)
+
+            remaining = dv.index.to_a.zip(dv.to_a)
+            vals.map do |val|
+              position = remaining.index { |_, v| v.eql?(val) } || remaining.index { |_, v| v == val }
+              remaining.delete_at(position).first
+            end
           end
         end
       end

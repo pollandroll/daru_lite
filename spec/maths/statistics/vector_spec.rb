@@ -58,6 +58,14 @@ describe DaruLite::Vector do
       it "returns N index_of_max values, sorted by comparitive block input" do
         expect(dv.index_of_max(2) {|a,b| a.size <=> b.size}).to eq([:j, :d])
       end
+      it "returns distinct indexes when the N max values tie" do
+        tied = DaruLite::Vector.new([5, nil, 1, 5], index: %i[a b c d])
+        expect(tied.index_of_max(2)).to eq(%i[a d])
+      end
+      it "labels an Integer and a Float that tie with their own index" do
+        tied = DaruLite::Vector.new([1, 1.0], index: %i[a b])
+        expect(tied.index_of_max(2)).to eq(%i[b a])
+      end
     end
 
     context "#index_of_max_by" do
@@ -72,6 +80,10 @@ describe DaruLite::Vector do
       end
       it "returns N index_of_max values, sorted by object block input" do
         expect(dv.index_of_max_by(2) {|x| x.size }).to eq([:j, :d])
+      end
+      it "returns distinct indexes when the N max values tie" do
+        tied = DaruLite::Vector.new([5, nil, 1, 5], index: %i[a b c d])
+        expect(tied.index_of_max_by(2) { |x| x }).to eq(%i[a d])
       end
     end
 
@@ -118,6 +130,10 @@ describe DaruLite::Vector do
       it "returns N index of min values, sorted by comparitive block input" do
         expect(dv.index_of_min(2) {|a,b| a.size <=> b.size}).to eq([:t, :d])
       end
+      it "returns distinct indexes when the N min values tie" do
+        tied = DaruLite::Vector.new([1, nil, 5, 1], index: %i[a b c d])
+        expect(tied.index_of_min(2)).to eq(%i[a d])
+      end
     end
 
     context "#index_of_min_by" do
@@ -132,6 +148,10 @@ describe DaruLite::Vector do
       end
       it "returns N index of min values, sorted by object block input" do
         expect(dv.index_of_min_by(2) {|x| x.size }).to eq([:t, :d])
+      end
+      it "returns distinct indexes when the N min values tie" do
+        tied = DaruLite::Vector.new([1, nil, 5, 1], index: %i[a b c d])
+        expect(tied.index_of_min_by(2) { |x| x }).to eq(%i[a d])
       end
     end
 
@@ -186,11 +206,20 @@ describe DaruLite::Vector do
       it "calculates sum of squared deviation" do
         expect(@dv.sum_of_squared_deviation).to eq(676069.6)
       end
+
+      it "ignores nils" do
+        expect(DaruLite::Vector.new([1, 2, nil, 4, 8]).sum_of_squared_deviation).to eq(28.75)
+      end
     end
 
     context "#skew" do
       it "calculates skewness" do
         @dv.skew
+      end
+
+      it "ignores nils" do
+        with_nils = DaruLite::Vector.new([1, 2, nil, 4, 8])
+        expect(with_nils.skew).to eq(DaruLite::Vector.new([1, 2, 4, 8]).skew)
       end
     end
 
@@ -250,6 +279,11 @@ describe DaruLite::Vector do
       it "calculates kurtosis" do
         @dv.kurtosis
       end
+
+      it "ignores nils" do
+        with_nils = DaruLite::Vector.new([1, 2, nil, 4, 8])
+        expect(with_nils.kurtosis).to eq(DaruLite::Vector.new([1, 2, 4, 8]).kurtosis)
+      end
     end
 
     context "#count" do
@@ -308,6 +342,26 @@ describe DaruLite::Vector do
       it "calculates proportion" do
         expect(@dv.proportion(1)).to eq(0.1)
       end
+
+      it "returns 0.0 for a value that does not occur in the vector" do
+        expect(DaruLite::Vector.new([2, 3], dtype: dtype).proportion(1)).to eq(0.0)
+      end
+
+      it "matches a Float value with an Integer argument" do
+        expect(DaruLite::Vector.new([1.0, 0.0, 1.0, 1.0], dtype: dtype).proportion).to eq(0.75)
+      end
+
+      it "raises for a missing value" do
+        expect { DaruLite::Vector.new([nil, nil, 1], dtype: dtype).proportion(nil) }.to raise_error(ArgumentError)
+      end
+
+      it "raises for a vector without any non-missing value" do
+        expect { DaruLite::Vector.new([nil, nil], dtype: dtype).proportion }.to raise_error(ArgumentError, /non-missing/)
+      end
+
+      it "matches an Integer value with a Float argument" do
+        expect(DaruLite::Vector.new([1, 0, 1, 1], dtype: dtype).proportion(1.0)).to eq(0.75)
+      end
     end
 
     context "#proportions" do
@@ -356,6 +410,21 @@ describe DaruLite::Vector do
       expect(values.percentil(50, :linear)).to eq(109)
       expect(values.percentil(75, :linear)).to eq(115)
       expect(values.percentil(100, :linear)).to eq(118)
+    end
+
+    it "returns the largest value for the 100th midpoint percentile" do
+      values = DaruLite::Vector.new [102, 104, 105, nil, 107]
+      expect(values.percentile(100)).to eq(107)
+    end
+
+    it "raises for a midpoint percentile above 100" do
+      values = DaruLite::Vector.new [102, 104, 105, 107]
+      expect { values.percentile(125) }.to raise_error(ArgumentError, /between 0 and 100/)
+    end
+
+    it "raises for a negative midpoint percentile" do
+      values = DaruLite::Vector.new [102, 104, 105, 107]
+      expect { values.percentile(-25) }.to raise_error(ArgumentError, /between 0 and 100/)
     end
   end
 
@@ -539,6 +608,26 @@ describe DaruLite::Vector do
     end
   end
 
+  context "#acvf" do
+    let(:vector) { DaruLite::Vector.new([1, 2, 3, 4, 5]) }
+
+    it "calculates autocovariances of a short vector" do
+      expect(vector.acvf).to eq([2.0, 0.8, -0.2, -0.8, -0.8])
+    end
+
+    it "does not demean the series when demean is false" do
+      expect(vector.acvf(false)).to eq([11.0, 8.0, 5.2, 2.8, 1.0])
+    end
+
+    it "calculates the form dividing each lag by its number of pairs" do
+      expect(vector.acvf(true, false)).to match([2.0, 1.0, be_within(1e-10).of(-1 / 3.0), -2.0, -4.0])
+    end
+
+    it "returns nil for a lag without any pair of observations" do
+      expect(DaruLite::Vector.new([1, 2, 3, 4, nil]).acvf).to eq([1.0, 0.25, -0.3, -0.45, nil])
+    end
+  end
+
   context "#percent_change" do
     it "calculates percent change" do
       vector = DaruLite::Vector.new([4,6,6,8,10],index: ['a','f','t','i','k'])
@@ -656,6 +745,30 @@ describe DaruLite::Vector do
       expect(ema_w[-5]) .to be_within(0.00001).of(17.33219)
       expect(ema_w[-10]).to be_within(0.00001).of(17.55810)
     end
+
+    it "returns nils for an all-nil vector" do
+      expect(DaruLite::Vector.new([nil] * 5).ema(2).to_a).to eq([nil] * 5)
+    end
+
+    it "returns nils for a vector shorter than the loopback length" do
+      expect(DaruLite::Vector.new([1, 2, 3]).ema.to_a).to eq([nil] * 3)
+    end
+
+    it "ignores a nil inside the first window" do
+      expect(DaruLite::Vector.new([1, nil, 3, 5]).ema(2).to_a.first(2)).to eq([nil, 1.0])
+    end
+
+    it "reads the observations by position, whatever the index" do
+      vector = DaruLite::Vector.new([1, 2, 3, 4, 5], index: [4, 3, 2, 1, 0])
+      expect(vector.ema(2).to_a).to eq([nil, 1.5, 2.5, 3.5, 4.5])
+    end
+
+    it "skips a nil that follows the first non-nil value" do
+      result = DaruLite::Vector.new([1, 2, 3, nil, 5]).ema(2)
+      without_nil = DaruLite::Vector.new([1, 2, 3, 5]).ema(2)
+      expect(result[3]).to be_nil
+      expect(result[4]).to be_within(1e-10).of(without_nil[3])
+    end
   end
 
   context "#emv" do
@@ -680,6 +793,30 @@ describe DaruLite::Vector do
       expect(emv_w[-1]) .to be_within(0.00001).of(0.20318)
       expect(emv_w[-5]) .to be_within(0.00001).of(0.11319)
       expect(emv_w[-10]).to be_within(0.00001).of(0.04289)
+    end
+
+    it "returns nils for an all-nil vector" do
+      expect(DaruLite::Vector.new([nil] * 5).emv(2).to_a).to eq([nil] * 5)
+    end
+
+    it "returns nils for a vector shorter than the loopback length" do
+      expect(DaruLite::Vector.new([1, 2, 3]).emv(5).to_a).to eq([nil] * 3)
+    end
+
+    it "ignores a nil inside the first window" do
+      expect(DaruLite::Vector.new([1, nil, 3, 5]).emv(2).to_a.first(2)).to eq([nil, 0.0])
+    end
+
+    it "reads the observations by position, whatever the index" do
+      vector = DaruLite::Vector.new([1, 2, 3, 4, 5], index: [4, 3, 2, 1, 0])
+      expect(vector.emv(2).to_a).to eq(DaruLite::Vector.new([1, 2, 3, 4, 5]).emv(2).to_a)
+    end
+
+    it "skips a nil that follows the first non-nil value" do
+      result = DaruLite::Vector.new([1, 2, 3, nil, 5]).emv(2)
+      without_nil = DaruLite::Vector.new([1, 2, 3, 5]).emv(2)
+      expect(result[3]).to be_nil
+      expect(result[4]).to be_within(1e-10).of(without_nil[3])
     end
   end
 
@@ -706,6 +843,21 @@ describe DaruLite::Vector do
       expect(emsd_w[-5]) .to be_within(0.00001).of(0.33644)
       expect(emsd_w[-10]).to be_within(0.00001).of(0.20710)
     end
+
+    it "returns nils for an all-nil vector" do
+      expect(DaruLite::Vector.new([nil] * 5).emsd(2).to_a).to eq([nil] * 5)
+    end
+
+    it "returns nils for a vector shorter than the loopback length" do
+      expect(DaruLite::Vector.new([1, 2, 3]).emsd(5).to_a).to eq([nil] * 3)
+    end
+
+    it "skips a nil that follows the first non-nil value" do
+      result = DaruLite::Vector.new([1, 2, 3, nil, 5]).emsd(2)
+      without_nil = DaruLite::Vector.new([1, 2, 3, 5]).emsd(2)
+      expect(result[3]).to be_nil
+      expect(result[4]).to be_within(1e-10).of(without_nil[3])
+    end
   end
 
   RSpec.shared_examples 'correct macd' do |*args|
@@ -730,6 +882,19 @@ describe DaruLite::Vector do
   end
 
   describe '#macd' do
+    context 'with an index that is not ascending' do
+      let(:values) { (1..12).map { |i| i * i * 1.0 } }
+      let(:vector) { DaruLite::Vector.new(values, index: (0...12).to_a.reverse) }
+
+      it 'calculates by position, like on the default index' do
+        expect(vector.macd(2, 4, 3).map(&:to_a)).to eq(DaruLite::Vector.new(values).macd(2, 4, 3).map(&:to_a))
+      end
+
+      it 'keeps the index' do
+        expect(vector.macd(2, 4, 3).map { |result| result.index.to_a }).to all(eq((0...12).to_a.reverse))
+      end
+    end
+
     context 'by default' do
       it_should_behave_like 'correct macd'
     end
