@@ -63,6 +63,14 @@ shared_examples_for 'a sortable DataFrame' do
       expect(df[:a].to_a).to eq([1, 2, 3])
     end
 
+    context 'with a single row' do
+      let(:df) { DaruLite::DataFrame.new({ a: [1], b: %w[x] }, index: %i[one]) }
+      let(:positions) { [0] }
+
+      it { is_expected.to eq(df) }
+      it { is_expected.not_to equal(df) }
+    end
+
     context 'when a position is missing' do
       let(:positions) { [2, 0] }
 

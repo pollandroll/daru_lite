@@ -106,7 +106,13 @@ describe DaruLite::Vector do
       expect(subject).to eq(with_md1 / 2)
     end
 
-    [0, 0.0, nil].each do |zero|
+    context 'when the divisor is a Vector' do
+      let(:divisor) { dv1 }
+
+      it { expect { subject }.to raise_error(ArgumentError, 'divisor must be Numeric or nil, not DaruLite::Vector') }
+    end
+
+    [0, 0.0, Float::NAN, nil].each do |zero|
       context "when the divisor is #{zero.inspect}" do
         let(:divisor) { zero }
 

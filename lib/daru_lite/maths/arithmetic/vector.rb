@@ -19,16 +19,21 @@ module DaruLite
         end
 
         # Divides by +divisor+, or returns 0.0 for every non-nil value when
-        # +divisor+ is zero or nil, where #/ would raise or return Infinity or NaN.
+        # +divisor+ is zero, NaN or nil, where #/ would raise or return
+        # Infinity or NaN.
         #
-        # @param divisor [Numeric, nil]
+        # @param divisor [Numeric, nil] a scalar: unlike #/, a Vector is not accepted
+        # @raise [ArgumentError] when +divisor+ is neither Numeric nor nil
         # @return [DaruLite::Vector]
         # @example
         #   vector = DaruLite::Vector.new([1, nil, 3])
         #   vector.divide_or_zero(2).to_a #=> [0, nil, 1]
         #   vector.divide_or_zero(0).to_a #=> [0.0, nil, 0.0]
         def divide_or_zero(divisor)
-          return self / divisor unless divisor.to_f.zero?
+          unless divisor.nil? || divisor.is_a?(Numeric)
+            raise ArgumentError, "divisor must be Numeric or nil, not #{divisor.class}"
+          end
+          return self / divisor unless divisor.nil? || divisor.zero? || (divisor.is_a?(Float) && divisor.nan?)
 
           recode { |value| value.nil? ? nil : 0.0 }
         end

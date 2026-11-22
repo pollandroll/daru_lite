@@ -25,6 +25,22 @@ shared_examples_for 'a relabelable DataFrame' do
 
       its(:vectors) { is_expected.to eq(DaruLite::MultiIndex.from_tuples([%i[a x], %i[b y]])) }
     end
+
+    context 'with vector names that are not Strings' do
+      let(:df) { DaruLite::DataFrame.new({ 0 => [1, 2], nil => [3, 4], 'c' => [5, 6] }) }
+
+      its('vectors.to_a') { is_expected.to eq([0, nil, :c]) }
+    end
+
+    context 'when two vectors would get the same name' do
+      let(:df) { DaruLite::DataFrame.new({ 'a' => [1, 2], a: [3, 4] }) }
+
+      it { expect { subject }.to raise_error(ArgumentError, 'Labels must be unique, got duplicates: :a') }
+
+      it 'leaves the vectors untouched' do
+        expect { subject rescue ArgumentError }.not_to(change { df.vectors.to_a })
+      end
+    end
   end
 
   describe '#rename_blank_vectors!' do
@@ -80,6 +96,22 @@ shared_examples_for 'a relabelable DataFrame' do
       let(:index) { ['none', nil, 'x'] }
 
       its('index.to_a') { is_expected.to eq(['none', 'none (1)', 'x']) }
+    end
+
+    context 'when a numbered label is already taken' do
+      let(:index) { [nil, '', 'none (1)'] }
+
+      its('index.to_a') { is_expected.to eq(['none', 'none (2)', 'none (1)']) }
+    end
+
+    context 'when the other labels are not unique' do
+      let(:index) { DaruLite::CategoricalIndex.new([nil, 'x', 'x']) }
+
+      it { expect { subject }.to raise_error(ArgumentError, 'Labels must be unique, got duplicates: "x"') }
+
+      it 'leaves the index untouched' do
+        expect { subject rescue ArgumentError }.not_to(change { df.index.to_a })
+      end
     end
 
     context 'with a whitespace-only label' do

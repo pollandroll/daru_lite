@@ -38,6 +38,7 @@ module DaruLite
       def reorder_rows(positions)
         raise NotImplementedError, 'Cannot reorder rows under a CategoricalIndex' if index.is_a?(CategoricalIndex)
         raise ArgumentError, 'Invalid order' unless positions.sort == (0...nrows).to_a
+        return dup if nrows <= 1
 
         row_at(*positions).tap { |reordered| reordered.index = index }
       end

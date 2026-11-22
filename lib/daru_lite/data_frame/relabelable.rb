@@ -1,21 +1,24 @@
 module DaruLite
   class DataFrame
     module Relabelable
-      # Converts every vector name to a Symbol, in place. With MultiIndex
-      # vectors, every level of each name is converted.
+      # Converts every String vector name to a Symbol, in place. Other names are
+      # left as they are. With MultiIndex vectors, every level of each name is
+      # converted.
       #
+      # @raise [ArgumentError] when two vectors would end up with the same name
       # @return [DaruLite::DataFrame] self
       # @example
       #   df = DaruLite::DataFrame.new({ 'a' => [1, 2], 'b' => [3, 4] })
       #   df.symbolize_vectors!
       #   df.vectors.to_a #=> [:a, :b]
       def symbolize_vectors!
-        self.vectors =
-          if vectors.is_a?(DaruLite::MultiIndex)
-            DaruLite::MultiIndex.from_tuples(vectors.to_a.map { |name| name.map(&:to_sym) })
-          else
-            DaruLite::Index.new(vectors.map(&:to_sym))
-          end
+        multi_index = vectors.is_a?(DaruLite::MultiIndex)
+        names = vectors.to_a.map do |name|
+          multi_index ? name.map { |level| symbolize_label(level) } : symbolize_label(name)
+        end
+        ensure_unique_labels!(names)
+
+        self.vectors = multi_index ? DaruLite::MultiIndex.from_tuples(names) : DaruLite::Index.new(names)
 
         self
       end
@@ -43,33 +46,54 @@ module DaruLite
       # empty or made of whitespace only).
       #
       # The first one is named +label+ and the following ones "label (1)",
-      # "label (2)"... so that index labels stay unique. A row already named
-      # +label+ takes part in the numbering. The index becomes a plain
-      # DaruLite::Index; nothing changes when no label is blank.
+      # "label (2)"... skipping the numbers already taken by another row, so
+      # that index labels stay unique. A row already named +label+ takes part
+      # in the numbering. The index becomes a plain DaruLite::Index; nothing
+      # changes when no label is blank.
       #
       # @param label [String] the label given to blank rows
+      # @raise [ArgumentError] when the other labels are not unique, as a
+      #   CategoricalIndex allows
       # @return [DaruLite::DataFrame] self
       # @example
       #   df = DaruLite::DataFrame.new({ a: [1, 2, 3] }, index: [nil, '', 'x'])
       #   df.rename_blank_rows!('none')
       #   df.index.to_a #=> ['none', 'none (1)', 'x']
       def rename_blank_rows!(label)
-        return self if index.none? { |row_label| blank_label?(row_label) }
+        labels = index.to_a
+        return self if labels.none? { |row_label| blank_label?(row_label) }
 
-        count = -1
-        self.index = DaruLite::Index.new(
-          index.map do |row_label|
-            next row_label unless blank_label?(row_label) || row_label == label
+        kept, renamed = labels.partition { |row_label| !blank_label?(row_label) && row_label != label }
+        new_labels = numbered_labels(label, renamed.size, kept).each
+        labels = labels.map { |row_label| kept.include?(row_label) ? row_label : new_labels.next }
+        ensure_unique_labels!(labels)
 
-            count += 1
-            count.zero? ? label : "#{label} (#{count})"
-          end
-        )
+        self.index = DaruLite::Index.new(labels)
 
         self
       end
 
       private
+
+      # +label+, then "label (1)", "label (2)"... leaving out those in +taken+
+      def numbered_labels(label, size, taken)
+        candidates = Enumerator.produce(0) { |count| count + 1 }.lazy.map do |count|
+          count.zero? ? label : "#{label} (#{count})"
+        end
+
+        candidates.reject { |candidate| taken.include?(candidate) }.first(size)
+      end
+
+      def symbolize_label(label)
+        label.is_a?(String) ? label.to_sym : label
+      end
+
+      def ensure_unique_labels!(labels)
+        duplicates = labels.tally.select { |_, count| count > 1 }.keys
+        return if duplicates.empty?
+
+        raise ArgumentError, "Labels must be unique, got duplicates: #{duplicates.map(&:inspect).join(', ')}"
+      end
 
       def blank_label?(label)
         return true if label.nil? || label == false
